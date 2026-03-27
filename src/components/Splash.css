@@ -1,0 +1,116 @@
+.ec-splash-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+}
+
+.ec-content-wrap {
+  max-width: 1120px;
+}
+
+.ec-badge {
+  display: inline-block;
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.09);
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  color: #0f172a;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.ec-title {
+  color: #000000;
+  font-size: clamp(2rem, 4vw, 3.1rem);
+  line-height: 1.2;
+}
+
+.ec-subtitle {
+  color: #000000;
+  font-weight: 500;
+}
+
+.ec-role-card {
+  background-color: white;
+  border-radius: 1.1rem;
+  box-shadow: 0 14px 32px rgba(2, 32, 58, 0.14);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.ec-role-card:hover {
+  transform: translateY(-7px);
+  box-shadow: 0 22px 44px rgba(2, 32, 58, 0.2);
+}
+
+.ec-icon-wrap {
+  width: 72px;
+  height: 72px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+}
+
+.ec-icon-admin {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+}
+
+.ec-icon-teacher {
+background: linear-gradient(135deg, #7c3aed, #6d28d9);
+}
+
+.ec-icon-student {
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+}
+
+.ec-role-title {
+  color: #0f172a;
+}
+
+.ec-role-text {
+  color: #475569;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  min-height: 3rem;
+}
+
+
+.ec-login-btn {
+  border-radius: 8px;
+  font-weight: 500;
+  border: 2px solid rgb(0, 0, 0);
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+
+
+.ec-btn-admin {
+  background: "transparent";
+  color: "black" !important;
+}
+
+.ec-btn-teacher {
+  background: "transparent";
+  color: "black" !important;
+}
+
+.ec-btn-student {
+   background: "transparent";
+  color: "black" !important;
+}
+
+.ec-login-btn:hover,
+.ec-login-btn:focus {
+  filter: brightness(1.08);
+  color: #ffffff;
+  background-color: black !important;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 767px) {
+  .ec-role-text {
+    min-height: auto;
+  }
+}
