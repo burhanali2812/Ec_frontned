@@ -164,8 +164,8 @@ function Login() {
             <div className="d-grid">
               {Loading ? (
                 <button className="btn btn-dark login-btn" type="button" disabled>
-                  <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                  <span className="visually-hidden">Verifying...</span>
+                  <span className="spinner-border spinner-border-sm mx-2" role="status" aria-hidden="true"></span>
+                   <span role="status">Verifying you...</span>
                 </button>
               ) : (
                 <button className="btn btn-dark login-btn" type="button" onClick={handleLogin}>
