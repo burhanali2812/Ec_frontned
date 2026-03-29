@@ -1,0 +1,52 @@
+.ap-filter-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+}
+
+.ap-stat-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+  height: 100%;
+}
+
+.ap-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  font-size: 1rem;
+}
+
+.ap-icon-student-paid {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+}
+
+.ap-icon-student-remaining {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.ap-icon-teacher-paid {
+  background: linear-gradient(135deg, #0f766e, #0d9488);
+}
+
+.ap-icon-teacher-remaining {
+  background: linear-gradient(135deg, #dc2626, #ef4444);
+}
+
+.ap-amount {
+  color: #0f172a;
+  font-size: 1.55rem;
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+}
+
+.ap-sub {
+  color: #64748b;
+  font-size: 0.9rem;
+}
