@@ -7,7 +7,7 @@ function Sidebar({ children }) {
   const menuItems = [
     { title: "Dashboard", icon: "fa-house", href: "#" },
     { title: "Students Manage", icon: "fa-user-graduate", href: "#" },
-    { title: "Teachers Manage", icon: "fa-chalkboard-teacher", href: "#" },
+    { title: "Teachers Manage", icon: "fa-chalkboard-teacher", href: "/teacherManage" },
     { title: "Courses Manage", icon: "fa-book-open", href: "#" },
     { title: "Attendance Control", icon: "fa-calendar-check", href: "#" },
     { title: "Results Manage", icon: "fa-chart-column", href: "#" },

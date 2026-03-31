@@ -5,6 +5,7 @@ import Signup from "./components/Signup";
 import AdminPanel from "./components/AdminPanel";
 import TeacherPanel from "./components/TeacherPanel";
 import { Routes, Route, Navigate } from "react-router-dom";
+import TeacherManage from "./components/TeacherManage";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/login" element={<Login/>} />
         <Route path="/adminPanel" element={<AdminPanel />} />
         <Route path="/teacherPanel" element={<TeacherPanel />} />
+        <Route path="/teacherManage" element={<TeacherManage />} />
 
       {/* Optional: Redirect unknown routes */}
       <Route path="*" element={<Navigate to="/" />} />
