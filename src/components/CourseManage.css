@@ -130,11 +130,96 @@
 
 .cm-teacher-item {
   display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.35rem 0.25rem;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.45rem 0.6rem;
+  margin-bottom: 0.45rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+.cm-teacher-item:last-child {
   margin-bottom: 0;
+}
+
+.cm-teacher-item-head {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
   cursor: pointer;
+  line-height: 1.2;
+}
+
+.cm-teacher-item-head .form-check-input {
+  margin-top: 0;
+  flex-shrink: 0;
+}
+
+.cm-class-button-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding-left: 1.8rem;
+}
+
+.cm-class-btn {
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: #334155;
+  border-radius: 999px;
+  padding: 0.24rem 0.65rem;
+  font-size: 0.78rem;
+  transition: all 0.2s ease;
+}
+
+.cm-class-btn:hover {
+  border-color: #198754;
+  color: #198754;
+  background: #ecfdf3;
+}
+
+.cm-class-btn.active {
+  border-color: #198754;
+  background: #198754;
+  color: #ffffff;
+}
+
+.cm-teacher-listing {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.cm-teacher-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.28rem 0.5rem;
+  border-radius: 8px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  line-height: 1.2;
+}
+
+.cm-teacher-name {
+  font-weight: 600;
+  color: #0f172a;
+  font-size: 0.92rem;
+}
+
+.cm-teacher-classes {
+  font-size: 0.78rem;
+  color: #475569;
+}
+
+.cm-table-card .table > :not(caption) > * > * {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.cm-table-card tbody tr:hover {
+  background: #f8fbff;
 }
 
 @media (max-width: 767px) {

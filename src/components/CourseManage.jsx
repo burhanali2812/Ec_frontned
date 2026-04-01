@@ -7,6 +7,8 @@ import logo from "../images/logo.png";
 import "./CourseManage.css";
 
 function CourseManage({ adminLoginType = "academy" }) {
+  const CLASS_OPTIONS = ["Pre-9th", "9th", "10th", "11th", "12th"];
+
   const [courses, setCourses] = useState([]);
   const [teachers, setTeachers] = useState([]);
   const [searchText, setSearchText] = useState("");
@@ -14,12 +16,13 @@ function CourseManage({ adminLoginType = "academy" }) {
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingCourseId, setEditingCourseId] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [loadingCourses, setLoadingCourses] = useState(false);
   const [loadingTeachers, setLoadingTeachers] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    teacherIds: [],
+    teacherAssignments: [],
   });
 
   const COURSE_API = "https://ec-backend-phi.vercel.app/api/courses";
@@ -47,7 +50,7 @@ function CourseManage({ adminLoginType = "academy" }) {
     setFormData({
       title: "",
       description: "",
-      teacherIds: [],
+      teacherAssignments: [],
     });
     setIsEditMode(false);
     setEditingCourseId("");
@@ -102,27 +105,80 @@ function CourseManage({ adminLoginType = "academy" }) {
   }, []);
 
   const teacherMap = useMemo(() => {
-    return teachers.reduce((acc, t) => {
-      const id = String(t._id || t.id);
-      acc[id] = t.name || "Unknown Teacher";
+    return teachers.reduce((acc, teacher) => {
+      const id = String(teacher._id || teacher.id);
+      acc[id] = teacher.name || "Unknown Teacher";
       return acc;
     }, {});
   }, [teachers]);
 
-  const getCourseTeacherNames = (course) => {
-    const tList = Array.isArray(course?.teachers) ? course.teachers : [];
+  const formatTeacherName = (teacherValue, fallbackId = "") => {
+    if (!teacherValue) {
+      return teacherMap[fallbackId] || "Unknown Teacher";
+    }
 
-    return tList
-      .map((t) => {
-        if (typeof t === "string") {
-          return teacherMap[t] || "Unknown Teacher";
+    if (typeof teacherValue === "string") {
+      return teacherMap[teacherValue] || teacherValue || "Unknown Teacher";
+    }
+
+    if (typeof teacherValue === "object") {
+      return (
+        teacherValue.name ||
+        teacherValue.fullName ||
+        teacherMap[String(teacherValue._id || teacherValue.id || fallbackId)] ||
+        "Unknown Teacher"
+      );
+    }
+
+    return teacherMap[fallbackId] || "Unknown Teacher";
+  };
+
+  const normalizeClassTargets = (course) => {
+    const raw = Array.isArray(course?.classTarget) ? course.classTarget : [];
+
+    return raw
+      .map((item) => {
+        if (!item) return null;
+
+        if (typeof item === "string") {
+          const [teacherId, classesPart] = item.split("|");
+          return {
+            teacherId: teacherId ? String(teacherId) : "",
+            classes: classesPart ? classesPart.split(",").filter(Boolean) : [],
+            teacher: null,
+          };
         }
-        if (t && typeof t === "object") {
-          return t.name || teacherMap[String(t._id)] || "Unknown Teacher";
-        }
-        return "Unknown Teacher";
+
+        return {
+          teacherId: String(
+            item.teacher?._id || item.teacher || item.teacherId || "",
+          ),
+          classes: Array.isArray(item.classes) ? item.classes : [],
+          teacher: item.teacher || null,
+        };
       })
-      .filter(Boolean);
+      .filter((item) => item && item.teacherId);
+  };
+
+  const getCourseAssignments = (course) => {
+    const assignments = normalizeClassTargets(course);
+    return assignments.map((assignment) => ({
+      teacherId: assignment.teacherId,
+      teacherName: formatTeacherName(assignment.teacher, assignment.teacherId),
+      classes: assignment.classes || [],
+    }));
+  };
+
+  const getCourseSearchText = (course) => {
+    return getCourseAssignments(course)
+      .map((assignment) => {
+        const classText = assignment.classes.length
+          ? ` ${assignment.classes.join(", ")} class${assignment.classes.length > 1 ? "es" : ""}`
+          : "";
+        return `${assignment.teacherName}${classText}`;
+      })
+      .join(" ")
+      .toLowerCase();
   };
 
   const filteredCourses = useMemo(() => {
@@ -130,9 +186,6 @@ function CourseManage({ adminLoginType = "academy" }) {
     if (!q) return courses;
 
     return courses.filter((course) => {
-      const teacherNames = getCourseTeacherNames(course)
-        .join(" ")
-        .toLowerCase();
       return (
         String(course.title || "")
           .toLowerCase()
@@ -140,23 +193,70 @@ function CourseManage({ adminLoginType = "academy" }) {
         String(course.description || "")
           .toLowerCase()
           .includes(q) ||
-        teacherNames.includes(q)
+        getCourseSearchText(course).includes(q)
       );
     });
   }, [courses, searchText, teacherMap]);
 
+  const getTeacherAssignment = (teacherId) => {
+    return formData.teacherAssignments.find(
+      (item) => item.teacherId === teacherId,
+    );
+  };
+
   const toggleTeacherSelection = (teacherId) => {
     setFormData((prev) => {
-      const exists = prev.teacherIds.includes(teacherId);
+      const exists = prev.teacherAssignments.some(
+        (item) => item.teacherId === teacherId,
+      );
       if (exists) {
         return {
           ...prev,
-          teacherIds: prev.teacherIds.filter((id) => id !== teacherId),
+          teacherAssignments: prev.teacherAssignments.filter(
+            (item) => item.teacherId !== teacherId,
+          ),
         };
       }
+
       return {
         ...prev,
-        teacherIds: [...prev.teacherIds, teacherId],
+        teacherAssignments: [
+          ...prev.teacherAssignments,
+          { teacherId, classes: [] },
+        ],
+      };
+    });
+  };
+
+  const toggleTeacherClass = (teacherId, className) => {
+    setFormData((prev) => {
+      const exists = prev.teacherAssignments.some(
+        (item) => item.teacherId === teacherId,
+      );
+
+      if (!exists) {
+        return {
+          ...prev,
+          teacherAssignments: [
+            ...prev.teacherAssignments,
+            { teacherId, classes: [className] },
+          ],
+        };
+      }
+
+      return {
+        ...prev,
+        teacherAssignments: prev.teacherAssignments.map((item) => {
+          if (item.teacherId !== teacherId) return item;
+
+          const hasClass = item.classes.includes(className);
+          return {
+            ...item,
+            classes: hasClass
+              ? item.classes.filter((itemClass) => itemClass !== className)
+              : [...item.classes, className],
+          };
+        }),
       };
     });
   };
@@ -182,8 +282,16 @@ function CourseManage({ adminLoginType = "academy" }) {
       return false;
     }
 
-    if (!isEditMode && !formData.teacherIds.length) {
+    if (!formData.teacherAssignments.length) {
       toast.error("Please select at least one teacher");
+      return false;
+    }
+
+    const missingClasses = formData.teacherAssignments.some(
+      (assignment) => !assignment.classes.length,
+    );
+    if (missingClasses) {
+      toast.error("Please select at least one class for each teacher");
       return false;
     }
 
@@ -199,7 +307,11 @@ function CourseManage({ adminLoginType = "academy" }) {
       const payload = {
         title: formData.title.trim(),
         description: formData.description.trim(),
-        teacherIds: formData.teacherIds,
+        teacherIds: formData.teacherAssignments.map((item) => item.teacherId),
+        classTarget: formData.teacherAssignments.map((item) => ({
+          teacher: item.teacherId,
+          classes: item.classes,
+        })),
       };
 
       const endpoint = isEditMode
@@ -245,18 +357,54 @@ function CourseManage({ adminLoginType = "academy" }) {
   };
 
   const handleEdit = (course) => {
-    const selectedTeacherIds = Array.isArray(course?.teachers)
-      ? course.teachers.map((t) => String(t?._id || t))
-      : [];
+    const assignments = normalizeClassTargets(course).map((item) => ({
+      teacherId: item.teacherId,
+      classes: item.classes,
+    }));
 
     setIsEditMode(true);
     setEditingCourseId(String(course._id || course.id));
     setFormData({
       title: course.title || "",
       description: course.description || "",
-      teacherIds: selectedTeacherIds,
+      teacherAssignments: assignments,
     });
     setShowModal(true);
+  };
+
+  const handleDelete = async () => {
+    const ok = window.confirm("Delete this course?");
+    if (!ok) return;
+
+    setDeleteLoading(true);
+    try {
+      const res = await axios.delete(
+        `${COURSE_API}/deleteCourse/${editingCourseId}`,
+        {
+          headers: getAuthHeaders(),
+        },
+      );
+
+      if (res.data?.success) {
+        toast.success(res.data?.message || "Course deleted successfully");
+        setShowModal(false);
+        resetForm();
+        //fast ui update without refetching
+        setCourses((prev) =>
+          prev.filter(
+            (course) => String(course._id || course.id) !== editingCourseId,
+          ),
+        );
+      } else {
+        toast.error(res.data?.message || "Failed to delete course");
+      }
+    } catch (error) {
+      toast.error(
+        getErrorMessage(error, "Unable to delete course. Please try again."),
+      );
+    } finally {
+      setDeleteLoading(false);
+    }
   };
 
   return (
@@ -289,7 +437,7 @@ function CourseManage({ adminLoginType = "academy" }) {
           <input
             type="text"
             className="form-control cm-search-input"
-            placeholder="Search courses by title, description, teacher..."
+            placeholder="Search courses by title, description, teacher, class..."
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
@@ -304,7 +452,7 @@ function CourseManage({ adminLoginType = "academy" }) {
                 <th>#</th>
                 <th>Title</th>
                 <th>Description</th>
-                <th>Teachers</th>
+                <th>Teachers / Classes</th>
                 <th>Manage</th>
               </tr>
             </thead>
@@ -323,25 +471,30 @@ function CourseManage({ adminLoginType = "academy" }) {
                 </tr>
               ) : (
                 filteredCourses.map((course, index) => {
-                  const names = getCourseTeacherNames(course);
+                  const assignments = getCourseAssignments(course);
                   return (
                     <tr key={course._id || index}>
                       <td>{index + 1}</td>
                       <td>{course.title}</td>
                       <td className="cm-desc-cell">{course.description}</td>
                       <td>
-                        {names.length ? (
-                          <div className="cm-teacher-chips">
-                            {names.slice(0, 2).map((name, i) => (
-                              <span className="cm-chip" key={`${name}-${i}`}>
-                                {name}
-                              </span>
+                        {assignments.length ? (
+                          <div className="cm-teacher-listing">
+                            {assignments.map((assignment) => (
+                              <div
+                                className="cm-teacher-row"
+                                key={assignment.teacherId}
+                              >
+                                <span className="cm-teacher-name">
+                                  {assignment.teacherName}
+                                </span>
+                                <span className="cm-teacher-classes">
+                                  {assignment.classes.length
+                                    ? `${assignment.classes.join(", ")} class${assignment.classes.length > 1 ? "es" : ""}`
+                                    : "No class selected"}
+                                </span>
+                              </div>
                             ))}
-                            {names.length > 2 && (
-                              <span className="cm-chip cm-chip-muted">
-                                +{names.length - 2} more
-                              </span>
-                            )}
                           </div>
                         ) : (
                           <span className="text-muted">No teacher linked</span>
@@ -428,7 +581,7 @@ function CourseManage({ adminLoginType = "academy" }) {
 
                 <div className="col-12">
                   <label className="form-label d-flex justify-content-between align-items-center">
-                    <span>Select Teachers</span>
+                    <span>Select Teachers and Classes</span>
                     {loadingTeachers && (
                       <small className="text-muted">Loading...</small>
                     )}
@@ -442,21 +595,52 @@ function CourseManage({ adminLoginType = "academy" }) {
                     ) : (
                       teachers.map((teacher) => {
                         const teacherId = String(teacher._id || teacher.id);
+                        const isSelected = formData.teacherAssignments.some(
+                          (item) => item.teacherId === teacherId,
+                        );
+                        const selectedClasses =
+                          getTeacherAssignment(teacherId)?.classes || [];
+
                         return (
-                          <label className="cm-teacher-item" key={teacherId}>
-                            <input
-                              type="checkbox"
-                              className="form-check-input"
-                              checked={formData.teacherIds.includes(teacherId)}
-                              onChange={() => toggleTeacherSelection(teacherId)}
-                            />
-                            <span>
-                              {teacher.name}{" "}
-                              <small className="text-muted">
-                                ({teacher.email})
-                              </small>
-                            </span>
-                          </label>
+                          <div className="cm-teacher-item" key={teacherId}>
+                            <label className="cm-teacher-item-head">
+                              <input
+                                type="checkbox"
+                                className="form-check-input"
+                                checked={isSelected}
+                                onChange={() =>
+                                  toggleTeacherSelection(teacherId)
+                                }
+                              />
+                              <span>
+                                {teacher.name}{" "}
+                                <small className="text-muted">
+                                  ({teacher.email})
+                                </small>
+                              </span>
+                            </label>
+
+                            {isSelected && (
+                              <div className="cm-class-button-wrap">
+                                {CLASS_OPTIONS.map((className) => {
+                                  const active =
+                                    selectedClasses.includes(className);
+                                  return (
+                                    <button
+                                      key={className}
+                                      type="button"
+                                      className={`cm-class-btn ${active ? "active" : ""}`}
+                                      onClick={() =>
+                                        toggleTeacherClass(teacherId, className)
+                                      }
+                                    >
+                                      {className}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </div>
                         );
                       })
                     )}
@@ -465,6 +649,25 @@ function CourseManage({ adminLoginType = "academy" }) {
               </div>
 
               <div className="d-flex justify-content-end gap-2 mt-4">
+                {isEditMode &&
+                  (deleteLoading ? (
+                    <button
+                      type="button"
+                      className="btn btn-outline-danger me-auto"
+                      disabled
+                    >
+                      Deleting...
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      className="btn btn-outline-danger me-auto"
+                      onClick={handleDelete}
+                    >
+                      <i className="fas fa-trash me-1"></i>Delete Course
+                    </button>
+                  ))}
+
                 <button
                   type="button"
                   className="btn btn-outline-secondary"
