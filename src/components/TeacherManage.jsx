@@ -6,7 +6,7 @@ import TopBar from "./TopBar";
 import logo from "../images/logo.png";
 import "./TeacherManage.css";
 
-function TeacherManage() {
+function TeacherManage({ adminLoginType }) {
   const [teachers, setTeachers] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [showModal, setShowModal] = useState(false);
@@ -15,6 +15,7 @@ function TeacherManage() {
   const [submitting, setSubmitting] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingTeacherId, setEditingTeacherId] = useState("");
+  const [institutionType, setInstitutionType] = useState(adminLoginType);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -50,8 +51,10 @@ function TeacherManage() {
 
   const fetchTeachers = async () => {
     setLoadingTeachers(true);
+    console.log("Fetching teachers with institutionType:", institutionType);
     try {
       const res = await axios.get(`${API_BASE}/getAllTeachers`, {
+        params: { institutionType },
         headers: getAuthHeaders(),
       });
 
@@ -127,7 +130,7 @@ function TeacherManage() {
       return false;
     }
     if (!/^\d{13}$|^\d{5}-\d{7}-\d$/.test(cnic.trim())) {
-      toast.error("CNIC must be 13 digits or xxxxx-xxxxxxx-x");
+      toast.error("CNIC must be 13 digits");
       return false;
     }
     if (!address.trim() || address.trim().length < 5) {
@@ -164,7 +167,10 @@ function TeacherManage() {
       if (res.data?.success) {
         toast.success("Teacher deleted successfully");
         setDeleteLoading(null);
-        fetchTeachers();
+        //quickly delete from UI without refetching
+        setTeachers((prev) =>
+          prev.filter((t) => String(t._id || t.id) !== String(teacherId)),
+        );
         return true;
       } else {
         toast.error(res.data?.message || "Failed to delete teacher");
@@ -184,6 +190,8 @@ function TeacherManage() {
     e.preventDefault();
     if (!validateForm()) return;
 
+  
+
     setSubmitting(true);
     try {
       const payload = {
@@ -192,7 +200,11 @@ function TeacherManage() {
         email: formData.email.trim(),
         cnic: formData.cnic.trim(),
         address: formData.address.trim(),
+        institutionType : adminLoginType,
       };
+      console.log("institutionType", institutionType);
+      console.log("adminLoginType", adminLoginType);
+      
 
       const duplicate = teachers.find((t) => {
         if (isEditMode && String(t._id || t.id) === String(editingTeacherId))
@@ -218,6 +230,7 @@ function TeacherManage() {
 
       const res = await axios({
         method,
+        
         url: endpoint,
         data: payload,
         headers: getAuthHeaders(),

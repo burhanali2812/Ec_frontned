@@ -7,12 +7,20 @@ function Sidebar({ children }) {
   const menuItems = [
     { title: "Dashboard", icon: "fa-house", href: "#" },
     { title: "Students Manage", icon: "fa-user-graduate", href: "#" },
-    { title: "Teachers Manage", icon: "fa-chalkboard-teacher", href: "/teacherManage" },
-    { title: "Courses Manage", icon: "fa-book-open", href: "#" },
+    {
+      title: "Teachers Manage",
+      icon: "fa-chalkboard-teacher",
+      href: "/teacherManage",
+    },
+    { title: "Courses Manage", icon: "fa-book-open", href: "/courseManage" },
     { title: "Attendance Control", icon: "fa-calendar-check", href: "#" },
     { title: "Results Manage", icon: "fa-chart-column", href: "#" },
     { title: "Notifications", icon: "fa-bell", href: "#" },
   ];
+  const handlelogOut = () => {
+    localStorage.removeItem("token");
+    window.location.href = "/";
+  }
 
   const toggleMenu = () => setIsOpen((prev) => !prev);
   const closeMenu = () => setIsOpen(false);
@@ -35,27 +43,28 @@ function Sidebar({ children }) {
           <i className="fas fa-bars"></i>
         </button>
       </header>
-  
 
       <aside className="sb-desktop-sidebar">
-           <div
-  style={{
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center"
-  }}
-  className="mt-3"
->
-  <img src={logo} alt="EC Portal" width={120} />
-</div>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+          className="mt-3"
+        >
+          <img src={logo} alt="EC Portal" width={120} />
+        </div>
         <div className="sb-header">
           <h1 className="mb-1 text-dark text-center fw-bold">EC Portal</h1>
-        <div style={{ display: "flex", justifyContent: "center" }}>
-  <span className="mb-0 px-3 py-1 rounded-2 fw-semibold"
-        style={{ backgroundColor: "#e6f4ea", color: "#198754" }}>
-    Academy
-  </span>
-</div>
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <span
+              className="mb-0 px-3 py-1 rounded-2 fw-semibold"
+              style={{ backgroundColor: "#e6f4ea", color: "#198754" }}
+            >
+              Academy
+            </span>
+          </div>
         </div>
 
         <nav className="sb-nav">
@@ -68,7 +77,7 @@ function Sidebar({ children }) {
         </nav>
 
         <div className="sb-footer">
-          <button className="sb-logout-btn" type="button">
+          <button className="sb-logout-btn" type="button" onClick={handlelogOut}>
             <i className="fas fa-right-from-bracket"></i>
             Logout
           </button>
