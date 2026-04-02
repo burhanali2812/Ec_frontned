@@ -10,6 +10,7 @@ import TeacherPanel from "./components/TeacherPanel";
 import { Routes, Route, Navigate } from "react-router-dom";
 import TeacherManage from "./components/TeacherManage";
 import CourseManage from "./components/CourseManage";
+import StudentManage from "./components/StudentManage";
 
 function App() {
   const token = localStorage.getItem("token");
@@ -28,6 +29,10 @@ function App() {
       <Route
         path="/courseManage"
         element={<CourseManage adminLoginType={adminLoginType} />}
+      />
+      <Route
+        path="/studentManage"
+        element={<StudentManage adminLoginType={adminLoginType} />}
       />
 
       {/* Optional: Redirect unknown routes */}

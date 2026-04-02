@@ -6,7 +6,11 @@ function Sidebar({ children }) {
 
   const menuItems = [
     { title: "Dashboard", icon: "fa-house", href: "#" },
-    { title: "Students Manage", icon: "fa-user-graduate", href: "#" },
+    {
+      title: "Students Manage",
+      icon: "fa-user-graduate",
+      href: "/studentManage",
+    },
     {
       title: "Teachers Manage",
       icon: "fa-chalkboard-teacher",
@@ -20,7 +24,7 @@ function Sidebar({ children }) {
   const handlelogOut = () => {
     localStorage.removeItem("token");
     window.location.href = "/";
-  }
+  };
 
   const toggleMenu = () => setIsOpen((prev) => !prev);
   const closeMenu = () => setIsOpen(false);
@@ -77,7 +81,11 @@ function Sidebar({ children }) {
         </nav>
 
         <div className="sb-footer">
-          <button className="sb-logout-btn" type="button" onClick={handlelogOut}>
+          <button
+            className="sb-logout-btn"
+            type="button"
+            onClick={handlelogOut}
+          >
             <i className="fas fa-right-from-bracket"></i>
             Logout
           </button>

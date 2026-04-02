@@ -1,0 +1,193 @@
+/* ====== Student Management Styles ====== */
+
+.sm-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f0f4f9;
+}
+
+.sm-main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.sm-content-wrapper {
+  flex: 1;
+ 
+  overflow-y: auto;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.sm-header-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 1.25rem 1rem;
+  text-align: center;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+}
+
+.sm-logo-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.sm-logo {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+}
+
+.sm-heading {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.sm-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.sm-add-btn {
+  border-radius: 10px;
+  padding: 0.55rem 1rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.sm-search-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 240px;
+}
+
+.sm-search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6b7280;
+}
+
+.sm-search-input {
+  height: 42px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  padding-left: 2rem;
+}
+
+.sm-table-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+  overflow: hidden;
+}
+
+.sm-table-head th {
+  background: #f8fafc;
+  color: #0f172a;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.sm-class-badge {
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  background: #e8f2ff;
+  color: #0d4ea6;
+  border: 1px solid #d5e7ff;
+}
+
+.sm-manage-actions {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.sm-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.sm-modal-card {
+  width: min(780px, 100%);
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 1rem;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.25);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.sm-courses-list {
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  padding: 0.65rem;
+  max-height: 220px;
+  overflow-y: auto;
+  background: #fbfdff;
+}
+
+.sm-course-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.45rem 0.6rem;
+  margin-bottom: 0.45rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+.sm-course-item:last-child {
+  margin-bottom: 0;
+}
+
+.sm-course-title {
+  font-weight: 600;
+  color: #0f172a;
+  font-size: 0.92rem;
+}
+
+.sm-course-desc {
+  font-size: 0.78rem;
+  color: #475569;
+}
+
+.sm-table-card .table > :not(caption) > * > * {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.sm-table-card tbody tr:hover {
+  background: #f8fbff;
+}
+
+@media (max-width: 767px) {
+  .sm-content-wrapper {
+    padding: 1rem;
+  }
+
+  .sm-logo {
+    width: 74px;
+    height: 74px;
+  }
+
+  .sm-heading {
+    font-size: 1.35rem;
+  }
+}
