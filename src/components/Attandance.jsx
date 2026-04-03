@@ -10,9 +10,16 @@ function Attandance() {
   const [students, setStudents] = useState([]);
   const [selectedCourseId, setSelectedCourseId] = useState("");
   const [selectedClassInfo, setSelectedClassInfo] = useState("");
-  const [selectedDate, setSelectedDate] = useState(
-    new Date().toISOString().slice(0, 10),
-  );
+
+  const getLocalToday = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  const [selectedDate, setSelectedDate] = useState(getLocalToday());
   const [loadingCourses, setLoadingCourses] = useState(false);
   const [loadingStudents, setLoadingStudents] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -228,8 +235,8 @@ function Attandance() {
   return (
     <Sidebar>
       <Toaster position="top-right" />
-      <div className="attendance-page">
-        <TopBar />
+      <div className="attendance-page mt-3 mt-lg-4">
+  
 
         <div className="container-fluid px-0 px-lg-2">
           <div className="attendance-hero mb-4">
@@ -249,9 +256,7 @@ function Attandance() {
                 style={{ minWidth: 240 }}
               >
                 <div className="small text-muted">Selected course</div>
-                <div className="fw-bold">
-                  {selectedCourse?.title || "None"}
-                </div>
+                <div className="fw-bold">{selectedCourse?.title || "None"}</div>
                 <div className="small text-muted mt-2">Selected class</div>
                 <div className="fw-bold">{selectedClassInfo || "None"}</div>
               </div>
@@ -305,6 +310,7 @@ function Attandance() {
                       className="form-control"
                       value={selectedDate}
                       onChange={(e) => setSelectedDate(e.target.value)}
+                      disabled
                     />
                   </div>
 
@@ -391,6 +397,31 @@ function Attandance() {
                               <div className="fw-semibold">{student.name}</div>
                               <div className="text-muted small">
                                 {student.email || "-"}
+                              </div>
+                              <div className="mt-2">
+                                <div className="d-flex justify-content-between align-items-center mb-1 small text-muted">
+                                  <span>Attendance</span>
+                                  <span>
+                                    {Number(student.percentage || 0)}%
+                                  </span>
+                                </div>
+                                <div
+                                  className="progress"
+                                  style={{ height: 8, borderRadius: 999 }}
+                                >
+                                  <div
+                                    className={`progress-bar ${Number(student.percentage || 0) < 90 ? "bg-danger" : "bg-success"}`}
+                                    role="progressbar"
+                                    aria-valuenow={Number(
+                                      student.percentage || 0,
+                                    )}
+                                    aria-valuemin="0"
+                                    aria-valuemax="100"
+                                    style={{
+                                      width: `${Number(student.percentage || 0)}%`,
+                                    }}
+                                  />
+                                </div>
                               </div>
                             </td>
                             <td>
