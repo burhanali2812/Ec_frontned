@@ -1,7 +1,6 @@
 import "./App.css";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+
 import Home from "./components/Home";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
@@ -12,6 +11,7 @@ import TeacherManage from "./components/TeacherManage";
 import CourseManage from "./components/CourseManage";
 import StudentManage from "./components/StudentManage";
 import StudentRegister from "./components/StudentRegister";
+import Attandance from "./components/Attandance";
 
 function App() {
   const token = localStorage.getItem("token");
@@ -43,6 +43,7 @@ function App() {
         path="/student-register"
         element={<StudentRegister adminLoginType={adminLoginType} />}
       />
+      <Route path="/teacher/attendance" element={<Attandance />} />
 
       {/* Optional: Redirect unknown routes */}
       <Route path="*" element={<Navigate to="/" />} />

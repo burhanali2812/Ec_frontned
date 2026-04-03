@@ -32,6 +32,21 @@
   display: flex;
   flex-direction: column;
   gap: 0.45rem;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* hide scrollbar but keep vertical scrolling */
+.sb-nav::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.sb-nav {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .sb-link {
@@ -162,6 +177,8 @@
 
 .sb-mobile-nav {
   padding: 0.7rem 0.9rem 1rem;
+  max-height: calc(100vh - 90px);
+  overflow-y: auto;
 }
 
 .sb-overlay {

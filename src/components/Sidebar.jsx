@@ -1,13 +1,16 @@
 import React, { useState } from "react";
 import "./Sidebar.css";
 import logo from "../images/logo.png";
-import { useNavigation } from "react-router-dom";
-import { ToastBar, toast } from "react-hot-toast";
 function Sidebar({ children }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const navigate = useNavigation();
+  const token = localStorage.getItem("token");
+  const userRole = token ? JSON.parse(atob(token.split(".")[1])).role : null;
 
-  const menuItems = [
+
+  const [isOpen, setIsOpen] = useState(false);
+
+
+  const roleList = {
+   admin: [
     { title: "Dashboard", icon: "fa-house", href: "#" },
     {
       title: "Students Manage",
@@ -28,13 +31,34 @@ function Sidebar({ children }) {
     { title: "Attendance Control", icon: "fa-calendar-check", href: "#" },
     { title: "Results Manage", icon: "fa-chart-column", href: "#" },
     { title: "Notifications", icon: "fa-bell", href: "#" },
-  ];
+  ],
+     teacher: [
+  { title: "Dashboard", icon: "fa-house", href: "/teacher/dashboard" },
+  { title: "Attendance", icon: "fa-calendar-check", href: "/teacher/attendance" },
+  { title: "Students Manage", icon: "fa-user-graduate", href: "/teacher/students" },
+  { title: "Add Lectures & Notes", icon: "fa-file-import", href: "/teacher/add-notes" },
+  { title: "Apply for Leave", icon: "fa-envelope-open-text", href: "/teacher/leave" },
+  { title: "Test Marks", icon: "fa-square-poll-vertical", href: "/teacher/test-marks" },
+  { title: "Test Generator", icon: "fa-gears", href: "/teacher/test-generator" },
+  { title: "Notifications", icon: "fa-bell", href: "/teacher/notifications" },
+],
+     student: [
+  { title: "Dashboard", icon: "fa-house", href: "/student/dashboard" },
+  { title: "View Attendance", icon: "fa-calendar-check", href: "/student/attendance" },
+  { title: "Registered Courses", icon: "fa-book-open", href: "/student/courses" },
+  { title: "Lectures & Notes", icon: "fa-file-pdf", href: "/student/notes" },
+  { title: "Fee History", icon: "fa-file-invoice-dollar", href: "/student/fees" },
+  { title: "Results", icon: "fa-chart-column", href: "/student/results" },
+  { title: "Notifications", icon: "fa-bell", href: "/student/notifications" },
+]
+  };
+  console.log("User Role:", userRole);
+
+    const menuItems = userRole ? roleList[userRole] || [] : [];
   const handlelogOut = () => {
     localStorage.removeItem("token");
-      toast.success("Logged out successfully");
-    setTimeout(() => {
-      navigate("/login");
-    }, 1500);
+      window.location.href = "/";
+   
   };
 
   const toggleMenu = () => setIsOpen((prev) => !prev);
@@ -42,7 +66,7 @@ function Sidebar({ children }) {
 
   return (
     <div className="sb-layout">
-      <ToastBar />
+  
       <header className="sb-mobile-topbar">
         <div className="sb-brand-wrap">
           <img src={logo} alt="EC Portal" width={50} />
