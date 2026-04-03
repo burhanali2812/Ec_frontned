@@ -1,28 +1,23 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { Toaster, toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import TopBar from "./TopBar";
 import logo from "../images/logo.png";
 import "./StudentManage.css";
 
 function StudentManage({ adminLoginType = "academy" }) {
+  const navigate = useNavigate();
   const CLASS_OPTIONS = ["Pre-9th", "9th", "10th", "11th", "12th"];
 
   const [students, setStudents] = useState([]);
-  const [courses, setCourses] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [showRegistrationModal, setShowRegistrationModal] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingStudentId, setEditingStudentId] = useState("");
-  const [registeredCourses, setRegisteredCourses] = useState([]);
-  const [studentRegisteredMap, setStudentRegisteredMap] = useState({});
-  const [selectedStudentForRegistration, setSelectedStudentForRegistration] =
-    useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [loadingStudents, setLoadingStudents] = useState(false);
-  const [loadingCourses, setLoadingCourses] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -34,13 +29,7 @@ function StudentManage({ adminLoginType = "academy" }) {
     fatherContact: "",
   });
 
-  const [registrationData, setRegistrationData] = useState({
-    courseIds: [],
-  });
-
   const STUDENT_API = "https://ec-backend-phi.vercel.app/api/students";
-  const COURSE_API = "https://ec-backend-phi.vercel.app/api/courses";
-  const REGISTRATION_API = "https://ec-backend-phi.vercel.app/api/registration";
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem("token");
@@ -58,31 +47,6 @@ function StudentManage({ adminLoginType = "academy" }) {
     }
 
     return fallback;
-  };
-
-  const normalizeId = (value) => {
-    if (!value) return "";
-    if (typeof value === "string") return value;
-    return String(value._id || value.id || value);
-  };
-
-  const extractCourseIdsFromRegistrationResponse = (data) => {
-    const source =
-      data?.courses ||
-      data?.registeredCourses ||
-      data?.studentCourses ||
-      data?.registrations ||
-      [];
-
-    if (!Array.isArray(source)) return [];
-
-    return [
-      ...new Set(
-        source
-          .map((item) => normalizeId(item?.course || item?.courseId || item))
-          .filter(Boolean),
-      ),
-    ];
   };
 
   const resetForm = () => {
@@ -124,41 +88,17 @@ function StudentManage({ adminLoginType = "academy" }) {
     }
   };
 
-  const fetchCourses = async () => {
-    setLoadingCourses(true);
-    try {
-      const res = await axios.get(`${COURSE_API}/allCourses`, {
-        params: {
-          institutionType: adminLoginType === "academy" ? "Academy" : "School",
-        },
-        headers: getAuthHeaders(),
-      });
-
-      if (res.data?.success) {
-        setCourses(res.data.courses || []);
-      } else {
-        toast.error(res.data?.message || "Failed to load courses");
-      }
-    } catch (error) {
-      toast.error(
-        getErrorMessage(error, "Unable to load courses. Please refresh."),
-      );
-    } finally {
-      setLoadingCourses(false);
-    }
-  };
-
   useEffect(() => {
     fetchStudents();
-    fetchCourses();
   }, []);
 
   const filteredStudents = useMemo(() => {
     if (!searchText.trim()) return students;
+    const q = searchText.toLowerCase();
     return students.filter(
       (student) =>
-        student.name?.toLowerCase().includes(searchText.toLowerCase()) ||
-        student.email?.toLowerCase().includes(searchText.toLowerCase()) ||
+        student.name?.toLowerCase().includes(q) ||
+        student.email?.toLowerCase().includes(q) ||
         student.contact?.includes(searchText) ||
         student.rollNumber?.toString().includes(searchText),
     );
@@ -172,56 +112,36 @@ function StudentManage({ adminLoginType = "academy" }) {
     }));
   };
 
-  const handleRegistrationChange = (e) => {
-    const { value, checked } = e.target;
-    setRegistrationData((prev) => {
-      const updatedIds = checked
-        ? Array.from(new Set([...prev.courseIds, value]))
-        : prev.courseIds.filter((id) => id !== value);
-      return {
-        ...prev,
-        courseIds: updatedIds,
-      };
-    });
-  };
-
   const validateForm = () => {
     if (!formData.name.trim()) {
       toast.error("Student name is required");
       return false;
     }
-
     if (!formData.email.trim()) {
       toast.error("Email is required");
       return false;
     }
-
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
       toast.error("Please enter a valid email address");
       return false;
     }
-
     if (!formData.contact.trim()) {
       toast.error("Contact number is required");
       return false;
     }
-
     if (formData.contact.length < 10) {
       toast.error("Contact number must be at least 10 digits");
       return false;
     }
-
     if (!formData.classInfo) {
       toast.error("Please select a class");
       return false;
     }
-
     if (!formData.fatherName.trim()) {
       toast.error("Father's name is required");
       return false;
     }
-
     return true;
   };
 
@@ -246,10 +166,9 @@ function StudentManage({ adminLoginType = "academy" }) {
       const endpoint = isEditMode
         ? `${STUDENT_API}/updateStudent/${editingStudentId}`
         : `${STUDENT_API}/signUp`;
-      const method = isEditMode ? "put" : "post";
 
       const res = await axios({
-        method,
+        method: isEditMode ? "put" : "post",
         url: endpoint,
         data: payload,
         headers: getAuthHeaders(),
@@ -299,123 +218,17 @@ function StudentManage({ adminLoginType = "academy" }) {
     setShowModal(true);
   };
 
-  const fetchStudentRegisteredCourses = async (studentId) => {
-    const sid = String(studentId);
-    const cachedCourseIds = studentRegisteredMap[sid] || [];
-
-    try {
-      const res = await axios.get(
-        `${REGISTRATION_API}/getStudentCourses/${studentId}`,
-        {
-          headers: getAuthHeaders(),
-        },
-      );
-
-      if (res.data?.success) {
-        const parsedCourseIds = extractCourseIdsFromRegistrationResponse(
-          res.data,
-        );
-        const nextCourseIds =
-          parsedCourseIds.length > 0 || cachedCourseIds.length === 0
-            ? parsedCourseIds
-            : cachedCourseIds;
-
-        setRegisteredCourses(nextCourseIds);
-        setRegistrationData({ courseIds: nextCourseIds });
-        setStudentRegisteredMap((prev) => ({
-          ...prev,
-          [sid]: nextCourseIds,
-        }));
-      } else {
-        setRegisteredCourses(cachedCourseIds);
-        setRegistrationData({ courseIds: cachedCourseIds });
-      }
-    } catch {
-      setRegisteredCourses(cachedCourseIds);
-      setRegistrationData({ courseIds: cachedCourseIds });
-    }
+  const openRegistrationPage = (student) => {
+    navigate(`/student-register/${student._id || student.id}`, {
+      state: { student },
+    });
   };
-
-  const handleRegisterCourses = async (e) => {
-    e.preventDefault();
-
-    if (!registrationData.courseIds.length) {
-      toast.error("Please select at least one course");
-      return;
-    }
-
-    if (!selectedStudentForRegistration) {
-      toast.error("No student selected");
-      return;
-    }
-
-    setSubmitting(true);
-    try {
-      const classInfo = adminLoginType === "academy" ? "Academy" : "School";
-      const selectedCourseIds = registrationData.courseIds.map(String);
-      const payload = {
-        courses: selectedCourseIds,
-        courseIds: selectedCourseIds,
-        institutionType: classInfo,
-        classInfo: selectedStudentForRegistration.classInfo,
-        studentId:
-          selectedStudentForRegistration._id ||
-          selectedStudentForRegistration.id,
-      };
-
-      const res = await axios.post(`${REGISTRATION_API}/register`, payload, {
-        headers: getAuthHeaders(),
-      });
-
-      if (res.data?.success) {
-        const sid = String(
-          selectedStudentForRegistration._id ||
-            selectedStudentForRegistration.id,
-        );
-        const updatedCourseIds = registrationData.courseIds.map(String);
-
-        setStudentRegisteredMap((prev) => ({
-          ...prev,
-          [sid]: updatedCourseIds,
-        }));
-
-        toast.success(
-          res.data?.message || "Registration updated successfully!",
-        );
-        setShowRegistrationModal(false);
-        setRegistrationData({ courseIds: [] });
-        setSelectedStudentForRegistration(null);
-        setRegisteredCourses([]);
-      } else {
-        toast.error(res.data?.message || "Failed to register student");
-      }
-    } catch (error) {
-      toast.error(getErrorMessage(error, "Failed to register student"));
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const openRegistrationModal = async (student) => {
-    setSelectedStudentForRegistration(student);
-    await fetchStudentRegisteredCourses(student._id || student.id);
-    setShowRegistrationModal(true);
-  };
-
-  const selectedCourseIds = registrationData.courseIds.map(String);
-  const selectedCourses = courses.filter((course) =>
-    selectedCourseIds.includes(String(course._id || course.id)),
-  );
-  const availableCourses = courses.filter(
-    (course) => !selectedCourseIds.includes(String(course._id || course.id)),
-  );
 
   return (
     <Sidebar>
       <Toaster position="top-right" />
       <TopBar />
       <div className="sm-content-wrapper">
-        {/* Header Card */}
         <section className="sm-header-card">
           <div className="sm-logo-wrap">
             <img src={logo} alt="EC Portal" className="sm-logo" />
@@ -423,7 +236,6 @@ function StudentManage({ adminLoginType = "academy" }) {
           <h2 className="sm-heading mb-0">EC Student Manage</h2>
         </section>
 
-        {/* Toolbar */}
         <section className="sm-toolbar mb-3 mt-3">
           <button
             type="button"
@@ -449,7 +261,6 @@ function StudentManage({ adminLoginType = "academy" }) {
           </div>
         </section>
 
-        {/* Table Card */}
         <section className="sm-table-card">
           <div className="table-responsive">
             <table className="table table-hover align-middle mb-0">
@@ -501,11 +312,10 @@ function StudentManage({ adminLoginType = "academy" }) {
                           >
                             <i className="fas fa-edit me-1"></i>Edit
                           </button>
-
                           <button
                             type="button"
                             className="btn btn-sm btn-info"
-                            onClick={() => openRegistrationModal(student)}
+                            onClick={() => openRegistrationPage(student)}
                           >
                             <i className="fas fa-book me-1"></i>Register
                           </button>
@@ -520,7 +330,6 @@ function StudentManage({ adminLoginType = "academy" }) {
         </section>
       </div>
 
-      {/* Add/Edit Student Modal */}
       {showModal && (
         <div
           className="sm-modal-backdrop"
@@ -595,6 +404,7 @@ function StudentManage({ adminLoginType = "academy" }) {
                     <option value="">Select Gender</option>
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
+                    <option value="Other">Other</option>
                   </select>
                 </div>
 
@@ -663,7 +473,6 @@ function StudentManage({ adminLoginType = "academy" }) {
                 >
                   Cancel
                 </button>
-
                 <button
                   type="submit"
                   className="btn btn-success"
@@ -676,174 +485,6 @@ function StudentManage({ adminLoginType = "academy" }) {
                     : isEditMode
                       ? "Update Student"
                       : "Save Student"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Register/Update Courses Modal */}
-      {showRegistrationModal && selectedStudentForRegistration && (
-        <div
-          className="sm-modal-backdrop"
-          onClick={() => {
-            setShowRegistrationModal(false);
-            setRegistrationData({ courseIds: [] });
-            setSelectedStudentForRegistration(null);
-            setRegisteredCourses([]);
-          }}
-        >
-          <div className="sm-modal-card" onClick={(e) => e.stopPropagation()}>
-            <div className="d-flex justify-content-between align-items-center mb-3">
-              <h5 className="mb-0">Register to Courses</h5>
-              <button
-                type="button"
-                className="btn btn-sm btn-outline-secondary"
-                onClick={() => {
-                  setShowRegistrationModal(false);
-                  setRegistrationData({ courseIds: [] });
-                  setSelectedStudentForRegistration(null);
-                  setRegisteredCourses([]);
-                }}
-              >
-                <i className="fas fa-times"></i>
-              </button>
-            </div>
-
-            <form onSubmit={handleRegisterCourses}>
-              <div className="row g-3">
-                {(registeredCourses.length > 0 ||
-                  selectedCourses.length > 0) && (
-                  <div className="col-12">
-                    <div className="alert alert-info py-2 mb-0">
-                      Already registered courses are checked. You can remove or
-                      add courses.
-                    </div>
-                  </div>
-                )}
-
-                {loadingCourses ? (
-                  <div className="col-12">
-                    <small className="text-muted">Loading...</small>
-                  </div>
-                ) : courses.length === 0 ? (
-                  <div className="col-12 text-muted small">
-                    No course available.
-                  </div>
-                ) : (
-                  <>
-                    <div className="col-12">
-                      <label className="form-label mb-2">
-                        Registered Courses
-                      </label>
-                      <div className="sm-courses-list">
-                        {selectedCourses.length === 0 ? (
-                          <div className="text-muted small">
-                            No registered courses.
-                          </div>
-                        ) : (
-                          selectedCourses.map((course) => {
-                            const courseId = String(course._id || course.id);
-                            return (
-                              <div
-                                className="sm-course-item"
-                                key={`registered-${courseId}`}
-                              >
-                                <label className="d-flex align-items-flex-start">
-                                  <input
-                                    type="checkbox"
-                                    className="form-check-input mt-1"
-                                    value={courseId}
-                                    checked={selectedCourseIds.includes(
-                                      courseId,
-                                    )}
-                                    onChange={handleRegistrationChange}
-                                  />
-                                  <div className="ms-2">
-                                    <span className="sm-course-title">
-                                      {course.courseTitle || course.title}
-                                    </span>
-                                    <span className="sm-course-desc">
-                                      {course.courseDescription ||
-                                        course.description}
-                                    </span>
-                                  </div>
-                                </label>
-                              </div>
-                            );
-                          })
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="col-12">
-                      <label className="form-label mb-2">
-                        Available Courses
-                      </label>
-                      <div className="sm-courses-list">
-                        {availableCourses.length === 0 ? (
-                          <div className="text-muted small">
-                            No available courses.
-                          </div>
-                        ) : (
-                          availableCourses.map((course) => {
-                            const courseId = String(course._id || course.id);
-                            return (
-                              <div
-                                className="sm-course-item"
-                                key={`available-${courseId}`}
-                              >
-                                <label className="d-flex align-items-flex-start">
-                                  <input
-                                    type="checkbox"
-                                    className="form-check-input mt-1"
-                                    value={courseId}
-                                    checked={selectedCourseIds.includes(
-                                      courseId,
-                                    )}
-                                    onChange={handleRegistrationChange}
-                                  />
-                                  <div className="ms-2">
-                                    <span className="sm-course-title">
-                                      {course.courseTitle || course.title}
-                                    </span>
-                                    <span className="sm-course-desc">
-                                      {course.courseDescription ||
-                                        course.description}
-                                    </span>
-                                  </div>
-                                </label>
-                              </div>
-                            );
-                          })
-                        )}
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
-
-              <div className="d-flex justify-content-end gap-2 mt-4">
-                <button
-                  type="button"
-                  className="btn btn-outline-secondary"
-                  onClick={() => {
-                    setShowRegistrationModal(false);
-                    setRegistrationData({ courseIds: [] });
-                    setSelectedStudentForRegistration(null);
-                    setRegisteredCourses([]);
-                  }}
-                >
-                  Cancel
-                </button>
-
-                <button
-                  type="submit"
-                  className="btn btn-success"
-                  disabled={submitting || !registrationData.courseIds.length}
-                >
-                  {submitting ? "Updating..." : "Update Registration"}
                 </button>
               </div>
             </form>

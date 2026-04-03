@@ -11,6 +11,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import TeacherManage from "./components/TeacherManage";
 import CourseManage from "./components/CourseManage";
 import StudentManage from "./components/StudentManage";
+import StudentRegister from "./components/StudentRegister";
 
 function App() {
   const token = localStorage.getItem("token");
@@ -33,6 +34,14 @@ function App() {
       <Route
         path="/studentManage"
         element={<StudentManage adminLoginType={adminLoginType} />}
+      />
+      <Route
+        path="/student-register/:studentId"
+        element={<StudentRegister adminLoginType={adminLoginType} />}
+      />
+      <Route
+        path="/student-register"
+        element={<StudentRegister adminLoginType={adminLoginType} />}
       />
 
       {/* Optional: Redirect unknown routes */}

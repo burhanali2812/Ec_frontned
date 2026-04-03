@@ -22,6 +22,7 @@ function CourseManage({ adminLoginType = "academy" }) {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
+    coursePrice: "",
     teacherAssignments: [],
   });
 
@@ -50,6 +51,7 @@ function CourseManage({ adminLoginType = "academy" }) {
     setFormData({
       title: "",
       description: "",
+      coursePrice: "",
       teacherAssignments: [],
     });
     setIsEditMode(false);
@@ -282,6 +284,11 @@ function CourseManage({ adminLoginType = "academy" }) {
       return false;
     }
 
+    if (formData.coursePrice === "" || Number(formData.coursePrice) < 0) {
+      toast.error("Please enter a valid course price");
+      return false;
+    }
+
     if (!formData.teacherAssignments.length) {
       toast.error("Please select at least one teacher");
       return false;
@@ -307,6 +314,7 @@ function CourseManage({ adminLoginType = "academy" }) {
       const payload = {
         title: formData.title.trim(),
         description: formData.description.trim(),
+        coursePrice: Number(formData.coursePrice),
         teacherIds: formData.teacherAssignments.map((item) => item.teacherId),
         classTarget: formData.teacherAssignments.map((item) => ({
           teacher: item.teacherId,
@@ -367,6 +375,10 @@ function CourseManage({ adminLoginType = "academy" }) {
     setFormData({
       title: course.title || "",
       description: course.description || "",
+      coursePrice:
+        course.coursePrice !== undefined && course.coursePrice !== null
+          ? String(course.coursePrice)
+          : "",
       teacherAssignments: assignments,
     });
     setShowModal(true);
@@ -452,6 +464,7 @@ function CourseManage({ adminLoginType = "academy" }) {
                 <th>#</th>
                 <th>Title</th>
                 <th>Description</th>
+                <th>Price</th>
                 <th>Teachers / Classes</th>
                 <th>Manage</th>
               </tr>
@@ -459,13 +472,13 @@ function CourseManage({ adminLoginType = "academy" }) {
             <tbody>
               {loadingCourses ? (
                 <tr>
-                  <td colSpan="5" className="text-center py-4">
+                  <td colSpan="6" className="text-center py-4">
                     Loading courses...
                   </td>
                 </tr>
               ) : filteredCourses.length === 0 ? (
                 <tr>
-                  <td colSpan="5" className="text-center py-4">
+                  <td colSpan="6" className="text-center py-4">
                     No course found.
                   </td>
                 </tr>
@@ -477,6 +490,7 @@ function CourseManage({ adminLoginType = "academy" }) {
                       <td>{index + 1}</td>
                       <td>{course.title}</td>
                       <td className="cm-desc-cell">{course.description}</td>
+                      <td>{Number(course.coursePrice || 0)}</td>
                       <td>
                         {assignments.length ? (
                           <div className="cm-teacher-listing">
@@ -577,6 +591,24 @@ function CourseManage({ adminLoginType = "academy" }) {
                     }
                     placeholder="Enter course description"
                   ></textarea>
+                </div>
+
+                <div className="col-12">
+                  <label className="form-label">Course Price</label>
+                  <input
+                    name="coursePrice"
+                    type="number"
+                    min="0"
+                    className="form-control"
+                    value={formData.coursePrice}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        coursePrice: e.target.value,
+                      }))
+                    }
+                    placeholder="Enter course price"
+                  />
                 </div>
 
                 <div className="col-12">

@@ -12,6 +12,11 @@ function Sidebar({ children }) {
       href: "/studentManage",
     },
     {
+      title: "Register Student",
+      icon: "fa-user-plus",
+      href: "/student-register",
+    },
+    {
       title: "Teachers Manage",
       icon: "fa-chalkboard-teacher",
       href: "/teacherManage",
