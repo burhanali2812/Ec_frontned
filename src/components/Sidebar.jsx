@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import "./Sidebar.css";
 import logo from "../images/logo.png";
+import { useNavigation } from "react-router-dom";
+import { ToastBar, toast } from "react-hot-toast";
 function Sidebar({ children }) {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
   const menuItems = [
     { title: "Dashboard", icon: "fa-house", href: "#" },
@@ -28,7 +31,10 @@ function Sidebar({ children }) {
   ];
   const handlelogOut = () => {
     localStorage.removeItem("token");
-    window.location.href = "/";
+      toast.success("Logged out successfully");
+    setTimeout(() => {
+      navigate("/login");
+    }, 1500);
   };
 
   const toggleMenu = () => setIsOpen((prev) => !prev);
@@ -36,21 +42,34 @@ function Sidebar({ children }) {
 
   return (
     <div className="sb-layout">
+      <ToastBar />
       <header className="sb-mobile-topbar">
         <div className="sb-brand-wrap">
           <img src={logo} alt="EC Portal" width={50} />
           <h6 className="sb-brand-title mb-0">EC Portal</h6>
         </div>
 
-        <button
-          className="sb-hamburger"
-          onClick={toggleMenu}
-          aria-label="Toggle sidebar menu"
-          aria-expanded={isOpen}
-          type="button"
-        >
-          <i className="fas fa-bars"></i>
-        </button>
+        <div className="sb-mobile-actions">
+          <button
+            className="sb-hamburger"
+            onClick={toggleMenu}
+            aria-label="Toggle sidebar menu"
+            aria-expanded={isOpen}
+            type="button"
+          >
+            <i className="fas fa-bars"></i>
+          </button>
+
+          <button
+            className="sb-mobile-logout"
+            onClick={handlelogOut}
+            aria-label="Logout"
+            type="button"
+            title="Logout"
+          >
+            <i className="fas fa-right-from-bracket"></i>
+          </button>
+        </div>
       </header>
 
       <aside className="sb-desktop-sidebar">
