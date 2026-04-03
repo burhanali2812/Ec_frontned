@@ -5,7 +5,7 @@ import { useNavigation } from "react-router-dom";
 import { ToastBar, toast } from "react-hot-toast";
 function Sidebar({ children }) {
   const [isOpen, setIsOpen] = useState(false);
-  const navigate = useNavigate();
+  const navigate = useNavigation();
 
   const menuItems = [
     { title: "Dashboard", icon: "fa-house", href: "#" },
