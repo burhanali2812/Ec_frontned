@@ -64,22 +64,31 @@ function Attandance() {
   const selectedCourseClasses = useMemo(() => {
     if (!selectedCourse) return [];
 
-    const classTargetClasses = Array.isArray(selectedCourse.classTarget)
-      ? selectedCourse.classTarget
+    const assignmentClasses = Array.isArray(selectedCourse.assignments)
+      ? selectedCourse.assignments
           .filter(
             (item) =>
               !currentTeacherId ||
               String(item?.teacher?._id || item?.teacher) === currentTeacherId,
           )
-          .flatMap((item) => item?.classes || [])
-      : [];
+          .flatMap((item) => item?.targetClasses || item?.classes || [])
+      : Array.isArray(selectedCourse.classTarget)
+        ? selectedCourse.classTarget
+            .filter(
+              (item) =>
+                !currentTeacherId ||
+                String(item?.teacher?._id || item?.teacher) ===
+                  currentTeacherId,
+            )
+            .flatMap((item) => item?.classes || [])
+        : [];
 
     const directClasses = Array.isArray(selectedCourse.classes)
       ? selectedCourse.classes
       : [];
 
     return [
-      ...new Set([...directClasses, ...classTargetClasses].filter(Boolean)),
+      ...new Set([...directClasses, ...assignmentClasses].filter(Boolean)),
     ];
   }, [selectedCourse, currentTeacherId]);
 
@@ -98,12 +107,9 @@ function Attandance() {
   const fetchCourses = async () => {
     setLoadingCourses(true);
     try {
-      const res = await axios.get(
-        "https://ec-backend-phi.vercel.app/api/courses/myCourses",
-        {
-          headers: getAuthHeaders(),
-        },
-      );
+      const res = await axios.get(`${API_BASE}/myCourses`, {
+        headers: getAuthHeaders(),
+      });
       if (res.data?.success) {
         setCourses(res.data.courses || []);
       } else {
@@ -236,8 +242,6 @@ function Attandance() {
     <Sidebar>
       <Toaster position="top-right" />
       <div className="attendance-page mt-3 mt-lg-4">
-  
-
         <div className="container-fluid px-0 px-lg-2">
           <div className="attendance-hero mb-4">
             <div className="d-flex flex-column flex-lg-row justify-content-between gap-3 align-items-start align-items-lg-center">

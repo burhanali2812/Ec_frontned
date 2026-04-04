@@ -135,8 +135,12 @@ function CourseManage({ adminLoginType = "academy" }) {
     return teacherMap[fallbackId] || "Unknown Teacher";
   };
 
-  const normalizeClassTargets = (course) => {
-    const raw = Array.isArray(course?.classTarget) ? course.classTarget : [];
+  const normalizeAssignments = (course) => {
+    const raw = Array.isArray(course?.assignments)
+      ? course.assignments
+      : Array.isArray(course?.classTarget)
+        ? course.classTarget
+        : [];
 
     return raw
       .map((item) => {
@@ -155,7 +159,11 @@ function CourseManage({ adminLoginType = "academy" }) {
           teacherId: String(
             item.teacher?._id || item.teacher || item.teacherId || "",
           ),
-          classes: Array.isArray(item.classes) ? item.classes : [],
+          classes: Array.isArray(item.targetClasses)
+            ? item.targetClasses
+            : Array.isArray(item.classes)
+              ? item.classes
+              : [],
           teacher: item.teacher || null,
         };
       })
@@ -163,7 +171,7 @@ function CourseManage({ adminLoginType = "academy" }) {
   };
 
   const getCourseAssignments = (course) => {
-    const assignments = normalizeClassTargets(course);
+    const assignments = normalizeAssignments(course);
     return assignments.map((assignment) => ({
       teacherId: assignment.teacherId,
       teacherName: formatTeacherName(assignment.teacher, assignment.teacherId),
@@ -315,10 +323,9 @@ function CourseManage({ adminLoginType = "academy" }) {
         title: formData.title.trim(),
         description: formData.description.trim(),
         coursePrice: Number(formData.coursePrice),
-        teacherIds: formData.teacherAssignments.map((item) => item.teacherId),
-        classTarget: formData.teacherAssignments.map((item) => ({
+        assignments: formData.teacherAssignments.map((item) => ({
           teacher: item.teacherId,
-          classes: item.classes,
+          targetClasses: item.classes,
         })),
       };
 
@@ -365,7 +372,7 @@ function CourseManage({ adminLoginType = "academy" }) {
   };
 
   const handleEdit = (course) => {
-    const assignments = normalizeClassTargets(course).map((item) => ({
+    const assignments = normalizeAssignments(course).map((item) => ({
       teacherId: item.teacherId,
       classes: item.classes,
     }));

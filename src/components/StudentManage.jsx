@@ -17,6 +17,7 @@ function StudentManage({ adminLoginType = "academy" }) {
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingStudentId, setEditingStudentId] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [deletingStudent, setDeletingStudent] = useState(false);
   const [loadingStudents, setLoadingStudents] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -216,6 +217,38 @@ function StudentManage({ adminLoginType = "academy" }) {
       fatherContact: student.fatherContact || "",
     });
     setShowModal(true);
+  };
+
+  const handleDeleteStudent = async () => {
+    if (!editingStudentId) return;
+
+    const confirmed = window.confirm(
+      "Delete this student? This will also delete all course registrations for this student.",
+    );
+    if (!confirmed) return;
+
+    setDeletingStudent(true);
+    try {
+      const res = await axios.delete(
+        `${STUDENT_API}/deleteStudent/${editingStudentId}`,
+        {
+          headers: getAuthHeaders(),
+        },
+      );
+
+      if (res.data?.success) {
+        toast.success(res.data?.message || "Student deleted successfully!");
+        setShowModal(false);
+        resetForm();
+        fetchStudents();
+      } else {
+        toast.error(res.data?.message || "Failed to delete student");
+      }
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Failed to delete student"));
+    } finally {
+      setDeletingStudent(false);
+    }
   };
 
   const openRegistrationPage = (student) => {
@@ -462,30 +495,47 @@ function StudentManage({ adminLoginType = "academy" }) {
                 </div>
               </div>
 
-              <div className="d-flex justify-content-end gap-2 mt-4">
-                <button
-                  type="button"
-                  className="btn btn-outline-secondary"
-                  onClick={() => {
-                    setShowModal(false);
-                    resetForm();
-                  }}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="btn btn-success"
-                  disabled={submitting}
-                >
-                  {submitting
-                    ? isEditMode
-                      ? "Updating..."
-                      : "Saving..."
-                    : isEditMode
-                      ? "Update Student"
-                      : "Save Student"}
-                </button>
+              <div className="d-flex justify-content-between gap-2 mt-4 flex-wrap">
+                {isEditMode ? (
+                  <button
+                    type="button"
+                    className="btn btn-outline-danger"
+                    onClick={handleDeleteStudent}
+                    disabled={deletingStudent || submitting}
+                  >
+                    <i className="fas fa-trash me-1"></i>
+                    {deletingStudent ? "Deleting..." : "Delete Student"}
+                  </button>
+                ) : (
+                  <span></span>
+                )}
+
+                <div className="d-flex gap-2">
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary"
+                    onClick={() => {
+                      setShowModal(false);
+                      resetForm();
+                    }}
+                    disabled={deletingStudent}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="btn btn-success"
+                    disabled={submitting || deletingStudent}
+                  >
+                    {submitting
+                      ? isEditMode
+                        ? "Updating..."
+                        : "Saving..."
+                      : isEditMode
+                        ? "Update Student"
+                        : "Save Student"}
+                  </button>
+                </div>
               </div>
             </form>
           </div>

@@ -380,7 +380,7 @@ function StudentRegister({ adminLoginType = "academy" }) {
   return (
     <Sidebar>
       <Toaster position="top-right" />
-      <TopBar />
+  
       <div className="sr-page">
         <div className="sr-container">
           <div className="sr-header-card">
