@@ -12,6 +12,9 @@ import CourseManage from "./components/CourseManage";
 import StudentManage from "./components/StudentManage";
 import StudentRegister from "./components/StudentRegister";
 import Attandance from "./components/Attandance";
+import ViewAttandance from "./components/ViewAttandance";
+import StudentDashboard from "./components/StudentDashboard";
+import ComingSoon from "./components/ComingSoon";
 
 function App() {
   const token = localStorage.getItem("token");
@@ -44,6 +47,12 @@ function App() {
         element={<StudentRegister adminLoginType={adminLoginType} />}
       />
       <Route path="/teacher/attendance" element={<Attandance />} />
+      <Route path="/teacher/view-attendance" element={<ViewAttandance />} />
+      <Route path="/student/dashboard" element={<StudentDashboard />} />
+      <Route
+        path="/coming-soon"
+        element={<ComingSoon />}
+       />
 
       {/* Optional: Redirect unknown routes */}
       <Route path="*" element={<Navigate to="/" />} />

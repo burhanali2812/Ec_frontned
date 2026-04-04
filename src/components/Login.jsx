@@ -17,7 +17,7 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rollNumber, setRollNumber] = useState("");
-  const [loginType, setLoginType] = useState("student");
+  const [loginType, setLoginType] = useState(null);
   const [Loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
@@ -57,7 +57,34 @@ function Login() {
         toast.error(error.response.data.message || "Login failed");
       }
     }
+    else{
+      if (!rollNumber || !password) {
+        toast.error("Please fill all the fields");
+        setLoading(false);
+        return;
+      }
+      try {        const res = await axios.post(`https://ec-backend-phi.vercel.app/api/students/login`, {
+          institutionPrefix: loginType,
+          rollNumber,
+          password,
+        });
+        if(res.data.success){
+          toast.success(`Student Login successful`);
+          localStorage.setItem("token", res.data.token);
+          navigate(`/student/dashboard`);
+          setLoading(false);
+        } else {
+          setLoading(false);
+          toast.error(res.data.message || "Login failed");
+        }
+      } catch (error) {
+        setLoading(false);
+        toast.error(error.response.data.message || "Login failed");
+      }
+    }
   };
+  console.log(loginType);
+  
 
   return (
     <div className="login-page">
@@ -115,9 +142,9 @@ function Login() {
                   <span className="input-group-text" id="addon-Roll Number">
                     <i className="fa-solid fa-user-graduate"></i>
                   </span>
-                  <select className="form-select " aria-label="Login Type">
-                    <option value="student">ECS</option>
-                    <option value="teacher">ECA</option>
+                  <select className="form-select " aria-label="Login Type" onChange={(e) => setLoginType(e.target.value)} value={loginType}>
+                    <option value="ECS">ECS</option>
+                    <option value="ECA">ECA</option>
                   </select>
 
                   <input

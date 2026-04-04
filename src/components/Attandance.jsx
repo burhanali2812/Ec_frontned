@@ -314,7 +314,6 @@ function Attandance() {
                       className="form-control"
                       value={selectedDate}
                       onChange={(e) => setSelectedDate(e.target.value)}
-                      disabled
                     />
                   </div>
 
