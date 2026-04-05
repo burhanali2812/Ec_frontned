@@ -345,7 +345,7 @@ function StudentDashboard() {
             </div>
           </div>
 
-          <div className="dashboard-card overview-dashboard-card  py-2  mb-4">
+          <div className="dashboard-card overview-dashboard-card  py-3  mb-2">
             <div className="d-flex flex-column flex-md-row justify-content-between align-items-start gap-2 mb-3">
               <div>
                 <h5 className="dashboard-section-title mb-1 mt-1 ms-2">
@@ -447,7 +447,7 @@ function StudentDashboard() {
             )}
           </div>
 
-          <div className="row g-3 quick-cards-row">
+          <div className="row g-2 quick-cards-row">
             <div className="col-12 col-lg-6">
               <div
                 className="quick-access-card quick-access-card--courses"
