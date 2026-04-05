@@ -34,6 +34,7 @@ function StudentDashboard() {
   const [loadingProfile, setLoadingProfile] = useState(false);
   const [loadingCourses, setLoadingCourses] = useState(false);
   const [loadingStats, setLoadingStats] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   const API_BASE = "https://ec-backend-phi.vercel.app/api";
 
@@ -116,6 +117,17 @@ function StudentDashboard() {
   useEffect(() => {
     fetchProfile();
     fetchCourses();
+  }, []);
+
+  useEffect(() => {
+    const updateMobileState = () => {
+      setIsMobile(window.innerWidth <= 575);
+    };
+
+    updateMobileState();
+    window.addEventListener("resize", updateMobileState);
+
+    return () => window.removeEventListener("resize", updateMobileState);
   }, []);
 
   useEffect(() => {
@@ -203,6 +215,46 @@ function StudentDashboard() {
     [courses, coursePercentageMap, student],
   );
 
+  const averageAttendance = useMemo(() => {
+    if (!coursesWithPercentage.length) return 0;
+    return Math.round(
+      coursesWithPercentage.reduce(
+        (sum, course) => sum + course.percentage,
+        0,
+      ) / coursesWithPercentage.length,
+    );
+  }, [coursesWithPercentage]);
+
+  const courseAttendanceChartData = useMemo(
+    () =>
+      coursesWithPercentage.map((course) => ({
+        name:
+          course.title.length > 18
+            ? `${course.title.slice(0, 18)}...`
+            : course.title,
+        percentage: course.percentage,
+      })),
+    [coursesWithPercentage],
+  );
+
+  const attendanceBreakdownData = useMemo(() => {
+    const excellent = coursesWithPercentage.filter(
+      (course) => course.percentage >= 75,
+    ).length;
+    const average = coursesWithPercentage.filter(
+      (course) => course.percentage >= 50 && course.percentage < 75,
+    ).length;
+    const low = coursesWithPercentage.filter(
+      (course) => course.percentage < 50,
+    ).length;
+
+    return [
+      { name: "75%+", value: excellent },
+      { name: "50-74%", value: average },
+      { name: "Below 50%", value: low },
+    ];
+  }, [coursesWithPercentage]);
+
   if (loadingProfile) {
     return (
       <Sidebar>
@@ -221,175 +273,53 @@ function StudentDashboard() {
 
       <div className="student-dashboard mt-3 mt-lg-4">
         <div className="container-fluid px-0 px-lg-2">
-          {/* Hero Section with Profile Card */}
+          {/* Hero Section */}
           <div className="dashboard-hero mb-4">
-            <div className="d-flex flex-column flex-lg-row justify-content-between gap-4 align-items-start">
+            <div className="d-flex flex-column flex-md-row justify-content-between gap-3 align-items-start">
+              <div className="student-identity-card">
+                <div className="student-identity-avatar">
+                  {(student?.name || "S").charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <p className="mb-1 text-white-50 fw-semibold">Welcome Back</p>
+                  <h3 className="mb-1">{student?.name || "Student"}</h3>
+                  <div className="student-identity-meta">
+                    <span>
+                      <i className="fas fa-id-badge me-1"></i>
+                      {student?.rollNumber || "-"}
+                    </span>
+                    <span className="d-none d-sm-inline">
+                      <i className="fas fa-graduation-cap me-1"></i>
+                      {student?.classInfo || "-"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="hero-attendance-summary">
+                <div className="summary-pill">
+                  <span>Courses</span>
+                  <strong>{coursesWithPercentage.length}</strong>
+                </div>
+                <div className="summary-pill">
+                  <span>Average</span>
+                  <strong>{averageAttendance}%</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="dashboard-card p-3 p-md-4 mb-4">
+            <div className="d-flex flex-column flex-md-row justify-content-between align-items-start gap-2 mb-3">
               <div>
-                <p className="mb-1 text-white-50 fw-semibold">Welcome Back</p>
-                <h3 className="mb-2">{student?.name || "Student"}</h3>
-                <p className="mb-0 text-white-75">
-                  View your profile, registered courses, and attendance
-                  statistics.
+                <h5 className="dashboard-section-title mb-1">
+                  Attendance Overview
+                </h5>
+                <p className="text-muted mb-0 small">
+                  Graph view of your registered course attendance
                 </p>
               </div>
             </div>
-          </div>
-
-          {/* Profile Cards Grid */}
-          <div className="row g-3 mb-4">
-            <div className="col-12 col-sm-6 col-lg-3">
-              <div className="dashboard-stat-card">
-                <div className="stat-icon bg-primary">
-                  <i className="fas fa-user"></i>
-                </div>
-                <div className="stat-content">
-                  <div className="stat-label">Roll Number</div>
-                  <div className="stat-value">{student?.rollNumber || "-"}</div>
-                </div>
-              </div>
-            </div>
-
-            <div className="col-12 col-sm-6 col-lg-3">
-              <div className="dashboard-stat-card">
-                <div className="stat-icon bg-success">
-                  <i className="fas fa-book"></i>
-                </div>
-                <div className="stat-content">
-                  <div className="stat-label">Courses Enrolled</div>
-                  <div className="stat-value">
-                    {coursesWithPercentage.length}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="col-12 col-sm-6 col-lg-3">
-              <div className="dashboard-stat-card">
-                <div className="stat-icon bg-info">
-                  <i className="fas fa-graduation-cap"></i>
-                </div>
-                <div className="stat-content">
-                  <div className="stat-label">Class</div>
-                  <div className="stat-value">{student?.classInfo || "-"}</div>
-                </div>
-              </div>
-            </div>
-
-            <div className="col-12 col-sm-6 col-lg-3">
-              <div className="dashboard-stat-card">
-                <div className="stat-icon bg-warning">
-                  <i className="fas fa-envelope"></i>
-                </div>
-                <div className="stat-content">
-                  <div className="stat-label">Email</div>
-                  <div className="stat-value-email">
-                    {student?.email || "-"}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Full Profile Card */}
-          <div className="dashboard-card dashboard-profile-card p-3 p-md-4 mb-4">
-            <h5 className="dashboard-section-title mb-4">Complete Profile</h5>
-
-            <div className="row g-3">
-              <div className="col-12 col-md-6">
-                <div className="profile-field compact">
-                  <label className="profile-label">Full Name</label>
-                  <div className="profile-value compact">
-                    {student?.name || "-"}
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-12 col-md-6">
-                <div className="profile-field compact">
-                  <label className="profile-label">Email</label>
-                  <div className="profile-value compact">
-                    {student?.email || "-"}
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-12 col-md-6">
-                <div className="profile-field compact">
-                  <label className="profile-label">Contact</label>
-                  <div className="profile-value compact">
-                    {student?.contact || "-"}
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-12 col-md-6">
-                <div className="profile-field compact">
-                  <label className="profile-label">Gender</label>
-                  <div className="profile-value compact">
-                    {student?.gender || "-"}
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-12 col-md-6">
-                <div className="profile-field compact">
-                  <label className="profile-label">Class</label>
-                  <div className="profile-value compact">
-                    {student?.classInfo || "-"}
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-12 col-md-6">
-                <div className="profile-field compact">
-                  <label className="profile-label">Father's Name</label>
-                  <div className="profile-value compact">
-                    {student?.fatherName || "-"}
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-12 col-md-6">
-                <div className="profile-field compact">
-                  <label className="profile-label">Father's Contact</label>
-                  <div className="profile-value compact">
-                    {student?.fatherContact || "-"}
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-12 col-md-6">
-                <div className="profile-field compact">
-                  <label className="profile-label">Address</label>
-                  <div className="profile-value compact">
-                    {student?.address || "-"}
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-12 col-md-6">
-                <div className="profile-field compact">
-                  <label className="profile-label">Roll Number</label>
-                  <div className="profile-value compact">
-                    {student?.rollNumber || "-"}
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-12 col-md-6">
-                <div className="profile-field compact">
-                  <label className="profile-label">Institution Type</label>
-                  <div className="profile-value compact">
-                    {student?.institutionType || "-"}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Registered Courses Table */}
-          <div className="dashboard-card p-3 p-md-4">
-            <h5 className="dashboard-section-title mb-3">Registered Courses</h5>
 
             {loadingCourses ? (
               <div className="text-center py-4">
@@ -402,69 +332,164 @@ function StudentDashboard() {
                 No courses registered yet.
               </div>
             ) : (
-              <div className="table-responsive">
-                <table className="dashboard-table">
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>Course Title</th>
-                      <th>Teacher(s)</th>
-                      <th>Price</th>
-                      <th>Attendance</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {coursesWithPercentage.map((course, index) => (
-                      <tr key={course._id}>
-                        <td>{index + 1}</td>
-                        <td>
-                          <div className="fw-semibold">{course.title}</div>
-                          <div className="text-muted small">
-                            {course.description}
-                          </div>
-                        </td>
-                        <td>
-                          <small>{course.teacherNames}</small>
-                        </td>
-                        <td>
-                          <strong>Rs. {Number(course.coursePrice || 0)}</strong>
-                        </td>
-                        <td>
-                          <div className="d-flex align-items-center gap-2">
-                            <div
-                              className="progress flex-grow-1"
-                              style={{ height: "6px", borderRadius: 999 }}
-                            >
-                              <div
-                                className={`progress-bar ${
-                                  course.percentage >= 75
-                                    ? "bg-success"
-                                    : course.percentage >= 50
-                                      ? "bg-warning"
-                                      : "bg-danger"
-                                }`}
-                                style={{ width: `${course.percentage}%` }}
-                              ></div>
-                            </div>
-                            <small className="fw-semibold">
-                              {course.percentage}%
-                            </small>
-                          </div>
-                        </td>
-                        <td>
-                          <button
-                            className="btn btn-sm btn-outline-primary"
-                            onClick={() => handleCourseClick(course)}
-                          >
-                            <i className="fas fa-chart-line me-1"></i>
-                            Details
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="row g-3">
+                <div className="col-12 col-xl-8">
+                  <div className="chart-panel chart-panel-centered h-100">
+                    <div className="d-flex align-items-center justify-content-between mb-3">
+                      <h6 className="mb-0">Course Attendance Graph</h6>
+                      <span className="text-muted small">
+                        Percent by course
+                      </span>
+                    </div>
+                    <ResponsiveContainer
+                      width="100%"
+                      height={isMobile ? 250 : 320}
+                    >
+                      <BarChart data={courseAttendanceChartData}>
+                        <CartesianGrid
+                          strokeDasharray="4 4"
+                          stroke={CHART_COLORS.grid}
+                        />
+                        <XAxis
+                          dataKey="name"
+                          stroke={CHART_COLORS.axis}
+                          interval={0}
+                          angle={isMobile ? 0 : -12}
+                          textAnchor={isMobile ? "middle" : "end"}
+                          height={isMobile ? 48 : 70}
+                          tickMargin={8}
+                        />
+                        <YAxis stroke={CHART_COLORS.axis} domain={[0, 100]} />
+                        <Tooltip />
+                        {!isMobile && <Legend />}
+                        <Bar
+                          dataKey="percentage"
+                          fill={CHART_COLORS.present}
+                          radius={[10, 10, 0, 0]}
+                          name="Attendance %"
+                        />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+
+                <div className="col-12 col-xl-4">
+                  <div className="chart-panel chart-panel-centered h-100">
+                    <div className="d-flex align-items-center justify-content-between mb-3">
+                      <h6 className="mb-0">Attendance Mix</h6>
+                      <span className="text-muted small">By course range</span>
+                    </div>
+                    <ResponsiveContainer
+                      width="100%"
+                      height={isMobile ? 250 : 320}
+                    >
+                      <PieChart>
+                        <Pie
+                          data={attendanceBreakdownData}
+                          dataKey="value"
+                          nameKey="name"
+                          innerRadius={isMobile ? 42 : 55}
+                          outerRadius={isMobile ? 72 : 92}
+                          paddingAngle={4}
+                        >
+                          <Cell fill="#0ea5a4" />
+                          <Cell fill="#f59e0b" />
+                          <Cell fill="#f97316" />
+                        </Pie>
+                        <Tooltip />
+                        {!isMobile && <Legend />}
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Registered Courses */}
+          <div className="dashboard-card p-3 p-md-4">
+            <div className="d-flex flex-column flex-md-row justify-content-between align-items-start gap-2 mb-3">
+              <div>
+                <h5 className="dashboard-section-title mb-1">
+                  Registered Courses
+                </h5>
+                <p className="text-muted mb-0 small">
+                  Course cards with attendance progress
+                </p>
+              </div>
+            </div>
+
+            {loadingCourses ? (
+              <div className="text-center py-4">
+                <div className="spinner-border text-success" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </div>
+              </div>
+            ) : coursesWithPercentage.length === 0 ? (
+              <div className="alert alert-info mb-0">
+                No courses registered yet.
+              </div>
+            ) : (
+              <div className="row g-3 course-cards-row">
+                {coursesWithPercentage.map((course) => (
+                  <div key={course._id} className="col-12 col-md-6 col-xl-4">
+                    <div className="course-attendance-card h-100">
+                      <div className="d-flex justify-content-between align-items-start gap-3 mb-3">
+                        <div>
+                          <h6 className="course-card-title mb-1">
+                            {course.title}
+                          </h6>
+                          <p className="course-card-text mb-0 d-none d-sm-block">
+                            {course.teacherNames}
+                          </p>
+                        </div>
+                        <span
+                          className={`course-grade-badge ${
+                            course.percentage >= 75
+                              ? "success"
+                              : course.percentage >= 50
+                                ? "warning"
+                                : "danger"
+                          }`}
+                        >
+                          {course.percentage}%
+                        </span>
+                      </div>
+
+                      <div className="course-progress-wrap mb-3">
+                        <div className="progress" style={{ height: "8px" }}>
+                          <div
+                            className={`progress-bar ${
+                              course.percentage >= 75
+                                ? "bg-success"
+                                : course.percentage >= 50
+                                  ? "bg-warning"
+                                  : "bg-danger"
+                            }`}
+                            style={{ width: `${course.percentage}%` }}
+                          ></div>
+                        </div>
+                        <div className="d-flex justify-content-between mt-2 small text-muted">
+                          <span>Attendance</span>
+                          <span>{course.percentage}%</span>
+                        </div>
+                      </div>
+
+                      <div className="d-flex justify-content-between align-items-center">
+                        <small className="text-muted">
+                          Click for detailed chart
+                        </small>
+                        <button
+                          className="btn btn-sm btn-outline-primary"
+                          onClick={() => handleCourseClick(course)}
+                        >
+                          <i className="fas fa-chart-line me-1"></i>
+                          Details
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </div>
@@ -626,6 +651,37 @@ function StudentDashboard() {
                       )}
                     </div>
                   </div>
+                </div>
+
+                {/* Recent Attendance History */}
+                <div className="attendance-history mt-4">
+                  <h6 className="mb-3">Recent Attendance (Last 30 Days)</h6>
+                  {courseStats.recentAttendance &&
+                  courseStats.recentAttendance.length > 0 ? (
+                    <div className="attendance-history-grid">
+                      {courseStats.recentAttendance.map((record, index) => (
+                        <div key={index} className="attendance-record">
+                          <div className="attendance-date">{record.date}</div>
+                          <div
+                            className={`attendance-status attendance-${record.status}`}
+                          >
+                            <i
+                              className={`fas fa-${record.status === "present" ? "check-circle" : "times-circle"}`}
+                            ></i>
+                            <span>
+                              {record.status === "present"
+                                ? "Present"
+                                : "Absent"}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="alert alert-info mb-0">
+                      No attendance history available.
+                    </div>
+                  )}
                 </div>
               </>
             ) : (

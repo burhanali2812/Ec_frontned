@@ -11,6 +11,82 @@
   box-shadow: 0 14px 40px rgba(20, 83, 45, 0.25);
 }
 
+.student-identity-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.student-identity-avatar {
+  width: 58px;
+  height: 58px;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  font-size: 1.35rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.student-identity-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.hero-attendance-summary {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.summary-pill {
+  min-width: 120px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  padding: 0.8rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  backdrop-filter: blur(10px);
+}
+
+.summary-pill span {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.75);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.summary-pill strong {
+  font-size: 1.1rem;
+  color: #fff;
+}
+
+.profile-info-label {
+  display: block;
+  color: rgba(255, 255, 255, 0.75);
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.75rem;
+}
+
+.profile-info-value {
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.95rem;
+  word-break: break-word;
+}
+
 .dashboard-stat-card {
   background: #ffffff;
   border: 1px solid rgba(15, 23, 42, 0.08);
@@ -85,6 +161,14 @@
   border: 1px solid rgba(15, 23, 42, 0.08);
   border-radius: 1rem;
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+}
+
+.chart-panel-centered {
+  overflow: hidden;
+}
+
+.chart-panel-centered .recharts-wrapper {
+  margin: 0 auto;
 }
 
 .dashboard-profile-card {
@@ -201,12 +285,140 @@
   border: 1px solid rgba(148, 163, 184, 0.26);
   border-radius: 0.9rem;
   padding: 0.9rem;
+  overflow: hidden;
+}
+
+.course-attendance-card {
+  background: #ffffff;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 1rem;
+  padding: 1rem;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.course-attendance-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.09);
+}
+
+.course-card-title {
+  font-weight: 700;
+  color: #0f172a;
+  font-size: 1rem;
+}
+
+.course-card-text {
+  font-size: 0.86rem;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.course-grade-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 58px;
+  padding: 0.45rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.course-grade-badge.success {
+  background: #d1fae5;
+  color: #047857;
+}
+
+.course-grade-badge.warning {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.course-grade-badge.danger {
+  background: #ffe4e6;
+  color: #be123c;
 }
 
 @media (max-width: 768px) {
+  .student-dashboard,
+  .dashboard-modal-backdrop,
+  .dashboard-modal-card,
+  .chart-panel,
+  .course-attendance-card {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .student-dashboard .row {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .student-dashboard [class*="col-"] {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
   .dashboard-modal-card {
     max-width: 95%;
     padding: 1.5rem;
+  }
+
+  .dashboard-hero {
+    padding: 1rem;
+  }
+
+  .student-identity-card {
+    gap: 0.75rem;
+  }
+
+  .student-identity-avatar {
+    width: 46px;
+    height: 46px;
+    border-radius: 0.8rem;
+    font-size: 1.05rem;
+  }
+
+  .student-identity-meta {
+    gap: 0.35rem 0.65rem;
+    font-size: 0.76rem;
+  }
+
+  .hero-attendance-summary {
+    width: 100%;
+  }
+
+  .summary-pill {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0.7rem 0.85rem;
+  }
+
+  .summary-pill strong {
+    font-size: 0.95rem;
+  }
+
+  .chart-panel {
+    padding: 0.75rem;
+  }
+
+  .course-attendance-card {
+    padding: 0.85rem;
+  }
+
+  .course-card-title {
+    font-size: 0.95rem;
+  }
+
+  .dashboard-modal-card {
+    max-width: 100%;
+    padding: 1rem;
+  }
+
+  .stats-card {
+    padding: 0.85rem !important;
+    gap: 0.75rem;
   }
 
   .stat-value {
@@ -307,17 +519,49 @@
 }
 
 @media (max-width: 575px) {
+  .student-dashboard {
+    overflow-x: hidden;
+  }
+
   .dashboard-hero {
     padding: 1rem;
   }
 
-  .dashboard-stat-card {
-    padding: 1rem;
+  .student-identity-card {
+    align-items: flex-start;
+  }
+
+  .hero-attendance-summary {
+    gap: 0.5rem;
+  }
+
+  .summary-pill {
+    padding: 0.6rem 0.75rem;
+  }
+
+  .student-identity-card {
     gap: 0.75rem;
   }
 
-  .stat-value {
-    font-size: 1rem;
+  .student-identity-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 0.85rem;
+    font-size: 1.1rem;
+  }
+
+  .student-identity-meta {
+    gap: 0.4rem 0.75rem;
+    font-size: 0.78rem;
+  }
+
+  .summary-pill {
+    min-width: 96px;
+    padding: 0.65rem 0.85rem;
+  }
+
+  .summary-pill strong {
+    font-size: 0.98rem;
   }
 
   .dashboard-section-title {
@@ -340,5 +584,146 @@
 
   .stats-value {
     font-size: 1.25rem;
+  }
+
+  .course-attendance-card {
+    padding: 0.85rem;
+  }
+
+  .chart-panel {
+    padding: 0.7rem;
+  }
+
+  .course-card-title {
+    font-size: 0.95rem;
+  }
+
+  .course-card-text {
+    font-size: 0.8rem;
+  }
+
+  .chart-panel h6,
+  .chart-panel .small {
+    text-align: center;
+    width: 100%;
+  }
+
+  .chart-panel-centered .recharts-legend-wrapper {
+    display: none !important;
+  }
+
+  .recharts-responsive-container,
+  .recharts-wrapper {
+    max-width: 100% !important;
+  }
+
+  .recharts-cartesian-axis-tick-value {
+    font-size: 11px;
+  }
+
+  .recharts-pie-label-text,
+  .recharts-legend-item-text {
+    font-size: 11px;
+  }
+}
+
+.attendance-history {
+  background: #ffffff;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 0.9rem;
+  padding: 1.5rem;
+  margin-top: 1rem;
+}
+
+.attendance-history h6 {
+  color: #0f172a;
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.attendance-history-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 0.75rem;
+}
+
+.attendance-record {
+  background: #f8fafc;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.attendance-record:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(15, 23, 42, 0.08);
+}
+
+.attendance-date {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.attendance-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.attendance-status.attendance-present {
+  background: #d1fae5;
+  color: #047857;
+}
+
+.attendance-status.attendance-absent {
+  background: #ffe4e6;
+  color: #be123c;
+}
+
+.attendance-status i {
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .attendance-history-grid {
+    grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+    gap: 0.6rem;
+  }
+
+  .attendance-record {
+    padding: 0.6rem;
+  }
+
+  .attendance-date {
+    font-size: 0.7rem;
+  }
+
+  .attendance-status {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.5rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .attendance-history-grid {
+    grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
+  }
+
+  .attendance-record {
+    padding: 0.5rem;
+  }
+
+  .attendance-status {
+    font-size: 0.7rem;
   }
 }

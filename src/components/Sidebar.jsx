@@ -26,8 +26,16 @@ function Sidebar({ children }) {
         href: "/teacherManage",
       },
       { title: "Courses Manage", icon: "fa-book-open", href: "/courseManage" },
-      { title: "Attendance Control", icon: "fa-calendar-check", href: "/coming-soon" },
-      { title: "Results Manage", icon: "fa-chart-column", href: "/coming-soon" },
+      {
+        title: "Attendance Control",
+        icon: "fa-calendar-check",
+        href: "/coming-soon",
+      },
+      {
+        title: "Results Manage",
+        icon: "fa-chart-column",
+        href: "/coming-soon",
+      },
       { title: "Notifications", icon: "fa-bell", href: "/coming-soon" },
     ],
     teacher: [
@@ -55,7 +63,7 @@ function Sidebar({ children }) {
       {
         title: "Apply for Leave",
         icon: "fa-envelope-open-text",
-        href: "/coming-soon",
+        href: "/apply-leave",
       },
       {
         title: "Test Marks",
@@ -75,12 +83,6 @@ function Sidebar({ children }) {
     ],
     student: [
       { title: "Dashboard", icon: "fa-house", href: "/student/dashboard" },
-
-      {
-        title: "Registered Courses",
-        icon: "fa-book-open",
-        href: "/coming-soon",
-      },
       {
         title: "Lectures & Notes",
         icon: "fa-file-pdf",
@@ -92,6 +94,16 @@ function Sidebar({ children }) {
         href: "/coming-soon",
       },
       { title: "Results", icon: "fa-chart-column", href: "/coming-soon" },
+      {
+        title: "Apply for Leave",
+        icon: "fa-envelope-open-text",
+        href: "/apply-leave",
+      },
+      {
+        title: "Add Teacher Feedback",
+        icon: "fa-comment-dots",
+        href: "/coming-soon",
+      },
       {
         title: "Notifications",
         icon: "fa-bell",
