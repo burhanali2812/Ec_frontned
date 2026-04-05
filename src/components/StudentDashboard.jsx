@@ -35,6 +35,7 @@ function StudentDashboard() {
   const [loadingCourses, setLoadingCourses] = useState(false);
   const [loadingStats, setLoadingStats] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [courseStatsMap, setCourseStatsMap] = useState({});
 
   const API_BASE = "https://ec-backend-phi.vercel.app/api";
 
@@ -121,7 +122,7 @@ function StudentDashboard() {
 
   useEffect(() => {
     const updateMobileState = () => {
-      setIsMobile(window.innerWidth <= 575);
+      setIsMobile(window.innerWidth <= 768);
     };
 
     updateMobileState();
@@ -133,6 +134,7 @@ function StudentDashboard() {
   useEffect(() => {
     if (!courses.length) {
       setCoursePercentageMap({});
+      setCourseStatsMap({});
       return;
     }
 
@@ -151,16 +153,33 @@ function StudentDashboard() {
 
             return [
               String(course._id),
-              Number(res?.data?.stats?.percentage || 0),
+              {
+                percentage: Number(res?.data?.stats?.percentage || 0),
+                present: Number(res?.data?.stats?.present || 0),
+                absent: Number(res?.data?.stats?.absent || 0),
+                total: Number(res?.data?.stats?.total || 0),
+              },
             ];
           } catch {
-            return [String(course._id), 0];
+            return [
+              String(course._id),
+              { percentage: 0, present: 0, absent: 0, total: 0 },
+            ];
           }
         }),
       );
 
       if (!isCancelled) {
-        setCoursePercentageMap(Object.fromEntries(entries));
+        const statsEntries = Object.fromEntries(entries);
+        setCourseStatsMap(statsEntries);
+        setCoursePercentageMap(
+          Object.fromEntries(
+            Object.entries(statsEntries).map(([courseId, stats]) => [
+              courseId,
+              stats.percentage,
+            ]),
+          ),
+        );
       }
     };
 
@@ -224,6 +243,75 @@ function StudentDashboard() {
       ) / coursesWithPercentage.length,
     );
   }, [coursesWithPercentage]);
+
+  const overallAttendanceData = useMemo(() => {
+    const totals = Object.values(courseStatsMap).reduce(
+      (acc, stats) => {
+        acc.present += Number(stats?.present || 0);
+        acc.absent += Number(stats?.absent || 0);
+        return acc;
+      },
+      { present: 0, absent: 0 },
+    );
+
+    return [
+      { name: "Present", value: totals.present },
+      { name: "Absent", value: totals.absent },
+    ];
+  }, [courseStatsMap]);
+
+  const overallAttendanceSummary = useMemo(() => {
+    const total = overallAttendanceData.reduce(
+      (sum, item) => sum + Number(item.value || 0),
+      0,
+    );
+    const present = Number(overallAttendanceData[0]?.value || 0);
+    const absent = Number(overallAttendanceData[1]?.value || 0);
+    const presentPercent = total > 0 ? Math.round((present / total) * 100) : 0;
+    const absentPercent = total > 0 ? 100 - presentPercent : 0;
+
+    return { total, present, absent, presentPercent, absentPercent };
+  }, [overallAttendanceData]);
+
+  const resultPieData = useMemo(
+    () => [
+      { name: "Pass", value: 72 },
+      { name: "Average", value: 18 },
+      { name: "Need Improvement", value: 10 },
+    ],
+    [],
+  );
+
+  const resultSnapshotSummary = useMemo(() => {
+    const total = resultPieData.reduce(
+      (sum, item) => sum + Number(item.value || 0),
+      0,
+    );
+
+    const buildGradient = (items) => {
+      let start = 0;
+      return items
+        .map((item) => {
+          const span = total > 0 ? (Number(item.value || 0) / total) * 100 : 0;
+          const segment = `${item.color} ${start}% ${start + span}%`;
+          start += span;
+          return segment;
+        })
+        .join(", ");
+    };
+
+    const items = [
+      { ...resultPieData[0], color: "#22c55e" },
+      { ...resultPieData[1], color: "#f59e0b" },
+      { ...resultPieData[2], color: "#ef4444" },
+    ];
+
+    return {
+      total,
+      items,
+      gradient: buildGradient(items),
+    };
+  }, [resultPieData]);
 
   const courseAttendanceChartData = useMemo(
     () =>
@@ -295,17 +383,6 @@ function StudentDashboard() {
                   </div>
                 </div>
               </div>
-
-              <div className="hero-attendance-summary">
-                <div className="summary-pill">
-                  <span>Courses</span>
-                  <strong>{coursesWithPercentage.length}</strong>
-                </div>
-                <div className="summary-pill">
-                  <span>Average</span>
-                  <strong>{averageAttendance}%</strong>
-                </div>
-              </div>
             </div>
           </div>
 
@@ -313,10 +390,10 @@ function StudentDashboard() {
             <div className="d-flex flex-column flex-md-row justify-content-between align-items-start gap-2 mb-3">
               <div>
                 <h5 className="dashboard-section-title mb-1">
-                  Attendance Overview
+                  Overview Charts
                 </h5>
                 <p className="text-muted mb-0 small">
-                  Graph view of your registered course attendance
+                  Attendance and result snapshots
                 </p>
               </div>
             </div>
@@ -333,73 +410,81 @@ function StudentDashboard() {
               </div>
             ) : (
               <div className="row g-3">
-                <div className="col-12 col-xl-8">
-                  <div className="chart-panel chart-panel-centered h-100">
+                <div className="col-12 col-lg-6">
+                  <div className="chart-panel overview-donut-card h-100">
                     <div className="d-flex align-items-center justify-content-between mb-3">
-                      <h6 className="mb-0">Course Attendance Graph</h6>
+                      <h6 className="mb-0">Overall Attendance</h6>
                       <span className="text-muted small">
-                        Percent by course
+                        Present vs absent across all courses
                       </span>
                     </div>
-                    <ResponsiveContainer
-                      width="100%"
-                      height={isMobile ? 250 : 320}
-                    >
-                      <BarChart data={courseAttendanceChartData}>
-                        <CartesianGrid
-                          strokeDasharray="4 4"
-                          stroke={CHART_COLORS.grid}
-                        />
-                        <XAxis
-                          dataKey="name"
-                          stroke={CHART_COLORS.axis}
-                          interval={0}
-                          angle={isMobile ? 0 : -12}
-                          textAnchor={isMobile ? "middle" : "end"}
-                          height={isMobile ? 48 : 70}
-                          tickMargin={8}
-                        />
-                        <YAxis stroke={CHART_COLORS.axis} domain={[0, 100]} />
-                        <Tooltip />
-                        {!isMobile && <Legend />}
-                        <Bar
-                          dataKey="percentage"
-                          fill={CHART_COLORS.present}
-                          radius={[10, 10, 0, 0]}
-                          name="Attendance %"
-                        />
-                      </BarChart>
-                    </ResponsiveContainer>
+
+                    <div className="donut-chart-wrap">
+                      <div
+                        className="donut-chart"
+                        style={{
+                          background: `conic-gradient(${CHART_COLORS.present} 0% ${overallAttendanceSummary.presentPercent}%, ${CHART_COLORS.absent} ${overallAttendanceSummary.presentPercent}% 100%)`,
+                        }}
+                      >
+                        <div className="donut-chart-inner">
+                          <div className="donut-chart-value">
+                            {overallAttendanceSummary.total > 0
+                              ? `${overallAttendanceSummary.presentPercent}%`
+                              : "0%"}
+                          </div>
+                          <div className="donut-chart-label">Present</div>
+                        </div>
+                      </div>
+
+                      <div className="donut-legend">
+                        <div className="donut-legend-item">
+                          <span className="donut-dot present"></span>
+                          <span>Present</span>
+                          <strong>{overallAttendanceSummary.present}</strong>
+                        </div>
+                        <div className="donut-legend-item">
+                          <span className="donut-dot absent"></span>
+                          <span>Absent</span>
+                          <strong>{overallAttendanceSummary.absent}</strong>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                <div className="col-12 col-xl-4">
-                  <div className="chart-panel chart-panel-centered h-100">
+                <div className="col-12 col-lg-6">
+                  <div className="chart-panel overview-donut-card h-100">
                     <div className="d-flex align-items-center justify-content-between mb-3">
-                      <h6 className="mb-0">Attendance Mix</h6>
-                      <span className="text-muted small">By course range</span>
+                      <h6 className="mb-0">Results Snapshot</h6>
+                      <span className="text-muted small">
+                        Dummy result distribution
+                      </span>
                     </div>
-                    <ResponsiveContainer
-                      width="100%"
-                      height={isMobile ? 250 : 320}
-                    >
-                      <PieChart>
-                        <Pie
-                          data={attendanceBreakdownData}
-                          dataKey="value"
-                          nameKey="name"
-                          innerRadius={isMobile ? 42 : 55}
-                          outerRadius={isMobile ? 72 : 92}
-                          paddingAngle={4}
-                        >
-                          <Cell fill="#0ea5a4" />
-                          <Cell fill="#f59e0b" />
-                          <Cell fill="#f97316" />
-                        </Pie>
-                        <Tooltip />
-                        {!isMobile && <Legend />}
-                      </PieChart>
-                    </ResponsiveContainer>
+
+                    <div className="donut-chart-wrap">
+                      <div
+                        className="donut-chart"
+                        style={{ background: `conic-gradient(${resultSnapshotSummary.gradient})` }}
+                      >
+                        <div className="donut-chart-inner">
+                          <div className="donut-chart-value">72%</div>
+                          <div className="donut-chart-label">Pass</div>
+                        </div>
+                      </div>
+
+                      <div className="donut-legend">
+                        {resultSnapshotSummary.items.map((item) => (
+                          <div key={item.name} className="donut-legend-item">
+                            <span
+                              className="donut-dot"
+                              style={{ backgroundColor: item.color }}
+                            ></span>
+                            <span>{item.name}</span>
+                            <strong>{item.value}%</strong>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
