@@ -345,7 +345,7 @@ function StudentDashboard() {
             </div>
           </div>
 
-          <div className="dashboard-card overview-dashboard-card bg-transparent border-0  mb-4">
+          <div className="dashboard-card overview-dashboard-card  py-2  mb-4">
             <div className="d-flex flex-column flex-md-row justify-content-between align-items-start gap-2 mb-3">
               <div>
                 <h5 className="dashboard-section-title mb-1 mt-1 ms-2">
