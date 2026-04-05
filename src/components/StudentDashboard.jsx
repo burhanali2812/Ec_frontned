@@ -12,7 +12,7 @@ import {
   Title,
   Tooltip as ChartTooltip,
 } from "chart.js";
-import { Bar, Doughnut } from "react-chartjs-2";
+import { Doughnut } from "react-chartjs-2";
 import Sidebar from "./Sidebar";
 import "./StudentDashboard.css";
 
@@ -40,12 +40,8 @@ function StudentDashboard() {
   const [student, setStudent] = useState(null);
   const [courses, setCourses] = useState([]);
   const [coursePercentageMap, setCoursePercentageMap] = useState({});
-  const [selectedCourse, setSelectedCourse] = useState(null);
-  const [courseStats, setCourseStats] = useState(null);
-  const [showModal, setShowModal] = useState(false);
   const [loadingProfile, setLoadingProfile] = useState(false);
   const [loadingCourses, setLoadingCourses] = useState(false);
-  const [loadingStats, setLoadingStats] = useState(false);
   const [courseStatsMap, setCourseStatsMap] = useState({});
   const navigate = useNavigate();
 
@@ -105,31 +101,19 @@ function StudentDashboard() {
     }
   };
 
-  const fetchCourseStats = async (courseId) => {
-    setLoadingStats(true);
-    try {
-      const res = await axios.get(
-        `${API_BASE}/attendance/studentStats/${courseId}`,
-        {
-          headers: getAuthHeaders(),
-        },
-      );
-
-      if (res.data?.success) {
-        setCourseStats(res.data);
-      } else {
-        toast.error(res.data?.message || "Failed to load course stats");
-      }
-    } catch (error) {
-      toast.error(getErrorMessage(error, "Unable to load attendance stats."));
-    } finally {
-      setLoadingStats(false);
-    }
-  };
-
   useEffect(() => {
     fetchProfile();
     fetchCourses();
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.classList.add("no-dashboard-scroll");
+    document.body.classList.add("no-dashboard-scroll");
+
+    return () => {
+      document.documentElement.classList.remove("no-dashboard-scroll");
+      document.body.classList.remove("no-dashboard-scroll");
+    };
   }, []);
 
   useEffect(() => {
@@ -214,12 +198,6 @@ function StudentDashboard() {
       .filter(Boolean);
 
     return names.length ? [...new Set(names)].join(", ") : "N/A";
-  };
-
-  const handleCourseClick = (course) => {
-    setSelectedCourse(course);
-    setShowModal(true);
-    fetchCourseStats(course._id);
   };
 
   const coursesWithPercentage = useMemo(
@@ -324,80 +302,6 @@ function StudentDashboard() {
     [pieOptions],
   );
 
-  const barOptions = useMemo(
-    () => ({
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          display: true,
-          position: "top",
-          labels: {
-            color: "#334155",
-            boxWidth: 12,
-            font: { size: 12, weight: "600" },
-          },
-        },
-        tooltip: {
-          enabled: true,
-        },
-      },
-      scales: {
-        x: {
-          ticks: { color: CHART_COLORS.axis, font: { size: 11 } },
-          grid: { display: false },
-        },
-        y: {
-          ticks: { color: CHART_COLORS.axis, font: { size: 11 } },
-          grid: { color: CHART_COLORS.grid },
-          beginAtZero: true,
-        },
-      },
-    }),
-    [],
-  );
-
-  const selectedCourseSplitData = useMemo(
-    () => ({
-      labels: ["Present", "Absent"],
-      datasets: [
-        {
-          data: [
-            Number(courseStats?.stats?.present || 0),
-            Number(courseStats?.stats?.absent || 0),
-          ],
-          backgroundColor: [CHART_COLORS.present, CHART_COLORS.absent],
-          borderWidth: 0,
-        },
-      ],
-    }),
-    [courseStats],
-  );
-
-  const selectedCourseMonthlyData = useMemo(() => {
-    const chartData = Array.isArray(courseStats?.chartData)
-      ? courseStats.chartData
-      : [];
-
-    return {
-      labels: chartData.map((item) => item.month),
-      datasets: [
-        {
-          label: "Present",
-          data: chartData.map((item) => Number(item.present || 0)),
-          backgroundColor: CHART_COLORS.present,
-          borderRadius: 8,
-        },
-        {
-          label: "Absent",
-          data: chartData.map((item) => Number(item.absent || 0)),
-          backgroundColor: CHART_COLORS.absent,
-          borderRadius: 8,
-        },
-      ],
-    };
-  }, [courseStats]);
-
   if (loadingProfile) {
     return (
       <Sidebar>
@@ -414,18 +318,18 @@ function StudentDashboard() {
     <Sidebar>
       <Toaster position="top-right" />
 
-      <div className="student-dashboard mt-3 mt-lg-4">
+      <div className="student-dashboard">
         <div className="container-fluid px-0 px-lg-2 bg-transparent">
           {/* Hero Section */}
-          <div className="dashboard-hero mb-4">
-            <div className="d-flex flex-column flex-md-row justify-content-between gap-3 align-items-start">
+          <div className="dashboard-hero mb-2  mt-3 mb-lg-4">
+            <div className="d-flex flex-column flex-md-row justify-content-between gap-2 align-items-start">
               <div className="student-identity-card">
                 <div className="student-identity-avatar">
                   {(student?.name || "S").charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <p className="mb-1 text-white-50 fw-semibold">Welcome Back</p>
-                  <h3 className="mb-1">{student?.name || "Student"}</h3>
+                  <p className="mb-1 text-dark fw-semibold">Welcome Back</p>
+                  <h4 className="mb-1">{student?.name || "Student"}</h4>
                   <div className="student-identity-meta">
                     <span>
                       <i className="fas fa-id-badge me-1"></i>
@@ -465,7 +369,10 @@ function StudentDashboard() {
               </div>
             ) : (
               <div className="row g-3 g-lg-4 overview-graphs-row">
-                <div className="col-6 col-lg-6" onClick={() => navigate("/coming-soon")}>
+                <div
+                  className="col-6 col-lg-6"
+                  onClick={() => navigate("/coming-soon")}
+                >
                   <div className="chart-panel overview-donut-card h-100">
                     <div className="d-flex justify-content-between mb-3 overview-header">
                       <h6 className="mb-0 me-4">Attendance</h6>{" "}
@@ -498,7 +405,10 @@ function StudentDashboard() {
                   </div>
                 </div>
 
-                <div className="col-6 col-lg-6" onClick={() => navigate("/coming-soon")}>
+                <div
+                  className="col-6 col-lg-6"
+                  onClick={() => navigate("/coming-soon")}
+                >
                   <div className="chart-panel overview-donut-card h-100">
                     <div className="d-flex justify-content-between mb-3 overview-header">
                       <h6 className="mb-0" style={{ marginRight: "48px" }}>
@@ -537,254 +447,57 @@ function StudentDashboard() {
             )}
           </div>
 
-          {/* Registered Courses */}
-          <div className="dashboard-card p-3 p-md-4">
-            <div className="d-flex flex-column flex-md-row justify-content-between align-items-start gap-2 mb-3">
-              <div>
-                <h5 className="dashboard-section-title mb-1">
-                  Registered Courses
-                </h5>
-                <p className="text-muted mb-0 small">
-                  Course cards with attendance progress
-                </p>
+          <div className="row g-3 quick-cards-row">
+            <div className="col-12 col-lg-6">
+              <div
+                className="quick-access-card quick-access-card--courses"
+                role="button"
+                tabIndex={0}
+                onClick={() => navigate("/coming-soon")}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    navigate("/coming-soon");
+                  }
+                }}
+              >
+                <div className="quick-access-card__icon">
+                  <i className="fas fa-book-open"></i>
+                </div>
+                <div>
+                  <h6 className="mb-1">Registered Courses</h6>
+                  <p className="mb-0">Open course list</p>
+                </div>
+                <i className="fa-solid fa-arrow-right-long quick-access-card__arrow"></i>
               </div>
             </div>
 
-            {loadingCourses ? (
-              <div className="text-center py-4">
-                <div className="spinner-border text-success" role="status">
-                  <span className="visually-hidden">Loading...</span>
+            <div className="col-12 col-lg-6">
+              <div
+                className="quick-access-card quick-access-card--timetable"
+                role="button"
+                tabIndex={0}
+                onClick={() => navigate("/coming-soon")}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    navigate("/coming-soon");
+                  }
+                }}
+              >
+                <div className="quick-access-card__icon">
+                  <i className="fas fa-calendar-alt"></i>
                 </div>
+                <div>
+                  <h6 className="mb-1">Timetable</h6>
+                  <p className="mb-0">View class schedule</p>
+                </div>
+                <i className="fa-solid fa-arrow-right-long quick-access-card__arrow"></i>
               </div>
-            ) : coursesWithPercentage.length === 0 ? (
-              <div className="alert alert-info mb-0">
-                No courses registered yet.
-              </div>
-            ) : (
-              <div className="row g-3 course-cards-row">
-                {coursesWithPercentage.map((course) => (
-                  <div key={course._id} className="col-12 col-md-6 col-xl-4">
-                    <div className="course-attendance-card h-100">
-                      <div className="d-flex justify-content-between align-items-start gap-3 mb-3">
-                        <div>
-                          <h6 className="course-card-title mb-1">
-                            {course.title}
-                          </h6>
-                          <p className="course-card-text mb-0 d-none d-sm-block">
-                            {course.teacherNames}
-                          </p>
-                        </div>
-                        <span
-                          className={`course-grade-badge ${
-                            course.percentage >= 75
-                              ? "success"
-                              : course.percentage >= 50
-                                ? "warning"
-                                : "danger"
-                          }`}
-                        >
-                          {course.percentage}%
-                        </span>
-                      </div>
-
-                      <div className="course-progress-wrap mb-3">
-                        <div className="progress" style={{ height: "8px" }}>
-                          <div
-                            className={`progress-bar ${
-                              course.percentage >= 75
-                                ? "bg-success"
-                                : course.percentage >= 50
-                                  ? "bg-warning"
-                                  : "bg-danger"
-                            }`}
-                            style={{ width: `${course.percentage}%` }}
-                          ></div>
-                        </div>
-                        <div className="d-flex justify-content-between mt-2 small text-muted">
-                          <span>Attendance</span>
-                          <span>{course.percentage}%</span>
-                        </div>
-                      </div>
-
-                      <div className="d-flex justify-content-between align-items-center">
-                        <small className="text-muted">
-                          Click for detailed chart
-                        </small>
-                        <button
-                          className="btn btn-sm btn-outline-primary"
-                          onClick={() => handleCourseClick(course)}
-                        >
-                          <i className="fas fa-chart-line me-1"></i>
-                          Details
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+            </div>
           </div>
         </div>
       </div>
-
-      {/* Attendance Modal */}
-      {showModal && (
-        <div
-          className="dashboard-modal-backdrop"
-          onClick={() => setShowModal(false)}
-        >
-          <div
-            className="dashboard-modal-card"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="d-flex justify-content-between align-items-center mb-3">
-              <h5 className="mb-0">{selectedCourse?.title} - Attendance</h5>
-              <button
-                className="btn btn-sm btn-outline-secondary"
-                onClick={() => setShowModal(false)}
-              >
-                <i className="fas fa-times"></i>
-              </button>
-            </div>
-
-            {loadingStats ? (
-              <div className="text-center py-5">
-                <div className="spinner-border text-success" role="status">
-                  <span className="visually-hidden">Loading...</span>
-                </div>
-              </div>
-            ) : courseStats ? (
-              <>
-                <div className="row g-3 mb-4">
-                  <div className="col-12 col-sm-6 col-lg-3">
-                    <div className="stats-card ">
-                      <div className="stats-icon">
-                        <i className="fas fa-calendar-days"></i>
-                      </div>
-                      <div className="stats-content">
-                        <div className="stats-label">Total Classes</div>
-                        <div className="stats-value">
-                          {courseStats.stats.total}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="col-12 col-sm-6 col-lg-3">
-                    <div className="stats-card ">
-                      <div className="stats-icon">
-                        <i className="fas fa-check-circle"></i>
-                      </div>
-                      <div className="stats-content">
-                        <div className="stats-label">Present</div>
-                        <div className="stats-value">
-                          {courseStats.stats.present}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="col-12 col-sm-6 col-lg-3">
-                    <div className="stats-card ">
-                      <div className="stats-icon">
-                        <i className="fas fa-times-circle"></i>
-                      </div>
-                      <div className="stats-content">
-                        <div className="stats-label">Absent</div>
-                        <div className="stats-value">
-                          {courseStats.stats.absent}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="col-12 col-sm-6 col-lg-3">
-                    <div className="stats-card ">
-                      <div className="stats-icon">
-                        <i className="fas fa-percentage"></i>
-                      </div>
-                      <div className="stats-content">
-                        <div className="stats-label">Percentage</div>
-                        <div className="stats-value">
-                          {courseStats.stats.percentage}%
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="row g-3 mb-2">
-                  <div className="col-12 col-lg-4">
-                    <div className="chart-panel h-100">
-                      <h6 className="mb-3">Attendance Split</h6>
-                      <div className="chart-canvas-box chart-canvas-box--modal-pie">
-                        <Doughnut
-                          data={selectedCourseSplitData}
-                          options={pieOptions}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="col-12 col-lg-8">
-                    <div className="chart-panel h-100">
-                      <h6 className="mb-3">Monthly Attendance Trend</h6>
-                      {courseStats.chartData &&
-                      courseStats.chartData.length > 0 ? (
-                        <div className="chart-canvas-box chart-canvas-box--modal-bar">
-                          <Bar
-                            data={selectedCourseMonthlyData}
-                            options={barOptions}
-                          />
-                        </div>
-                      ) : (
-                        <div className="alert alert-info mb-0">
-                          No attendance data available.
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Recent Attendance History */}
-                <div className="attendance-history mt-4">
-                  <h6 className="mb-3">Recent Attendance (Last 30 Days)</h6>
-                  {courseStats.recentAttendance &&
-                  courseStats.recentAttendance.length > 0 ? (
-                    <div className="attendance-history-grid">
-                      {courseStats.recentAttendance.map((record, index) => (
-                        <div key={index} className="attendance-record">
-                          <div className="attendance-date">{record.date}</div>
-                          <div
-                            className={`attendance-status attendance-${record.status}`}
-                          >
-                            <i
-                              className={`fas fa-${record.status === "present" ? "check-circle" : "times-circle"}`}
-                            ></i>
-                            <span>
-                              {record.status === "present"
-                                ? "Present"
-                                : "Absent"}
-                            </span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="alert alert-info mb-0">
-                      No attendance history available.
-                    </div>
-                  )}
-                </div>
-              </>
-            ) : (
-              <div className="alert alert-warning mb-0">
-                Failed to load attendance details.
-              </div>
-            )}
-          </div>
-        </div>
-      )}
     </Sidebar>
   );
 }

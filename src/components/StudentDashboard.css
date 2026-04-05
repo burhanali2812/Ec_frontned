@@ -1,32 +1,47 @@
-.student-dashboard {
-  min-height: 100vh;
 
+
+.no-dashboard-scroll,
+.no-dashboard-scroll body {
+  overflow: hidden !important;
+  height: 100%;
+}
+
+.student-dashboard {
+  height: 100dvh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  overflow-y: hidden !important;
 }
 
 .dashboard-hero {
-  background: rgb(52, 52, 52);
-  color: #fff;
-  border-radius: 1rem;
-  padding: 1.5rem;
-  /* box-shadow: 0 14px 40px rgba(20, 83, 45, 0.25); */
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  color: #0f172a;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  border-radius: 0.9rem;
+  padding: 0.7rem 1rem;
+  min-height: 74px;
+  display: flex;
+  align-items: center;
 }
 
 .student-identity-card {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.7rem;
+
 }
 
 .student-identity-avatar {
-  width: 58px;
-  height: 58px;
-  border-radius: 1rem;
+  width: 42px;
+  height: 42px;
+  border-radius: 0.75rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  font-size: 1.35rem;
+  background: #e2e8f0;
+  border: 1px solid rgba(100, 116, 139, 0.25);
+  color: #0f172a;
+  font-size: 1rem;
   font-weight: 700;
   flex-shrink: 0;
 }
@@ -34,10 +49,21 @@
 .student-identity-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem 1rem;
-  color: rgba(255, 255, 255, 0.86);
-  font-size: 0.9rem;
+  gap: 0.45rem 0.8rem;
+  color: #475569;
+  font-size: 0.8rem;
   font-weight: 600;
+}
+
+.dashboard-hero h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.dashboard-hero p {
+  font-size: 0.78rem;
+  margin-bottom: 0.15rem !important;
 }
 
 .hero-attendance-summary {
@@ -556,6 +582,65 @@
   /* box-shadow: 0 14px 32px rgba(15, 23, 42, 0.09); */
 }
 
+.quick-cards-row {
+  margin-bottom: 0.25rem;
+}
+
+.quick-access-card {
+  width: 100%;
+  min-height: 96px;
+  border-radius: 1rem;
+  border: 1px solid rgba(148, 163, 184, 0.26);
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.quick-access-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+}
+
+.quick-access-card__icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.quick-access-card__arrow {
+  margin-left: auto;
+  color: #64748b;
+}
+
+.quick-access-card h6 {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.quick-access-card p {
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+.quick-access-card--courses .quick-access-card__icon {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.quick-access-card--timetable .quick-access-card__icon {
+  background: #ecfdf5;
+  color: #047857;
+}
+
 .course-card-title {
   font-weight: 700;
   color: #0f172a;
@@ -624,24 +709,21 @@
     padding: 1.5rem;
   }
 
-  .dashboard-hero {
-    padding: 1rem;
-  }
 
   .student-identity-card {
     gap: 0.75rem;
   }
 
   .student-identity-avatar {
-    width: 46px;
-    height: 46px;
+    width: 38px;
+    height: 38px;
     border-radius: 0.8rem;
-    font-size: 1.05rem;
+    font-size: 0.92rem;
   }
 
   .student-identity-meta {
     gap: 0.35rem 0.65rem;
-    font-size: 0.76rem;
+    font-size: 0.73rem;
   }
 
   .hero-attendance-summary {
@@ -679,6 +761,18 @@
 
   .course-attendance-card {
     padding: 0.85rem;
+  }
+
+  .quick-access-card {
+    min-height: 88px;
+    padding: 0.85rem;
+    gap: 0.75rem;
+  }
+
+  .quick-access-card__icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 0.65rem;
   }
 
   .course-card-title {
@@ -798,9 +892,7 @@
   }
   
 
-  .dashboard-hero {
-    padding: 1rem;
-  }
+
 
   .student-identity-card {
     align-items: flex-start;
@@ -819,10 +911,10 @@
   }
 
   .student-identity-avatar {
-    width: 48px;
-    height: 48px;
+    width: 36px;
+    height: 36px;
     border-radius: 0.85rem;
-    font-size: 1.1rem;
+    font-size: 0.88rem;
   }
 
   .student-identity-meta {
