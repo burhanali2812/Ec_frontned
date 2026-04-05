@@ -330,6 +330,9 @@ function StudentDashboard() {
                 <div>
                   <h6 className="mb-1 text-dark fw-semibold">Hi 👋</h6>
                   <h5 className="mb-1">{student?.name || "Student"}</h5>
+                  <p className="mb-1">
+                    {student?.email || "student@example.com"}
+                  </p>
                   <div className="student-identity-meta">
                     <span>
                       <i className="fas fa-id-badge me-1"></i>
@@ -371,18 +374,10 @@ function StudentDashboard() {
               <div className="row g-3 g-lg-4 overview-graphs-row">
                 <div
                   className="col-6 col-lg-6"
-                  onClick={() => navigate("/coming-soon")}
+                  onClick={() => navigate("/student/attendance-overview")}
                 >
                   <div className="chart-panel overview-donut-card h-100">
-                    <div className="d-flex justify-content-between mb-3 overview-header">
-                      <h6 className="mb-0 me-4">Attendance</h6>{" "}
-                      <i
-                        className="fa-solid fa-arrow-right-long ms-4 cursor-pointer"
-                        data-bs-toggle="tooltip"
-                        data-bs-placement="top"
-                        title="Details"
-                      ></i>
-                    </div>
+                    <h6 className="mb-2 text-center">Attendance</h6>
 
                     <div className="chart-canvas-wrap">
                       <div className="chart-canvas-box chart-canvas-box--overview">
@@ -410,17 +405,7 @@ function StudentDashboard() {
                   onClick={() => navigate("/coming-soon")}
                 >
                   <div className="chart-panel overview-donut-card h-100">
-                    <div className="d-flex justify-content-between mb-3 overview-header">
-                      <h6 className="mb-0" style={{ marginRight: "48px" }}>
-                        Results
-                      </h6>{" "}
-                      <i
-                        className="fa-solid fa-arrow-right-long ms-4 cursor-pointer"
-                        data-bs-toggle="tooltip"
-                        data-bs-placement="top"
-                        title="Details"
-                      ></i>
-                    </div>
+                    <h6 className="mb-2 text-center">Results</h6>
 
                     <div className="chart-canvas-wrap">
                       <div className="result-progress-wrap">

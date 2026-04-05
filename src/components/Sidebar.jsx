@@ -84,6 +84,11 @@ function Sidebar({ children }) {
     student: [
       { title: "Dashboard", icon: "fa-house", href: "/student/dashboard" },
       {
+        title: "Attendance",
+        icon: "fa-calendar-check",
+        href: "/student/attendance-overview",
+      },
+      {
         title: "Lectures & Notes",
         icon: "fa-file-pdf",
         href: "/coming-soon",

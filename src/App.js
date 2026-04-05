@@ -16,6 +16,7 @@ import ViewAttandance from "./components/ViewAttandance";
 import StudentDashboard from "./components/StudentDashboard";
 import ComingSoon from "./components/ComingSoon";
 import ApplyLeave from "./components/ApplyLeave";
+import OverAllAttandanceStd from "./components/OverAllAttandanceStd";
 
 function App() {
   const token = localStorage.getItem("token");
@@ -50,6 +51,10 @@ function App() {
       <Route path="/teacher/attendance" element={<Attandance />} />
       <Route path="/teacher/view-attendance" element={<ViewAttandance />} />
       <Route path="/student/dashboard" element={<StudentDashboard />} />
+      <Route
+        path="/student/attendance-overview"
+        element={<OverAllAttandanceStd />}
+      />
       <Route path="/apply-leave" element={<ApplyLeave />} />
       <Route path="/coming-soon" element={<ComingSoon />} />
 
