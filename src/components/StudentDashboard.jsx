@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { Toaster, toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 import {
   ArcElement,
   BarElement,
@@ -26,11 +27,11 @@ ChartJS.register(
 );
 
 const CHART_COLORS = {
-  present: "#0ea5a4",
+  present: "#65ffff",
   absent: "#f97316",
   grid: "#e2e8f0",
   axis: "#64748b",
-  pass: "#22c55e",
+  pass: "#3b82f6",
   average: "#f59e0b",
   improve: "#ef4444",
 };
@@ -46,6 +47,7 @@ function StudentDashboard() {
   const [loadingCourses, setLoadingCourses] = useState(false);
   const [loadingStats, setLoadingStats] = useState(false);
   const [courseStatsMap, setCourseStatsMap] = useState({});
+  const navigate = useNavigate();
 
   const API_BASE = "https://ec-backend-phi.vercel.app/api";
 
@@ -290,6 +292,7 @@ function StudentDashboard() {
   const pieOptions = useMemo(
     () => ({
       responsive: true,
+      cutout: "60%",
       maintainAspectRatio: false,
       plugins: {
         legend: {
@@ -412,7 +415,7 @@ function StudentDashboard() {
       <Toaster position="top-right" />
 
       <div className="student-dashboard mt-3 mt-lg-4">
-        <div className="container-fluid px-0 px-lg-2">
+        <div className="container-fluid px-0 px-lg-2 bg-transparent">
           {/* Hero Section */}
           <div className="dashboard-hero mb-4">
             <div className="d-flex flex-column flex-md-row justify-content-between gap-3 align-items-start">
@@ -438,7 +441,7 @@ function StudentDashboard() {
             </div>
           </div>
 
-          <div className="dashboard-card overview-dashboard-card p-1 p-md-3 mb-4">
+          <div className="dashboard-card overview-dashboard-card bg-transparent border-0  mb-4">
             <div className="d-flex flex-column flex-md-row justify-content-between align-items-start gap-2 mb-3">
               <div>
                 <h5 className="dashboard-section-title mb-1 mt-1 ms-2">
@@ -462,13 +465,16 @@ function StudentDashboard() {
               </div>
             ) : (
               <div className="row g-3 g-lg-4 overview-graphs-row">
-                <div className="col-6 col-lg-6">
+                <div className="col-6 col-lg-6" onClick={() => navigate("/coming-soon")}>
                   <div className="chart-panel overview-donut-card h-100">
-                    <div className="d-flex align-items-center justify-content-between mb-3 overview-header">
-                      <h6 className="mb-0">Overall Attendance</h6>
-                      <span className="text-muted small">
-                        Present vs absent across all courses
-                      </span>
+                    <div className="d-flex justify-content-between mb-3 overview-header">
+                      <h6 className="mb-0 me-4">Attendance</h6>{" "}
+                      <i
+                        className="fa-solid fa-arrow-right-long ms-4 cursor-pointer"
+                        data-bs-toggle="tooltip"
+                        data-bs-placement="top"
+                        title="Details"
+                      ></i>
                     </div>
 
                     <div className="chart-canvas-wrap">
@@ -492,13 +498,18 @@ function StudentDashboard() {
                   </div>
                 </div>
 
-                <div className="col-6 col-lg-6">
+                <div className="col-6 col-lg-6" onClick={() => navigate("/coming-soon")}>
                   <div className="chart-panel overview-donut-card h-100">
-                    <div className="d-flex align-items-center justify-content-between mb-3 overview-header">
-                      <h6 className="mb-0">Results Snapshot</h6>
-                      <span className="text-muted small">
-                        Dummy result distribution
-                      </span>
+                    <div className="d-flex justify-content-between mb-3 overview-header">
+                      <h6 className="mb-0" style={{ marginRight: "48px" }}>
+                        Results
+                      </h6>{" "}
+                      <i
+                        className="fa-solid fa-arrow-right-long ms-4 cursor-pointer"
+                        data-bs-toggle="tooltip"
+                        data-bs-placement="top"
+                        title="Details"
+                      ></i>
                     </div>
 
                     <div className="chart-canvas-wrap">

@@ -89,8 +89,12 @@ function ApplyLeave() {
 
   useEffect(() => {
     fetchProfile();
-    fetchHistory();
   }, []);
+  useEffect(() => {
+    if (profile.email) {
+      fetchHistory();
+    }
+    }, [profile.email]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
