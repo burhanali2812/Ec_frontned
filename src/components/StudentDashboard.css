@@ -1,10 +1,10 @@
 .student-dashboard {
   min-height: 100vh;
-  background: #f8fafc;
+
 }
 
 .dashboard-hero {
-  background: linear-gradient(135deg, #0f766e, #14532d);
+  background: rgb(52, 52, 52);
   color: #fff;
   border-radius: 1rem;
   padding: 1.5rem;
@@ -163,6 +163,7 @@
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
 }
 
+
 .chart-panel-centered {
   overflow: visible;
 }
@@ -196,14 +197,14 @@
 .donut-chart::after {
   content: "";
   position: absolute;
-  inset: 16%;
+  inset:10%;
   background: #ffffff;
   border-radius: 50%;
 }
 
 .donut-chart-inner {
   position: absolute;
-  inset: 16%;
+  inset: 10%;
   z-index: 1;
   display: flex;
   flex-direction: column;
@@ -262,6 +263,89 @@
 
 .donut-dot.absent {
   background: #f97316;
+}
+
+.result-progress-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0;
+}
+
+.result-progress {
+  width: min(260px, 100%);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  position: relative;
+  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.16);
+}
+
+.result-progress::after {
+  content: "";
+  position: absolute;
+  inset: 5%;
+  background: #ffffff;
+  border-radius: 50%;
+}
+
+.result-progress-inner {
+  position: absolute;
+  inset: 5%;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.result-progress-value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1;
+}
+
+.result-progress-label {
+  margin-top: 0.35rem;
+  font-size: 0.9rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.result-stats-grid {
+  width: 100%;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.result-stat-chip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 0.8rem;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  font-size: 0.88rem;
+}
+
+.result-stat-chip.pass {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.result-stat-chip.avg {
+  background: #fffbeb;
+  color: #b45309;
+}
+
+.result-stat-chip.imp {
+  background: #fff1f2;
+  color: #be123c;
+}
+
+.result-stat-chip strong {
+  color: #0f172a;
 }
 
 .mobile-chart-stack {
@@ -395,6 +479,69 @@
   overflow: hidden;
 }
 
+.overview-donut-card {
+  padding: 0.7rem !important;
+  min-height: 260px;
+}
+
+.chart-canvas-wrap {
+  width: 100%;
+}
+
+.chart-canvas-box {
+  position: relative;
+  width: 100%;
+  height: 250px;
+}
+
+.chart-canvas-box--overview {
+  width: 100%;
+  height: 185px;
+}
+
+.chart-canvas-box--modal-pie,
+.chart-canvas-box--modal-bar {
+  height: 250px;
+}
+
+.chart-canvas-box canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.chart-hint-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  flex-wrap: nowrap;
+}
+
+.chart-hint-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  color: #475569;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.chart-hint-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.chart-hint-dot.present {
+  background: #0ea5a4;
+}
+
+.chart-hint-dot.absent {
+  background: #f97316;
+}
+
 .course-attendance-card {
   background: #ffffff;
   border: 1px solid rgba(148, 163, 184, 0.22);
@@ -467,6 +614,11 @@
     padding-right: 0;
   }
 
+  .overview-graphs-row > [class*="col-"] {
+    padding-left: 0.24rem !important;
+    padding-right: 0.24rem !important;
+  }
+
   .dashboard-modal-card {
     max-width: 95%;
     padding: 1.5rem;
@@ -508,6 +660,21 @@
 
   .chart-panel {
     padding: 0.75rem;
+  }
+
+  .overview-dashboard-card {
+    padding-left: 0.18rem !important;
+    padding-right: 0.18rem !important;
+  }
+
+  .overview-graphs-row {
+    --bs-gutter-x: 0.7rem;
+    --bs-gutter-y: 0.5rem;
+  }
+
+  .overview-donut-card {
+    min-height: 200px;
+    padding: 0.46rem !important;
   }
 
   .course-attendance-card {
@@ -640,7 +807,7 @@
   }
 
   .hero-attendance-summary {
-    gap: 0.5rem;
+    gap: 0.8rem;
   }
 
   .summary-pill {
@@ -706,6 +873,21 @@
     min-height: 0;
   }
 
+  .overview-dashboard-card {
+    padding-left: 0.1rem !important;
+    padding-right: 0.1rem !important;
+  }
+
+  .overview-graphs-row {
+    --bs-gutter-x: 0.6rem;
+    --bs-gutter-y: 0.45rem;
+  }
+
+  .overview-graphs-row > [class*="col-"] {
+    padding-left: 0.22rem !important;
+    padding-right: 0.22rem !important;
+  }
+
   .donut-chart-wrap {
     gap: 0.8rem;
   }
@@ -725,6 +907,101 @@
   .donut-legend-item {
     padding: 0.55rem 0.7rem;
     font-size: 0.82rem;
+  }
+
+  .result-progress-wrap {
+    gap: 0.8rem;
+  }
+
+  .result-progress {
+    width: min(220px, 100%);
+  }
+
+  .result-progress-value {
+    font-size: 1.7rem;
+  }
+
+  .result-progress-label {
+    font-size: 0.8rem;
+  }
+
+  .result-stat-chip {
+    padding: 0.55rem 0.7rem;
+    font-size: 0.82rem;
+  }
+
+  .overview-header {
+    margin-bottom: 0.5rem !important;
+  }
+
+  .overview-header h6 {
+    font-size: 0.78rem;
+    line-height: 1.2;
+    margin-bottom: 0;
+  }
+
+  .overview-header .small {
+    display: none;
+  }
+
+  .overview-donut-card {
+    padding: 0.5rem !important;
+    min-height: 180px;
+  }
+
+  .donut-chart-wrap {
+    gap: 0.45rem;
+    padding: 0.1rem 0;
+  }
+
+  .donut-chart {
+    width: min(130px, 100%);
+  }
+
+  .donut-chart-value {
+    font-size: 1.1rem;
+  }
+
+  .donut-chart-label {
+    font-size: 0.68rem;
+  }
+
+  .donut-legend {
+    gap: 0.35rem;
+  }
+
+  .donut-legend-item {
+    padding: 0.35rem 0.45rem;
+    font-size: 0.68rem;
+    gap: 0.35rem;
+    border-radius: 0.55rem;
+  }
+
+  .donut-dot {
+    width: 8px;
+    height: 8px;
+  }
+
+  .result-progress {
+    width: min(130px, 100%);
+  }
+
+  .result-progress-value {
+    font-size: 1.1rem;
+  }
+
+  .result-progress-label {
+    font-size: 0.68rem;
+  }
+
+  .result-stats-grid {
+    gap: 0.35rem;
+  }
+
+  .result-stat-chip {
+    padding: 0.35rem 0.45rem;
+    font-size: 0.68rem;
+    border-radius: 0.55rem;
   }
 
   .mobile-chart-stack {
@@ -759,22 +1036,26 @@
     width: 100%;
   }
 
-  .recharts-responsive-container,
-  .recharts-wrapper {
-    max-width: 100% !important;
+  .chart-canvas-box {
+    height: 170px;
   }
 
-  .recharts-wrapper {
-    overflow: visible !important;
+  .chart-canvas-box--overview {
+    height: 158px;
   }
 
-  .recharts-cartesian-axis-tick-value {
-    font-size: 11px;
+  .chart-hint-row {
+    gap: 0.6rem;
   }
 
-  .recharts-pie-label-text,
-  .recharts-legend-item-text {
-    font-size: 11px;
+  .chart-hint-item {
+    font-size: 0.68rem;
+    gap: 0.28rem;
+  }
+
+  .chart-hint-dot {
+    width: 8px;
+    height: 8px;
   }
 }
 

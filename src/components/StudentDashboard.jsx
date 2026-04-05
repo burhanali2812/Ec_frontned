@@ -2,26 +2,37 @@ import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { Toaster, toast } from "react-hot-toast";
 import {
-  PieChart,
-  Pie,
-  Cell,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
+  ArcElement,
+  BarElement,
+  CategoryScale,
+  Chart as ChartJS,
+  Legend as ChartLegend,
+  LinearScale,
+  Title,
+  Tooltip as ChartTooltip,
+} from "chart.js";
+import { Bar, Doughnut } from "react-chartjs-2";
 import Sidebar from "./Sidebar";
 import "./StudentDashboard.css";
+
+ChartJS.register(
+  ArcElement,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  ChartTooltip,
+  ChartLegend,
+);
 
 const CHART_COLORS = {
   present: "#0ea5a4",
   absent: "#f97316",
   grid: "#e2e8f0",
   axis: "#64748b",
+  pass: "#22c55e",
+  average: "#f59e0b",
+  improve: "#ef4444",
 };
 
 function StudentDashboard() {
@@ -34,7 +45,6 @@ function StudentDashboard() {
   const [loadingProfile, setLoadingProfile] = useState(false);
   const [loadingCourses, setLoadingCourses] = useState(false);
   const [loadingStats, setLoadingStats] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
   const [courseStatsMap, setCourseStatsMap] = useState({});
 
   const API_BASE = "https://ec-backend-phi.vercel.app/api";
@@ -118,17 +128,6 @@ function StudentDashboard() {
   useEffect(() => {
     fetchProfile();
     fetchCourses();
-  }, []);
-
-  useEffect(() => {
-    const updateMobileState = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-
-    updateMobileState();
-    window.addEventListener("resize", updateMobileState);
-
-    return () => window.removeEventListener("resize", updateMobileState);
   }, []);
 
   useEffect(() => {
@@ -234,16 +233,6 @@ function StudentDashboard() {
     [courses, coursePercentageMap, student],
   );
 
-  const averageAttendance = useMemo(() => {
-    if (!coursesWithPercentage.length) return 0;
-    return Math.round(
-      coursesWithPercentage.reduce(
-        (sum, course) => sum + course.percentage,
-        0,
-      ) / coursesWithPercentage.length,
-    );
-  }, [coursesWithPercentage]);
-
   const overallAttendanceData = useMemo(() => {
     const totals = Object.values(courseStatsMap).reduce(
       (acc, stats) => {
@@ -260,18 +249,19 @@ function StudentDashboard() {
     ];
   }, [courseStatsMap]);
 
-  const overallAttendanceSummary = useMemo(() => {
-    const total = overallAttendanceData.reduce(
-      (sum, item) => sum + Number(item.value || 0),
-      0,
-    );
-    const present = Number(overallAttendanceData[0]?.value || 0);
-    const absent = Number(overallAttendanceData[1]?.value || 0);
-    const presentPercent = total > 0 ? Math.round((present / total) * 100) : 0;
-    const absentPercent = total > 0 ? 100 - presentPercent : 0;
-
-    return { total, present, absent, presentPercent, absentPercent };
-  }, [overallAttendanceData]);
+  const overallAttendancePieData = useMemo(
+    () => ({
+      labels: overallAttendanceData.map((item) => item.name),
+      datasets: [
+        {
+          data: overallAttendanceData.map((item) => item.value),
+          backgroundColor: [CHART_COLORS.present, CHART_COLORS.absent],
+          borderWidth: 0,
+        },
+      ],
+    }),
+    [overallAttendanceData],
+  );
 
   const resultPieData = useMemo(
     () => [
@@ -282,66 +272,128 @@ function StudentDashboard() {
     [],
   );
 
-  const resultSnapshotSummary = useMemo(() => {
-    const total = resultPieData.reduce(
-      (sum, item) => sum + Number(item.value || 0),
-      0,
-    );
-
-    const buildGradient = (items) => {
-      let start = 0;
-      return items
-        .map((item) => {
-          const span = total > 0 ? (Number(item.value || 0) / total) * 100 : 0;
-          const segment = `${item.color} ${start}% ${start + span}%`;
-          start += span;
-          return segment;
-        })
-        .join(", ");
-    };
-
-    const items = [
-      { ...resultPieData[0], color: "#22c55e" },
-      { ...resultPieData[1], color: "#f59e0b" },
-      { ...resultPieData[2], color: "#ef4444" },
-    ];
+  const resultProgressSummary = useMemo(() => {
+    const pass = Number(resultPieData[0]?.value || 0);
+    const average = Number(resultPieData[1]?.value || 0);
+    const needImprovement = Number(resultPieData[2]?.value || 0);
+    const total = pass + average + needImprovement;
+    const passPercent = total > 0 ? Math.round((pass / total) * 100) : 0;
 
     return {
-      total,
-      items,
-      gradient: buildGradient(items),
+      pass,
+      average,
+      needImprovement,
+      passPercent,
     };
   }, [resultPieData]);
 
-  const courseAttendanceChartData = useMemo(
-    () =>
-      coursesWithPercentage.map((course) => ({
-        name:
-          course.title.length > 18
-            ? `${course.title.slice(0, 18)}...`
-            : course.title,
-        percentage: course.percentage,
-      })),
-    [coursesWithPercentage],
+  const pieOptions = useMemo(
+    () => ({
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: true,
+          position: "bottom",
+          labels: {
+            color: "#334155",
+            boxWidth: 12,
+            padding: 14,
+            font: { size: 12, weight: "600" },
+          },
+        },
+      },
+    }),
+    [],
   );
 
-  const attendanceBreakdownData = useMemo(() => {
-    const excellent = coursesWithPercentage.filter(
-      (course) => course.percentage >= 75,
-    ).length;
-    const average = coursesWithPercentage.filter(
-      (course) => course.percentage >= 50 && course.percentage < 75,
-    ).length;
-    const low = coursesWithPercentage.filter(
-      (course) => course.percentage < 50,
-    ).length;
+  const overviewAttendanceOptions = useMemo(
+    () => ({
+      ...pieOptions,
+      plugins: {
+        ...pieOptions.plugins,
+        legend: {
+          ...pieOptions.plugins.legend,
+          display: false,
+        },
+      },
+    }),
+    [pieOptions],
+  );
 
-    return [
-      { name: "75%+", value: excellent },
-      { name: "50-74%", value: average },
-      { name: "Below 50%", value: low },
-    ];
-  }, [coursesWithPercentage]);
+  const barOptions = useMemo(
+    () => ({
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: true,
+          position: "top",
+          labels: {
+            color: "#334155",
+            boxWidth: 12,
+            font: { size: 12, weight: "600" },
+          },
+        },
+        tooltip: {
+          enabled: true,
+        },
+      },
+      scales: {
+        x: {
+          ticks: { color: CHART_COLORS.axis, font: { size: 11 } },
+          grid: { display: false },
+        },
+        y: {
+          ticks: { color: CHART_COLORS.axis, font: { size: 11 } },
+          grid: { color: CHART_COLORS.grid },
+          beginAtZero: true,
+        },
+      },
+    }),
+    [],
+  );
+
+  const selectedCourseSplitData = useMemo(
+    () => ({
+      labels: ["Present", "Absent"],
+      datasets: [
+        {
+          data: [
+            Number(courseStats?.stats?.present || 0),
+            Number(courseStats?.stats?.absent || 0),
+          ],
+          backgroundColor: [CHART_COLORS.present, CHART_COLORS.absent],
+          borderWidth: 0,
+        },
+      ],
+    }),
+    [courseStats],
+  );
+
+  const selectedCourseMonthlyData = useMemo(() => {
+    const chartData = Array.isArray(courseStats?.chartData)
+      ? courseStats.chartData
+      : [];
+
+    return {
+      labels: chartData.map((item) => item.month),
+      datasets: [
+        {
+          label: "Present",
+          data: chartData.map((item) => Number(item.present || 0)),
+          backgroundColor: CHART_COLORS.present,
+          borderRadius: 8,
+        },
+        {
+          label: "Absent",
+          data: chartData.map((item) => Number(item.absent || 0)),
+          backgroundColor: CHART_COLORS.absent,
+          borderRadius: 8,
+        },
+      ],
+    };
+  }, [courseStats]);
 
   if (loadingProfile) {
     return (
@@ -386,13 +438,13 @@ function StudentDashboard() {
             </div>
           </div>
 
-          <div className="dashboard-card p-3 p-md-4 mb-4">
+          <div className="dashboard-card overview-dashboard-card p-1 p-md-3 mb-4">
             <div className="d-flex flex-column flex-md-row justify-content-between align-items-start gap-2 mb-3">
               <div>
-                <h5 className="dashboard-section-title mb-1">
+                <h5 className="dashboard-section-title mb-1 mt-1 ms-2">
                   Overview Charts
                 </h5>
-                <p className="text-muted mb-0 small">
+                <p className="text-muted mb-0 small ms-2">
                   Attendance and result snapshots
                 </p>
               </div>
@@ -409,80 +461,63 @@ function StudentDashboard() {
                 No courses registered yet.
               </div>
             ) : (
-              <div className="row g-3">
-                <div className="col-12 col-lg-6">
+              <div className="row g-3 g-lg-4 overview-graphs-row">
+                <div className="col-6 col-lg-6">
                   <div className="chart-panel overview-donut-card h-100">
-                    <div className="d-flex align-items-center justify-content-between mb-3">
+                    <div className="d-flex align-items-center justify-content-between mb-3 overview-header">
                       <h6 className="mb-0">Overall Attendance</h6>
                       <span className="text-muted small">
                         Present vs absent across all courses
                       </span>
                     </div>
 
-                    <div className="donut-chart-wrap">
-                      <div
-                        className="donut-chart"
-                        style={{
-                          background: `conic-gradient(${CHART_COLORS.present} 0% ${overallAttendanceSummary.presentPercent}%, ${CHART_COLORS.absent} ${overallAttendanceSummary.presentPercent}% 100%)`,
-                        }}
-                      >
-                        <div className="donut-chart-inner">
-                          <div className="donut-chart-value">
-                            {overallAttendanceSummary.total > 0
-                              ? `${overallAttendanceSummary.presentPercent}%`
-                              : "0%"}
-                          </div>
-                          <div className="donut-chart-label">Present</div>
-                        </div>
+                    <div className="chart-canvas-wrap">
+                      <div className="chart-canvas-box chart-canvas-box--overview">
+                        <Doughnut
+                          data={overallAttendancePieData}
+                          options={overviewAttendanceOptions}
+                        />
                       </div>
-
-                      <div className="donut-legend">
-                        <div className="donut-legend-item">
-                          <span className="donut-dot present"></span>
-                          <span>Present</span>
-                          <strong>{overallAttendanceSummary.present}</strong>
-                        </div>
-                        <div className="donut-legend-item">
-                          <span className="donut-dot absent"></span>
-                          <span>Absent</span>
-                          <strong>{overallAttendanceSummary.absent}</strong>
-                        </div>
+                      <div className="chart-hint-row mt-2">
+                        <span className="chart-hint-item">
+                          <span className="chart-hint-dot present"></span>
+                          Present
+                        </span>
+                        <span className="chart-hint-item">
+                          <span className="chart-hint-dot absent"></span>
+                          Absent
+                        </span>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="col-12 col-lg-6">
+                <div className="col-6 col-lg-6">
                   <div className="chart-panel overview-donut-card h-100">
-                    <div className="d-flex align-items-center justify-content-between mb-3">
+                    <div className="d-flex align-items-center justify-content-between mb-3 overview-header">
                       <h6 className="mb-0">Results Snapshot</h6>
                       <span className="text-muted small">
                         Dummy result distribution
                       </span>
                     </div>
 
-                    <div className="donut-chart-wrap">
-                      <div
-                        className="donut-chart"
-                        style={{ background: `conic-gradient(${resultSnapshotSummary.gradient})` }}
-                      >
-                        <div className="donut-chart-inner">
-                          <div className="donut-chart-value">72%</div>
-                          <div className="donut-chart-label">Pass</div>
-                        </div>
-                      </div>
-
-                      <div className="donut-legend">
-                        {resultSnapshotSummary.items.map((item) => (
-                          <div key={item.name} className="donut-legend-item">
-                            <span
-                              className="donut-dot"
-                              style={{ backgroundColor: item.color }}
-                            ></span>
-                            <span>{item.name}</span>
-                            <strong>{item.value}%</strong>
+                    <div className="chart-canvas-wrap">
+                      <div className="result-progress-wrap">
+                        <div
+                          className="result-progress"
+                          style={{
+                            background: `conic-gradient(${CHART_COLORS.pass} 0% ${resultProgressSummary.passPercent}%, #e2e8f0 ${resultProgressSummary.passPercent}% 100%)`,
+                          }}
+                        >
+                          <div className="result-progress-inner">
+                            <div className="result-progress-value">
+                              {resultProgressSummary.passPercent}%
+                            </div>
+                            <div className="result-progress-label">
+                              Pass Rate
+                            </div>
                           </div>
-                        ))}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -671,32 +706,12 @@ function StudentDashboard() {
                   <div className="col-12 col-lg-4">
                     <div className="chart-panel h-100">
                       <h6 className="mb-3">Attendance Split</h6>
-                      <ResponsiveContainer width="100%" height={250}>
-                        <PieChart>
-                          <Pie
-                            data={[
-                              {
-                                name: "Present",
-                                value: Number(courseStats?.stats?.present || 0),
-                              },
-                              {
-                                name: "Absent",
-                                value: Number(courseStats?.stats?.absent || 0),
-                              },
-                            ]}
-                            dataKey="value"
-                            nameKey="name"
-                            innerRadius={60}
-                            outerRadius={88}
-                            paddingAngle={3}
-                          >
-                            <Cell fill={CHART_COLORS.present} />
-                            <Cell fill={CHART_COLORS.absent} />
-                          </Pie>
-                          <Tooltip />
-                          <Legend />
-                        </PieChart>
-                      </ResponsiveContainer>
+                      <div className="chart-canvas-box chart-canvas-box--modal-pie">
+                        <Doughnut
+                          data={selectedCourseSplitData}
+                          options={pieOptions}
+                        />
+                      </div>
                     </div>
                   </div>
 
@@ -705,30 +720,12 @@ function StudentDashboard() {
                       <h6 className="mb-3">Monthly Attendance Trend</h6>
                       {courseStats.chartData &&
                       courseStats.chartData.length > 0 ? (
-                        <ResponsiveContainer width="100%" height={250}>
-                          <BarChart data={courseStats.chartData}>
-                            <CartesianGrid
-                              strokeDasharray="4 4"
-                              stroke={CHART_COLORS.grid}
-                            />
-                            <XAxis dataKey="month" stroke={CHART_COLORS.axis} />
-                            <YAxis stroke={CHART_COLORS.axis} />
-                            <Tooltip />
-                            <Legend />
-                            <Bar
-                              dataKey="present"
-                              fill={CHART_COLORS.present}
-                              radius={[8, 8, 0, 0]}
-                              name="Present"
-                            />
-                            <Bar
-                              dataKey="absent"
-                              fill={CHART_COLORS.absent}
-                              radius={[8, 8, 0, 0]}
-                              name="Absent"
-                            />
-                          </BarChart>
-                        </ResponsiveContainer>
+                        <div className="chart-canvas-box chart-canvas-box--modal-bar">
+                          <Bar
+                            data={selectedCourseMonthlyData}
+                            options={barOptions}
+                          />
+                        </div>
                       ) : (
                         <div className="alert alert-info mb-0">
                           No attendance data available.
