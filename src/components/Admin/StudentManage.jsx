@@ -2,9 +2,9 @@ import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { Toaster, toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import Sidebar from "./Sidebar";
-import TopBar from "./TopBar";
-import logo from "../images/logo.png";
+import Sidebar from "../Sidebar";
+import TopBar from "../TopBar";
+import logo from "./../../images/logo.png";
 import "./StudentManage.css";
 
 function StudentManage({ adminLoginType = "academy" }) {

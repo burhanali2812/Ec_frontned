@@ -27,6 +27,11 @@ function Sidebar({ children }) {
       },
       { title: "Courses Manage", icon: "fa-book-open", href: "/courseManage" },
       {
+        title: "Leave Applications",
+        icon: "fa-envelope-open-text",
+        href: "/admin/view-and-approve-leaves",
+      },
+      {
         title: "Attendance Control",
         icon: "fa-calendar-check",
         href: "/coming-soon",

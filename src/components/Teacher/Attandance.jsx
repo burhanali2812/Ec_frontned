@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { Toaster, toast } from "react-hot-toast";
-import Sidebar from "./Sidebar";
-import TopBar from "./TopBar";
+import Sidebar from "../Sidebar";
+import TopBar from "../TopBar";
 import "./Attandance.css";
 
 function Attandance() {

@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { Toaster, toast } from "react-hot-toast";
-import Sidebar from "./Sidebar";
-import TopBar from "./TopBar";
-import logo from "../images/logo.png";
+import Sidebar from "../Sidebar";
+import TopBar from "../TopBar";
+import logo from "./../../images/logo.png";
 import "./TeacherManage.css";
 
 function TeacherManage({ adminLoginType }) {
@@ -190,8 +190,6 @@ function TeacherManage({ adminLoginType }) {
     e.preventDefault();
     if (!validateForm()) return;
 
-  
-
     setSubmitting(true);
     try {
       const payload = {
@@ -200,11 +198,10 @@ function TeacherManage({ adminLoginType }) {
         email: formData.email.trim(),
         cnic: formData.cnic.trim(),
         address: formData.address.trim(),
-        institutionType : adminLoginType,
+        institutionType: adminLoginType,
       };
       console.log("institutionType", institutionType);
       console.log("adminLoginType", adminLoginType);
-      
 
       const duplicate = teachers.find((t) => {
         if (isEditMode && String(t._id || t.id) === String(editingTeacherId))
@@ -230,7 +227,7 @@ function TeacherManage({ adminLoginType }) {
 
       const res = await axios({
         method,
-        
+
         url: endpoint,
         data: payload,
         headers: getAuthHeaders(),

@@ -2,9 +2,9 @@ import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Toaster, toast } from "react-hot-toast";
-import Sidebar from "./Sidebar";
-import TopBar from "./TopBar";
-import logo from "../images/logo.png";
+import Sidebar from "../Sidebar";
+import TopBar from "../TopBar";
+import logo from "./../../images/logo.png";
 import "./StudentRegister.css";
 
 function StudentRegister({ adminLoginType = "academy" }) {
@@ -380,7 +380,7 @@ function StudentRegister({ adminLoginType = "academy" }) {
   return (
     <Sidebar>
       <Toaster position="top-right" />
-  
+
       <div className="sr-page">
         <div className="sr-container">
           <div className="sr-header-card">

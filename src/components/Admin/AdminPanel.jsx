@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
-import Sidebar from "./Sidebar";
-import TopBar from "./TopBar";
+import Sidebar from "../Sidebar";
+import TopBar from "../TopBar";
 import "./AdminPanel.css";
 
 function AdminPanel() {

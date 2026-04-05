@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { Toaster, toast } from "react-hot-toast";
-import Sidebar from "./Sidebar";
+import Sidebar from "../Sidebar";
 import "./ApplyLeave.css";
 
 function ApplyLeave() {
@@ -72,9 +72,12 @@ function ApplyLeave() {
   const fetchHistory = async () => {
     setLoadingHistory(true);
     try {
-      const res = await axios.get(`${API_BASE}/leave/viewAppliedLeaveApplications/${userRole}/${profile?.email}`, {
-        headers: authHeaders,
-      });
+      const res = await axios.get(
+        `${API_BASE}/leave/viewAppliedLeaveApplications/${userRole}/${profile?.email}`,
+        {
+          headers: authHeaders,
+        },
+      );
 
       const rows = Array.isArray(res.data?.leaveApplications)
         ? res.data.leaveApplications
@@ -94,7 +97,7 @@ function ApplyLeave() {
     if (profile.email) {
       fetchHistory();
     }
-    }, [profile.email]);
+  }, [profile.email]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

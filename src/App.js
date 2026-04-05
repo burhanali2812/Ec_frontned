@@ -4,19 +4,20 @@ import { useState } from "react";
 import Home from "./components/Home";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
-import AdminPanel from "./components/AdminPanel";
-import TeacherPanel from "./components/TeacherPanel";
+import AdminPanel from "./components/Admin/AdminPanel";
+import TeacherPanel from "./components/Teacher/TeacherPanel";
 import { Routes, Route, Navigate } from "react-router-dom";
-import TeacherManage from "./components/TeacherManage";
-import CourseManage from "./components/CourseManage";
-import StudentManage from "./components/StudentManage";
-import StudentRegister from "./components/StudentRegister";
-import Attandance from "./components/Attandance";
-import ViewAttandance from "./components/ViewAttandance";
-import StudentDashboard from "./components/StudentDashboard";
+import TeacherManage from "./components/Admin/TeacherManage";
+import CourseManage from "./components/Admin/CourseManage";
+import StudentManage from "./components/Admin/StudentManage";
+import StudentRegister from "./components/Admin/StudentRegister";
+import Attandance from "./components/Teacher/Attandance";
+import ViewAttandance from "./components/Teacher/ViewAttandance";
+import StudentDashboard from "./components/Student/StudentDashboard";
 import ComingSoon from "./components/ComingSoon";
-import ApplyLeave from "./components/ApplyLeave";
-import OverAllAttandanceStd from "./components/OverAllAttandanceStd";
+import ApplyLeave from "./components/Teacher/ApplyLeave";
+import OverAllAttandanceStd from "./components/Student/OverAllAttandanceStd";
+import ViewAndApproveLeaves from "./components/Admin/ViewAndApproveLeaves";
 
 function App() {
   const token = localStorage.getItem("token");
@@ -56,6 +57,7 @@ function App() {
         element={<OverAllAttandanceStd />}
       />
       <Route path="/apply-leave" element={<ApplyLeave />} />
+      <Route path="/admin/view-and-approve-leaves" element={<ViewAndApproveLeaves />} />
       <Route path="/coming-soon" element={<ComingSoon />} />
 
       {/* Optional: Redirect unknown routes */}

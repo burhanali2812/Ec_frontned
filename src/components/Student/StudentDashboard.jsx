@@ -13,7 +13,7 @@ import {
   Tooltip as ChartTooltip,
 } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
-import Sidebar from "./Sidebar";
+import Sidebar from "../Sidebar";
 import "./StudentDashboard.css";
 
 ChartJS.register(

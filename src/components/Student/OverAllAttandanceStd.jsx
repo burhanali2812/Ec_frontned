@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
-import Sidebar from "./Sidebar";
+import Sidebar from "../Sidebar";
 import "./OverAllAttandanceStd.css";
 import {
   ArcElement,
@@ -427,6 +427,15 @@ function OverAllAttandanceStd() {
                       <div className="text-muted small">Total Classes</div>
                     </div>
                   </div>
+
+                  <div className="d-flex justify-content-between align-items-center gap-2 mt-3">
+                    <span className="month-att-badge present">
+                      Present: {selectedMonth.present}
+                    </span>
+                    <span className="month-att-badge absent">
+                      Absent: {selectedMonth.absent}
+                    </span>
+                  </div>
                 </div>
 
                 <div className="col-12 col-lg-8">
@@ -457,7 +466,6 @@ function OverAllAttandanceStd() {
                         <div className="overall-att-history-date">
                           {item.date}
                         </div>
-                      
                       </div>
                       <span
                         className={`overall-att-history-badge ${item.status}`}
