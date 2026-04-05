@@ -328,8 +328,8 @@ function StudentDashboard() {
                   {(student?.name || "S").charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <p className="mb-1 text-dark fw-semibold">Welcome Back</p>
-                  <h4 className="mb-1">{student?.name || "Student"}</h4>
+                  <h6 className="mb-1 text-dark fw-semibold">Hi 👋</h6>
+                  <h5 className="mb-1">{student?.name || "Student"}</h5>
                   <div className="student-identity-meta">
                     <span>
                       <i className="fas fa-id-badge me-1"></i>
