@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { Toaster, toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import Footer from "../footer";
 import {
   ArcElement,
   BarElement,
@@ -107,8 +108,12 @@ function StudentDashboard() {
   }, []);
 
   useEffect(() => {
-    document.documentElement.classList.add("no-dashboard-scroll");
-    document.body.classList.add("no-dashboard-scroll");
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+
+    if (!isMobile) {
+      document.documentElement.classList.add("no-dashboard-scroll");
+      document.body.classList.add("no-dashboard-scroll");
+    }
 
     return () => {
       document.documentElement.classList.remove("no-dashboard-scroll");
@@ -302,6 +307,22 @@ function StudentDashboard() {
     [pieOptions],
   );
 
+  const courseResultProgressList = useMemo(
+    () =>
+      coursesWithPercentage.map((course) => {
+        const rawPercent = Number(
+          course?.resultPercentage ?? course?.percentage ?? 0,
+        );
+        const percent = Math.max(0, Math.min(100, Math.round(rawPercent)));
+        return {
+          id: String(course?._id || course?.title || "course"),
+          title: course?.title || "Course",
+          percent,
+        };
+      }),
+    [coursesWithPercentage],
+  );
+
   const quickAccessItems = useMemo(
     () => [
       {
@@ -366,7 +387,7 @@ function StudentDashboard() {
                 <div>
                   <h6 className="mb-1 text-dark fw-semibold">Hi 👋</h6>
                   <h5 className="mb-1">{student?.name || "Student"}</h5>
-               
+
                   <div className="student-identity-meta">
                     <span>
                       <i className="fas fa-id-badge me-1"></i>
@@ -411,10 +432,10 @@ function StudentDashboard() {
             </div>
           </div>
 
-          <div className="dashboard-card overview-dashboard-card  py-3  mb-2">
-            <div className="d-flex flex-column flex-md-row justify-content-between align-items-start gap-2 mb-3">
+          <div className="dashboard-card overview-dashboard-card  py-2 px-2 mb-2">
+            <div className="d-flex flex-column flex-md-row justify-content-between align-items-start gap-2 mb-2">
               <div>
-                <h5 className="dashboard-section-title mb-1 mt-1 ms-2">
+                <h5 className="dashboard-section-title  ms-2">
                   Overview Charts
                 </h5>
               </div>
@@ -431,56 +452,58 @@ function StudentDashboard() {
                 No courses registered yet.
               </div>
             ) : (
-              <div className="row g-3 g-lg-4 overview-graphs-row">
-                <div
-                  className="col-6 col-lg-6"
-                  onClick={() => navigate("/student/attendance-overview")}
-                >
-                  <div className="chart-panel overview-donut-card h-100">
-                    <h6 className="mb-2 text-center">Attendance</h6>
+              <>
+                <div className="row g-3 g-lg-4 overview-graphs-row">
+                  <div
+                    className="col-6 col-lg-6"
+                    onClick={() => navigate("/student/attendance-overview")}
+                  >
+                    <div className="chart-panel overview-donut-card h-100">
+                      <h6 className="mb-2 text-center">Attendance</h6>
 
-                    <div className="chart-canvas-wrap">
-                      <div className="chart-canvas-box chart-canvas-box--overview">
-                        <Doughnut
-                          data={overallAttendancePieData}
-                          options={overviewAttendanceOptions}
-                        />
-                      </div>
-                      <div className="chart-hint-row mt-2">
-                        <span className="chart-hint-item">
-                          <span className="chart-hint-dot present"></span>
-                          Present
-                        </span>
-                        <span className="chart-hint-item">
-                          <span className="chart-hint-dot absent"></span>
-                          Absent
-                        </span>
+                      <div className="chart-canvas-wrap">
+                        <div className="chart-canvas-box chart-canvas-box--overview">
+                          <Doughnut
+                            data={overallAttendancePieData}
+                            options={overviewAttendanceOptions}
+                          />
+                        </div>
+                        <div className="chart-hint-row mt-2">
+                          <span className="chart-hint-item">
+                            <span className="chart-hint-dot present"></span>
+                            Present
+                          </span>
+                          <span className="chart-hint-item">
+                            <span className="chart-hint-dot absent"></span>
+                            Absent
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
 
-                <div
-                  className="col-6 col-lg-6"
-                  onClick={() => navigate("/coming-soon")}
-                >
-                  <div className="chart-panel overview-donut-card h-100">
-                    <h6 className="mb-2 text-center">Results</h6>
+                  <div
+                    className="col-6 col-lg-6"
+                    onClick={() => navigate("/coming-soon")}
+                  >
+                    <div className="chart-panel overview-donut-card h-100">
+                      <h6 className="mb-2 text-center">Results</h6>
 
-                    <div className="chart-canvas-wrap">
-                      <div className="result-progress-wrap">
-                        <div
-                          className="result-progress"
-                          style={{
-                            background: `conic-gradient(${CHART_COLORS.pass} 0% ${resultProgressSummary.passPercent}%, #e2e8f0 ${resultProgressSummary.passPercent}% 100%)`,
-                          }}
-                        >
-                          <div className="result-progress-inner">
-                            <div className="result-progress-value">
-                              {resultProgressSummary.passPercent}%
-                            </div>
-                            <div className="result-progress-label">
-                              Pass Rate
+                      <div className="chart-canvas-wrap">
+                        <div className="result-progress-wrap">
+                          <div
+                            className="result-progress"
+                            style={{
+                              background: `conic-gradient(${CHART_COLORS.pass} 0% ${resultProgressSummary.passPercent}%, #e2e8f0 ${resultProgressSummary.passPercent}% 100%)`,
+                            }}
+                          >
+                            <div className="result-progress-inner">
+                              <div className="result-progress-value">
+                                {resultProgressSummary.passPercent}%
+                              </div>
+                              <div className="result-progress-label">
+                                Pass Rate
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -488,11 +511,55 @@ function StudentDashboard() {
                     </div>
                   </div>
                 </div>
+              </>
+            )}
+          </div>
+
+          <div className="dashboard-card result-progress-dashboard-card py-2 ">
+            <div className="d-flex flex-column flex-md-row justify-content-between align-items-start gap-2 mb-1">
+              <div>
+                <h5 className="dashboard-section-title ms-2 mb-1">
+                  Course Result Progress
+                </h5>
+              </div>
+            </div>
+
+            {loadingCourses ? (
+              <div className="text-center py-4">
+                <div className="spinner-border text-success" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </div>
+              </div>
+            ) : courseResultProgressList.length === 0 ? (
+              <div className="alert alert-info mb-0">
+                No courses registered yet.
+              </div>
+            ) : (
+              <div className="result-course-progress-card mt-1">
+                <div className="result-course-progress-list">
+                  {courseResultProgressList.map((item) => (
+                    <div key={item.id} className="result-course-progress-item">
+                      <div className="result-course-progress-head">
+                        <span className="result-course-name">{item.title}</span>
+                        <span className="result-course-percent">
+                          {item.percent}%
+                        </span>
+                      </div>
+                      <div className="result-course-track">
+                        <div
+                          className="result-course-fill"
+                          style={{ width: `${item.percent}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
         </div>
       </div>
+      <Footer />
     </Sidebar>
   );
 }

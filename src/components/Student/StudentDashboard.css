@@ -568,6 +568,65 @@
   background: #f97316;
 }
 
+.result-course-progress-card {
+  padding: 0.35rem 0.35rem 0.1rem;
+}
+
+.result-progress-dashboard-card {
+  border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.result-course-progress-title {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.result-course-progress-list {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.result-course-progress-item {
+  background: #f8fafc;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 0.7rem;
+  padding: 0.45rem 0.55rem;
+}
+
+.result-course-progress-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-bottom: 0.35rem;
+}
+
+.result-course-name {
+  color: #0f172a;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.result-course-percent {
+  color: #334155;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.result-course-track {
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  overflow: hidden;
+}
+
+.result-course-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #22c55e 0%, #3b82f6 100%);
+}
+
 .course-attendance-card {
   background: #ffffff;
   border: 1px solid rgba(148, 163, 184, 0.22);
@@ -776,6 +835,14 @@
     overflow-x: hidden;
   }
 
+  .student-dashboard {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+    height: auto;
+    min-height: calc(100dvh - 64px);
+    padding-bottom: 0.85rem;
+  }
+
   .student-dashboard .row {
     margin-left: 0;
     margin-right: 0;
@@ -874,6 +941,18 @@
 
   .quick-access-circle-text {
     font-size: 0.73rem;
+  }
+
+  .result-course-progress-card {
+    padding: 0.6rem 0.2rem 0;
+  }
+
+  .result-course-progress-item {
+    padding: 0.4rem 0.48rem;
+  }
+
+  .result-course-track {
+    height: 7px;
   }
 
   .quick-access-card__icon {

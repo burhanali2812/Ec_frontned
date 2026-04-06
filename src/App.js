@@ -18,6 +18,7 @@ import ComingSoon from "./components/ComingSoon";
 import ApplyLeave from "./components/Teacher/ApplyLeave";
 import OverAllAttandanceStd from "./components/Student/OverAllAttandanceStd";
 import ViewAndApproveLeaves from "./components/Admin/ViewAndApproveLeaves";
+import Footer from "./components/footer";
 
 function App() {
   const token = localStorage.getItem("token");
@@ -62,9 +63,11 @@ function App() {
         element={<ViewAndApproveLeaves />}
       />
       <Route path="/coming-soon" element={<ComingSoon />} />
+      <Route path="/footer" element={<Footer />} />
 
       {/* Optional: Redirect unknown routes */}
       <Route path="*" element={<Navigate to="/" />} />
+
     </Routes>
   );
 }
