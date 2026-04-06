@@ -302,6 +302,42 @@ function StudentDashboard() {
     [pieOptions],
   );
 
+  const quickAccessItems = useMemo(
+    () => [
+      {
+        label: "TimeTable",
+        icon: "fas fa-calendar-alt",
+        href: "/coming-soon",
+      },
+      {
+        label: "Courses",
+        icon: "fas fa-book-open",
+        href: "/coming-soon",
+      },
+      {
+        label: "E-Learning",
+        icon: "fas fa-laptop-code",
+        href: "/coming-soon",
+      },
+      {
+        label: "Attandance",
+        icon: "fas fa-calendar-check",
+        href: "/student/attendance-overview",
+      },
+      {
+        label: "Result",
+        icon: "fas fa-chart-column",
+        href: "/coming-soon",
+      },
+      {
+        label: "Apply leave",
+        icon: "fas fa-envelope-open-text",
+        href: "/apply-leave",
+      },
+    ],
+    [],
+  );
+
   if (loadingProfile) {
     return (
       <Sidebar>
@@ -321,7 +357,7 @@ function StudentDashboard() {
       <div className="student-dashboard">
         <div className="container-fluid px-0 px-lg-2 bg-transparent">
           {/* Hero Section */}
-          <div className="dashboard-hero mb-2  mt-3 mb-lg-4">
+          <div className="dashboard-hero mb-2  mt-2 mb-lg-4">
             <div className="d-flex flex-column flex-md-row justify-content-between gap-2 align-items-start">
               <div className="student-identity-card">
                 <div className="student-identity-avatar">
@@ -330,9 +366,7 @@ function StudentDashboard() {
                 <div>
                   <h6 className="mb-1 text-dark fw-semibold">Hi 👋</h6>
                   <h5 className="mb-1">{student?.name || "Student"}</h5>
-                  <p className="mb-1">
-                    {student?.email || "student@example.com"}
-                  </p>
+               
                   <div className="student-identity-meta">
                     <span>
                       <i className="fas fa-id-badge me-1"></i>
@@ -348,15 +382,41 @@ function StudentDashboard() {
             </div>
           </div>
 
+          <div className="dashboard-card quick-access-grid-card p-3 p-lg-4 mb-2">
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <h5 className="dashboard-section-title mb-0">Quick Access</h5>
+            </div>
+
+            <div className="quick-access-circle-grid">
+              {quickAccessItems.map((item) => (
+                <div
+                  key={item.label}
+                  className="quick-access-circle-item"
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => navigate(item.href)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      navigate(item.href);
+                    }
+                  }}
+                >
+                  <span className="quick-access-circle-icon">
+                    <i className={item.icon}></i>
+                  </span>
+                  <span className="quick-access-circle-text">{item.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
           <div className="dashboard-card overview-dashboard-card  py-3  mb-2">
             <div className="d-flex flex-column flex-md-row justify-content-between align-items-start gap-2 mb-3">
               <div>
                 <h5 className="dashboard-section-title mb-1 mt-1 ms-2">
                   Overview Charts
                 </h5>
-                <p className="text-muted mb-0 small ms-2">
-                  Attendance and result snapshots
-                </p>
               </div>
             </div>
 
@@ -430,56 +490,6 @@ function StudentDashboard() {
                 </div>
               </div>
             )}
-          </div>
-
-          <div className="row g-2 quick-cards-row">
-            <div className="col-12 col-lg-6">
-              <div
-                className="quick-access-card quick-access-card--courses"
-                role="button"
-                tabIndex={0}
-                onClick={() => navigate("/coming-soon")}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    navigate("/coming-soon");
-                  }
-                }}
-              >
-                <div className="quick-access-card__icon">
-                  <i className="fas fa-book-open"></i>
-                </div>
-                <div>
-                  <h6 className="mb-1">Registered Courses</h6>
-                  <p className="mb-0">Open course list</p>
-                </div>
-                <i className="fa-solid fa-arrow-right-long quick-access-card__arrow"></i>
-              </div>
-            </div>
-
-            <div className="col-12 col-lg-6">
-              <div
-                className="quick-access-card quick-access-card--timetable"
-                role="button"
-                tabIndex={0}
-                onClick={() => navigate("/coming-soon")}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    navigate("/coming-soon");
-                  }
-                }}
-              >
-                <div className="quick-access-card__icon">
-                  <i className="fas fa-calendar-alt"></i>
-                </div>
-                <div>
-                  <h6 className="mb-1">Timetable</h6>
-                  <p className="mb-0">View class schedule</p>
-                </div>
-                <i className="fa-solid fa-arrow-right-long quick-access-card__arrow"></i>
-              </div>
-            </div>
           </div>
         </div>
       </div>

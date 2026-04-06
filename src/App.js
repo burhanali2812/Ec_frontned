@@ -57,7 +57,10 @@ function App() {
         element={<OverAllAttandanceStd />}
       />
       <Route path="/apply-leave" element={<ApplyLeave />} />
-      <Route path="/admin/view-and-approve-leaves" element={<ViewAndApproveLeaves />} />
+      <Route
+        path="/admin/view-and-approve-leaves"
+        element={<ViewAndApproveLeaves />}
+      />
       <Route path="/coming-soon" element={<ComingSoon />} />
 
       {/* Optional: Redirect unknown routes */}

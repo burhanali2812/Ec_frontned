@@ -1,11 +1,38 @@
 import React, { useState } from "react";
 import "./Sidebar.css";
 import logo from "../images/logo.png";
+import { useEffect } from "react";
+import axios from "axios";
 function Sidebar({ children }) {
+  const [lengthOfPendingLeaves, setLengthOfPendingLeaves] = useState(null);
   const token = localStorage.getItem("token");
   const userRole = token ? JSON.parse(atob(token.split(".")[1])).role : null;
 
   const [isOpen, setIsOpen] = useState(false);
+  useEffect(() => {
+    const fetchPendingLeaves = async () => {
+      try {
+        const res = await axios.get(
+          `https://ec-backend-phi.vercel.app/api/leave/lengthOfPendingLeaves`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+        const data = res?.data || {};
+        if (data.success) {
+          setLengthOfPendingLeaves(data.pendingLeaves);
+        }
+      } catch (error) {
+        console.error("Error fetching pending leaves:", error);
+      }
+    };
+
+    if (userRole === "admin" && token) {
+      fetchPendingLeaves();
+    }
+  }, [userRole, token]);
 
   const roleList = {
     admin: [
@@ -26,14 +53,20 @@ function Sidebar({ children }) {
         href: "/teacherManage",
       },
       { title: "Courses Manage", icon: "fa-book-open", href: "/courseManage" },
+ 
       {
+        title: "Attendance Control",
+        icon: "fa-calendar-check",
+        href: "/coming-soon",
+      },
+           {
         title: "Leave Applications",
         icon: "fa-envelope-open-text",
         href: "/admin/view-and-approve-leaves",
       },
       {
-        title: "Attendance Control",
-        icon: "fa-calendar-check",
+        title: "Timetable & Scheduling",
+        icon: "fa-calendar-days",
         href: "/coming-soon",
       },
       {
@@ -190,7 +223,14 @@ function Sidebar({ children }) {
           {menuItems.map((item) => (
             <a key={item.title} href={item.href} className="sb-link">
               <i className={`fas ${item.icon}`}></i>
-              <span>{item.title}</span>
+              <span className="sb-link-text">{item.title}</span>
+              {userRole === "admin" &&
+              item.href === "/admin/view-and-approve-leaves" &&
+              Number(lengthOfPendingLeaves) > 0 ? (
+                <span className="sb-pending-badge">
+                  {lengthOfPendingLeaves}
+                </span>
+              ) : null}
             </a>
           ))}
         </nav>
@@ -229,7 +269,14 @@ function Sidebar({ children }) {
               onClick={closeMenu}
             >
               <i className={`fas ${item.icon}`}></i>
-              <span>{item.title}</span>
+              <span className="sb-link-text">{item.title}</span>
+              {userRole === "admin" &&
+              item.href === "/admin/view-and-approve-leaves" &&
+              Number(lengthOfPendingLeaves) > 0 ? (
+                <span className="sb-pending-badge">
+                  {lengthOfPendingLeaves}
+                </span>
+              ) : null}
             </a>
           ))}
         </nav>

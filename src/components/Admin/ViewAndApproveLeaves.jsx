@@ -53,7 +53,8 @@ function ViewAndApproveLeaves() {
     if (applicantFilter !== "all") {
       filtered = filtered.filter(
         (leave) =>
-          String(leave.applicant).toLowerCase() === applicantFilter.toLowerCase(),
+          String(leave.applicant).toLowerCase() ===
+          applicantFilter.toLowerCase(),
       );
     }
 
@@ -195,8 +196,12 @@ function ViewAndApproveLeaves() {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
                 <div className="applicant-mini-counts mt-2">
-                  <span className="mini-count-chip">Students: {stats.student}</span>
-                  <span className="mini-count-chip">Teachers: {stats.teacher}</span>
+                  <span className="mini-count-chip">
+                    Students: {stats.student}
+                  </span>
+                  <span className="mini-count-chip">
+                    Teachers: {stats.teacher}
+                  </span>
                 </div>
               </div>
               <div className="col-12 col-md-6">
@@ -227,7 +232,12 @@ function ViewAndApproveLeaves() {
                       }`}
                       onClick={() => setApplicantFilter(applicant)}
                     >
-                      {applicant.charAt(0).toUpperCase() + applicant.slice(1)}
+                      {applicant.charAt(0).toUpperCase() +
+                        applicant.slice(1) + " (" +
+                        (applicant === "all"
+                          ? stats.total
+                          : (stats[applicant] ?? 0))
+                           + ")"}
                     </button>
                   ))}
                 </div>
