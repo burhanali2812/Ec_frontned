@@ -17,7 +17,9 @@ import StudentDashboard from "./components/Student/StudentDashboard";
 import ComingSoon from "./components/ComingSoon";
 import ApplyLeave from "./components/Teacher/ApplyLeave";
 import OverAllAttandanceStd from "./components/Student/OverAllAttandanceStd";
+import ViewTimeTable from "./components/Student/ViewTimeTable";
 import ViewAndApproveLeaves from "./components/Admin/ViewAndApproveLeaves";
+import TimeTableManage from "./components/Admin/TimeTableManage";
 import Footer from "./components/footer";
 
 function App() {
@@ -57,17 +59,21 @@ function App() {
         path="/student/attendance-overview"
         element={<OverAllAttandanceStd />}
       />
+      <Route path="/student/timetable" element={<ViewTimeTable />} />
       <Route path="/apply-leave" element={<ApplyLeave />} />
       <Route
         path="/admin/view-and-approve-leaves"
         element={<ViewAndApproveLeaves />}
+      />
+      <Route
+        path="/admin/timetable-manage"
+        element={<TimeTableManage adminLoginType={adminLoginType} />}
       />
       <Route path="/coming-soon" element={<ComingSoon />} />
       <Route path="/footer" element={<Footer />} />
 
       {/* Optional: Redirect unknown routes */}
       <Route path="*" element={<Navigate to="/" />} />
-
     </Routes>
   );
 }

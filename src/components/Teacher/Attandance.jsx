@@ -24,6 +24,7 @@ function Attandance() {
   const [loadingStudents, setLoadingStudents] = useState(false);
   const [saving, setSaving] = useState(false);
   const [statusMap, setStatusMap] = useState({});
+  const [topic, setTopic] = useState("");
 
   const API_BASE = "https://ec-backend-phi.vercel.app/api/attendance";
 
@@ -137,6 +138,7 @@ function Attandance() {
 
       if (res.data?.success) {
         setStudents(res.data.students || []);
+        setTopic(String(res.data?.topic || ""));
         const nextMap = {};
         (res.data.students || []).forEach((student) => {
           if (student.status) {
@@ -163,6 +165,7 @@ function Attandance() {
       setSelectedClassInfo("");
       setStudents([]);
       setStatusMap({});
+      setTopic("");
       return;
     }
 
@@ -170,6 +173,7 @@ function Attandance() {
     setSelectedClassInfo(nextClass);
     setStudents([]);
     setStatusMap({});
+    setTopic("");
 
     if (nextClass) {
       fetchSession(selectedCourseId, nextClass, selectedDate);
@@ -188,6 +192,7 @@ function Attandance() {
     setSelectedClassInfo("");
     setStudents([]);
     setStatusMap({});
+    setTopic("");
   };
 
   const handleClassChange = async (event) => {
@@ -195,6 +200,7 @@ function Attandance() {
     setSelectedClassInfo(classInfo);
     setStudents([]);
     setStatusMap({});
+    setTopic("");
     if (selectedCourseId && classInfo) {
       await fetchSession(selectedCourseId, classInfo, selectedDate);
     }
@@ -210,12 +216,18 @@ function Attandance() {
       return;
     }
 
+    if (!String(topic).trim()) {
+      toast.error("Please enter topic");
+      return;
+    }
+
     setSaving(true);
     try {
       const payload = {
         courseId: selectedCourseId,
         classInfo: selectedClassInfo,
         date: selectedDate,
+        topic: String(topic).trim(),
         studentStatuses: students.map((student) => ({
           studentId: student._id,
           status: statusMap[student._id] || "absent",
@@ -314,6 +326,17 @@ function Attandance() {
                       className="form-control"
                       value={selectedDate}
                       onChange={(e) => setSelectedDate(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="mb-4">
+                    <label>Topic</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={topic}
+                      placeholder="Enter lecture topic"
+                      onChange={(e) => setTopic(e.target.value)}
                     />
                   </div>
 
@@ -480,6 +503,9 @@ function Attandance() {
                 <div className="text-muted small">
                   {selectedCourse?.title || "No course selected"}{" "}
                   {selectedClassInfo ? `• ${selectedClassInfo}` : ""}
+                </div>
+                <div className="text-muted small">
+                  {topic ? `Topic: ${topic}` : "Topic: -"}
                 </div>
               </div>
               <button

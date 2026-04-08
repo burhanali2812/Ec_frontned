@@ -466,6 +466,11 @@ function OverAllAttandanceStd() {
                         <div className="overall-att-history-date">
                           {item.date}
                         </div>
+                        {item.topic ? (
+                          <div className="overall-att-history-topic">
+                            Topic: {item.topic}
+                          </div>
+                        ) : null}
                       </div>
                       <span
                         className={`overall-att-history-badge ${item.status}`}

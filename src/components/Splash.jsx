@@ -50,7 +50,7 @@ function Splash() {
             {roles.map((role) => (
               <div className="ec-role-col" key={role.title}>
                 <div className="card ec-role-card h-100">
-                  <div className="card-body text-center d-flex flex-column justify-content-center px-2 py-2">
+                  <div className="card-body text-center d-flex flex-column justify-content-center px-2 py-2 py-lg-4">
                     <div
                       className={`ec-icon-wrap mx-auto mb-2 ${role.iconClass}`}
                     >

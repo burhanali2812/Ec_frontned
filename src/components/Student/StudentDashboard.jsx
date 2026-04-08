@@ -328,7 +328,7 @@ function StudentDashboard() {
       {
         label: "TimeTable",
         icon: "fas fa-calendar-alt",
-        href: "/coming-soon",
+        href: "/student/timetable",
       },
       {
         label: "Courses",

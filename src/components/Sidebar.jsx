@@ -53,13 +53,13 @@ function Sidebar({ children }) {
         href: "/teacherManage",
       },
       { title: "Courses Manage", icon: "fa-book-open", href: "/courseManage" },
- 
+
       {
         title: "Attendance Control",
         icon: "fa-calendar-check",
         href: "/coming-soon",
       },
-           {
+      {
         title: "Leave Applications",
         icon: "fa-envelope-open-text",
         href: "/admin/view-and-approve-leaves",
@@ -67,7 +67,7 @@ function Sidebar({ children }) {
       {
         title: "Timetable & Scheduling",
         icon: "fa-calendar-days",
-        href: "/coming-soon",
+        href: "/admin/timetable-manage",
       },
       {
         title: "Results Manage",
@@ -121,6 +121,11 @@ function Sidebar({ children }) {
     ],
     student: [
       { title: "Dashboard", icon: "fa-house", href: "/student/dashboard" },
+      {
+        title: "TimeTable",
+        icon: "fa-calendar-days",
+        href: "/student/timetable",
+      },
       {
         title: "Attendance",
         icon: "fa-calendar-check",

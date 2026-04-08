@@ -222,6 +222,12 @@
   color: #0f172a;
 }
 
+.overall-att-history-topic {
+  font-size: 0.78rem;
+  color: #64748b;
+  margin-top: 0.15rem;
+}
+
 .overall-att-history-badge {
   border-radius: 999px;
   padding: 0.35rem 0.75rem;
