@@ -1,0 +1,249 @@
+.overall-res-page {
+  min-height: 100%;
+}
+
+.overall-res-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  box-shadow: 0 6px 24px rgba(15, 23, 42, 0.06);
+}
+
+.overall-res-top {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 18px;
+  align-items: center;
+}
+
+.overall-res-chart-wrap {
+  height: 220px;
+}
+
+.overall-res-mini-stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.overall-res-mini-stat {
+  text-align: center;
+}
+
+.overall-res-mini-circle {
+  width: 94px;
+  height: 94px;
+  margin: 0 auto 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0f172a;
+  font-size: 1.05rem;
+  font-weight: 700;
+  border: 3px solid transparent;
+}
+
+.overall-res-mini-circle.obtained {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.overall-res-mini-circle.total {
+  border-color: #f97316;
+  background: #fff7ed;
+}
+
+.overall-res-mini-circle.exams {
+  border-color: #14b8a6;
+  background: #f0fdfa;
+}
+
+.overall-res-mini-label {
+  font-size: 0.86rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.course-filter-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.course-chip {
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  color: #334155;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+.course-chip.active {
+  border-color: #2563eb;
+  background: #2563eb;
+  color: #fff;
+}
+
+.month-res-card {
+  border: 1px solid #dbeafe;
+  background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+  border-radius: 12px;
+  padding: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.month-res-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.12);
+}
+
+.month-res-title {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.month-res-badge {
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.month-res-badge.obtained {
+  color: #1d4ed8;
+  background: #dbeafe;
+}
+
+.month-res-badge.total {
+  color: #c2410c;
+  background: #ffedd5;
+}
+
+.month-res-meta {
+  color: #64748b;
+  font-size: 0.83rem;
+}
+
+.overall-res-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+  padding: 18px;
+}
+
+.overall-res-modal-card {
+  width: min(980px, 100%);
+  max-height: 90vh;
+  overflow: auto;
+  background: #fff;
+  border-radius: 16px;
+  padding: 18px;
+}
+
+.overall-res-modal-chart {
+  position: relative;
+  height: 220px;
+}
+
+.overall-res-modal-chart-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.overall-res-modal-bar {
+  height: 240px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.overall-res-history {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.overall-res-history-list {
+  display: grid;
+  gap: 10px;
+}
+
+.overall-res-history-item {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.overall-res-history-date {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.overall-res-history-topic {
+  font-size: 0.82rem;
+  color: #64748b;
+}
+
+.overall-res-history-badge {
+  background: #dbeafe;
+  color: #1d4ed8;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+@media (max-width: 991px) {
+  .overall-res-top {
+    grid-template-columns: 1fr;
+  }
+
+  .overall-res-chart-wrap {
+    height: 200px;
+    max-width: 240px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 575px) {
+  .overall-res-mini-stats-row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .overall-res-mini-circle {
+    width: 68px;
+    height: 68px;
+    font-size: 0.82rem;
+  }
+
+  .overall-res-mini-label {
+    font-size: 0.72rem;
+    line-height: 1.2;
+  }
+
+  .month-res-badge {
+    font-size: 0.72rem;
+  }
+
+  .overall-res-modal-card {
+    padding: 14px;
+  }
+}

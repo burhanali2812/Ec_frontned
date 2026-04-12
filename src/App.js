@@ -13,10 +13,12 @@ import StudentManage from "./components/Admin/StudentManage";
 import StudentRegister from "./components/Admin/StudentRegister";
 import Attandance from "./components/Teacher/Attandance";
 import ViewAttandance from "./components/Teacher/ViewAttandance";
+import UploadResult from "./components/Teacher/UploadResult";
 import StudentDashboard from "./components/Student/StudentDashboard";
 import ComingSoon from "./components/ComingSoon";
 import ApplyLeave from "./components/Teacher/ApplyLeave";
 import OverAllAttandanceStd from "./components/Student/OverAllAttandanceStd";
+import OverAllResult from "./components/Student/OverAllResult";
 import ViewTimeTable from "./components/Student/ViewTimeTable";
 import ViewAndApproveLeaves from "./components/Admin/ViewAndApproveLeaves";
 import TimeTableManage from "./components/Admin/TimeTableManage";
@@ -54,11 +56,13 @@ function App() {
       />
       <Route path="/teacher/attendance" element={<Attandance />} />
       <Route path="/teacher/view-attendance" element={<ViewAttandance />} />
+      <Route path="/teacher/upload-result" element={<UploadResult />} />
       <Route path="/student/dashboard" element={<StudentDashboard />} />
       <Route
         path="/student/attendance-overview"
         element={<OverAllAttandanceStd />}
       />
+      <Route path="/student/result-overview" element={<OverAllResult />} />
       <Route path="/student/timetable" element={<ViewTimeTable />} />
       <Route path="/apply-leave" element={<ApplyLeave />} />
       <Route

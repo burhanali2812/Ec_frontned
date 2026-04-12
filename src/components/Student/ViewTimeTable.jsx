@@ -3,7 +3,14 @@ import axios from "axios";
 import Sidebar from "../Sidebar";
 import "./ViewTimeTable.css";
 
-const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const DAYS = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
 
 function ViewTimeTable() {
   const [timeTables, setTimeTables] = useState([]);
@@ -37,7 +44,9 @@ function ViewTimeTable() {
   }, []);
 
   const filteredRows = useMemo(() => {
-    const source = (timeTables || []).filter((item) => item?.dayOfWeek !== "Sunday");
+    const source = (timeTables || []).filter(
+      (item) => item?.dayOfWeek !== "Sunday",
+    );
     if (dayFilter === "all") return source;
     return source.filter((item) => String(item?.dayOfWeek) === dayFilter);
   }, [timeTables, dayFilter]);
@@ -55,9 +64,13 @@ function ViewTimeTable() {
       <div className="std-tt-page py-3 py-lg-4">
         <div className="container-fluid px-0 px-lg-2">
           <div className="std-tt-hero mb-3">
-            <p className="mb-1 small text-muted fw-semibold">Student Timetable</p>
+            <p className="mb-1 small text-muted fw-semibold">
+              Student Timetable
+            </p>
             <h4 className="mb-1">Registered Courses Schedule</h4>
-            <p className="mb-0 text-muted small">View your weekly timetable for Monday to Saturday.</p>
+            <p className="mb-0 text-muted small">
+              View your weekly timetable for Monday to Saturday.
+            </p>
           </div>
 
           <div className="std-tt-card p-3 p-md-4">
@@ -97,12 +110,15 @@ function ViewTimeTable() {
                     <div className="std-tt-day-head">
                       <span className="std-tt-day-pill">{group.day}</span>
                       <span className="small text-muted">
-                        {group.rows.length} {group.rows.length === 1 ? "class" : "classes"}
+                        {group.rows.length}{" "}
+                        {group.rows.length === 1 ? "class" : "classes"}
                       </span>
                     </div>
 
                     {group.rows.length === 0 ? (
-                      <div className="std-tt-day-empty">No classes scheduled.</div>
+                      <div className="std-tt-day-empty">
+                        No classes scheduled.
+                      </div>
                     ) : (
                       <div className="table-responsive">
                         <table className="std-tt-table">

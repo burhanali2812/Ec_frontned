@@ -41,9 +41,13 @@ function StudentDashboard() {
   const [student, setStudent] = useState(null);
   const [courses, setCourses] = useState([]);
   const [coursePercentageMap, setCoursePercentageMap] = useState({});
+  const [courseResultPercentageMap, setCourseResultPercentageMap] = useState(
+    {},
+  );
   const [loadingProfile, setLoadingProfile] = useState(false);
   const [loadingCourses, setLoadingCourses] = useState(false);
   const [courseStatsMap, setCourseStatsMap] = useState({});
+  const [courseResultStatsMap, setCourseResultStatsMap] = useState({});
   const navigate = useNavigate();
 
   const API_BASE = "https://ec-backend-phi.vercel.app/api";
@@ -125,6 +129,8 @@ function StudentDashboard() {
     if (!courses.length) {
       setCoursePercentageMap({});
       setCourseStatsMap({});
+      setCourseResultPercentageMap({});
+      setCourseResultStatsMap({});
       return;
     }
 
@@ -134,26 +140,48 @@ function StudentDashboard() {
       const entries = await Promise.all(
         courses.map(async (course) => {
           try {
-            const res = await axios.get(
-              `${API_BASE}/attendance/studentStats/${course._id}`,
-              {
+            const [attendanceRes, resultRes] = await Promise.all([
+              axios.get(`${API_BASE}/attendance/studentStats/${course._id}`, {
                 headers: getAuthHeaders(),
-              },
-            );
+              }),
+              axios.get(`${API_BASE}/results/studentStats/${course._id}`, {
+                headers: getAuthHeaders(),
+              }),
+            ]);
 
             return [
               String(course._id),
               {
-                percentage: Number(res?.data?.stats?.percentage || 0),
-                present: Number(res?.data?.stats?.present || 0),
-                absent: Number(res?.data?.stats?.absent || 0),
-                total: Number(res?.data?.stats?.total || 0),
+                attendance: {
+                  percentage: Number(
+                    attendanceRes?.data?.stats?.percentage || 0,
+                  ),
+                  present: Number(attendanceRes?.data?.stats?.present || 0),
+                  absent: Number(attendanceRes?.data?.stats?.absent || 0),
+                  total: Number(attendanceRes?.data?.stats?.total || 0),
+                },
+                result: {
+                  percentage: Number(resultRes?.data?.stats?.percentage || 0),
+                  obtainedMarks: Number(
+                    resultRes?.data?.stats?.obtainedMarks || 0,
+                  ),
+                  totalMarks: Number(resultRes?.data?.stats?.totalMarks || 0),
+                  totalExams: Number(resultRes?.data?.stats?.totalExams || 0),
+                },
               },
             ];
           } catch {
             return [
               String(course._id),
-              { percentage: 0, present: 0, absent: 0, total: 0 },
+              {
+                attendance: { percentage: 0, present: 0, absent: 0, total: 0 },
+                result: {
+                  percentage: 0,
+                  obtainedMarks: 0,
+                  totalMarks: 0,
+                  totalExams: 0,
+                },
+              },
             ];
           }
         }),
@@ -161,10 +189,32 @@ function StudentDashboard() {
 
       if (!isCancelled) {
         const statsEntries = Object.fromEntries(entries);
-        setCourseStatsMap(statsEntries);
+        const attendanceStatsMap = Object.fromEntries(
+          Object.entries(statsEntries).map(([courseId, stats]) => [
+            courseId,
+            stats.attendance,
+          ]),
+        );
+        const resultStatsMap = Object.fromEntries(
+          Object.entries(statsEntries).map(([courseId, stats]) => [
+            courseId,
+            stats.result,
+          ]),
+        );
+
+        setCourseStatsMap(attendanceStatsMap);
+        setCourseResultStatsMap(resultStatsMap);
         setCoursePercentageMap(
           Object.fromEntries(
-            Object.entries(statsEntries).map(([courseId, stats]) => [
+            Object.entries(attendanceStatsMap).map(([courseId, stats]) => [
+              courseId,
+              stats.percentage,
+            ]),
+          ),
+        );
+        setCourseResultPercentageMap(
+          Object.fromEntries(
+            Object.entries(resultStatsMap).map(([courseId, stats]) => [
               courseId,
               stats.percentage,
             ]),
@@ -209,13 +259,16 @@ function StudentDashboard() {
     () =>
       courses.map((course) => {
         const percentage = Number(coursePercentageMap[String(course._id)] || 0);
+        const resultPercentage = Number(
+          courseResultPercentageMap[String(course._id)] || 0,
+        );
         const teacherNames = getTeacherNamesForClass(
           course,
           student?.classInfo,
         );
-        return { ...course, percentage, teacherNames };
+        return { ...course, percentage, resultPercentage, teacherNames };
       }),
-    [courses, coursePercentageMap, student],
+    [courses, coursePercentageMap, courseResultPercentageMap, student],
   );
 
   const overallAttendanceData = useMemo(() => {
@@ -248,29 +301,25 @@ function StudentDashboard() {
     [overallAttendanceData],
   );
 
-  const resultPieData = useMemo(
-    () => [
-      { name: "Pass", value: 72 },
-      { name: "Average", value: 18 },
-      { name: "Need Improvement", value: 10 },
-    ],
-    [],
-  );
-
   const resultProgressSummary = useMemo(() => {
-    const pass = Number(resultPieData[0]?.value || 0);
-    const average = Number(resultPieData[1]?.value || 0);
-    const needImprovement = Number(resultPieData[2]?.value || 0);
-    const total = pass + average + needImprovement;
-    const passPercent = total > 0 ? Math.round((pass / total) * 100) : 0;
+    const totals = Object.values(courseResultStatsMap).reduce(
+      (acc, stats) => {
+        acc.obtained += Number(stats?.obtainedMarks || 0);
+        acc.total += Number(stats?.totalMarks || 0);
+        return acc;
+      },
+      { obtained: 0, total: 0 },
+    );
+
+    const overallPercent =
+      totals.total > 0 ? Math.round((totals.obtained / totals.total) * 100) : 0;
 
     return {
-      pass,
-      average,
-      needImprovement,
-      passPercent,
+      obtainedMarks: totals.obtained,
+      totalMarks: totals.total,
+      overallPercent,
     };
-  }, [resultPieData]);
+  }, [courseResultStatsMap]);
 
   const pieOptions = useMemo(
     () => ({
@@ -348,7 +397,7 @@ function StudentDashboard() {
       {
         label: "Result",
         icon: "fas fa-chart-column",
-        href: "/coming-soon",
+        href: "/student/result-overview",
       },
       {
         label: "Apply leave",
@@ -484,7 +533,7 @@ function StudentDashboard() {
 
                   <div
                     className="col-6 col-lg-6"
-                    onClick={() => navigate("/coming-soon")}
+                    onClick={() => navigate("/student/result-overview")}
                   >
                     <div className="chart-panel overview-donut-card h-100">
                       <h6 className="mb-2 text-center">Results</h6>
@@ -494,15 +543,15 @@ function StudentDashboard() {
                           <div
                             className="result-progress"
                             style={{
-                              background: `conic-gradient(${CHART_COLORS.pass} 0% ${resultProgressSummary.passPercent}%, #e2e8f0 ${resultProgressSummary.passPercent}% 100%)`,
+                              background: `conic-gradient(${CHART_COLORS.pass} 0% ${resultProgressSummary.overallPercent}%, #e2e8f0 ${resultProgressSummary.overallPercent}% 100%)`,
                             }}
                           >
                             <div className="result-progress-inner">
                               <div className="result-progress-value">
-                                {resultProgressSummary.passPercent}%
+                                {resultProgressSummary.overallPercent}%
                               </div>
                               <div className="result-progress-label">
-                                Pass Rate
+                                Overall Score
                               </div>
                             </div>
                           </div>

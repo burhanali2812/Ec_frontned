@@ -106,7 +106,7 @@ function Sidebar({ children }) {
       {
         title: "Test Marks",
         icon: "fa-square-poll-vertical",
-        href: "/coming-soon",
+        href: "/teacher/upload-result",
       },
       {
         title: "Test Generator",
@@ -141,7 +141,11 @@ function Sidebar({ children }) {
         icon: "fa-file-invoice-dollar",
         href: "/coming-soon",
       },
-      { title: "Results", icon: "fa-chart-column", href: "/coming-soon" },
+      {
+        title: "Results",
+        icon: "fa-chart-column",
+        href: "/student/result-overview",
+      },
       {
         title: "Apply for Leave",
         icon: "fa-envelope-open-text",
