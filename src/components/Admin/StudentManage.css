@@ -180,9 +180,7 @@
 }
 
 @media (max-width: 767px) {
-  .sm-content-wrapper {
-    padding: 1rem;
-  }
+ 
 
   .sm-logo {
     width: 74px;
@@ -248,9 +246,7 @@
 }
 
 @media (max-width: 480px) {
-  .sm-content-wrapper {
-    padding: 0.5rem;
-  }
+ 
 
   .sm-heading {
     font-size: 1.1rem;
