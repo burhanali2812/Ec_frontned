@@ -269,7 +269,7 @@ function StudentManage({ adminLoginType = "academy" }) {
   return (
     <Sidebar>
       <Toaster position="top-right" />
-      <TopBar />
+   
       <div className="sm-content-wrapper">
         <section className="sm-header-card">
           <div className="sm-logo-wrap">
