@@ -1,199 +1,396 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { Toaster, toast } from "react-hot-toast";
 import Sidebar from "../Sidebar";
-import TopBar from "../TopBar";
+import Footer from "../footer";
+import {
+  ArcElement,
+  BarElement,
+  CategoryScale,
+  Chart as ChartJS,
+  Legend as ChartLegend,
+  LinearScale,
+  Title,
+  Tooltip as ChartTooltip,
+} from "chart.js";
+import { Doughnut, Bar } from "react-chartjs-2";
 import "./AdminPanel.css";
 
+ChartJS.register(
+  ArcElement,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  ChartTooltip,
+  ChartLegend,
+);
+
+const CHART_COLORS = {
+  students: "#3b82f6",
+  teachers: "#8b5cf6",
+  courses: "#10b981",
+  paid: "#10b981",
+  pending: "#f59e0b",
+  grid: "#e2e8f0",
+  axis: "#64748b",
+};
+
 function AdminPanel() {
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [adminData, setAdminData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-  // Demo data (replace with API response later)
-  const students = [
-    { id: 1, paid: true, amount: 12000, date: "2026-03-02" },
-    { id: 2, paid: true, amount: 12000, date: "2026-03-04" },
-    { id: 3, paid: false, amount: 12000, date: "2026-03-10" },
-    { id: 4, paid: true, amount: 12000, date: "2026-03-16" },
-    { id: 5, paid: false, amount: 12000, date: "2026-03-22" },
-  ];
+  const API_BASE = "https://ec-backend-phi.vercel.app/api";
 
-  const teachers = [
-    { id: 1, paid: true, amount: 30000, date: "2026-03-03" },
-    { id: 2, paid: false, amount: 30000, date: "2026-03-09" },
-    { id: 3, paid: true, amount: 30000, date: "2026-03-15" },
-    { id: 4, paid: false, amount: 30000, date: "2026-03-24" },
-  ];
-
-  const isInRange = (valueDate) => {
-    if (!startDate && !endDate) return true;
-
-    const value = new Date(valueDate);
-    const start = startDate ? new Date(startDate) : null;
-    const end = endDate ? new Date(endDate) : null;
-
-    if (start && value < start) return false;
-    if (end && value > end) return false;
-    return true;
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem("token");
+    return token ? { Authorization: `Bearer ${token}` } : {};
   };
 
-  const summary = useMemo(() => {
-    const filteredStudents = students.filter((s) => isInRange(s.date));
-    const filteredTeachers = teachers.filter((t) => isInRange(t.date));
+  useEffect(() => {
+    const fetchAdminData = async () => {
+      setLoading(true);
+      try {
+        const [studentsRes, teachersRes, coursesRes] = await Promise.all([
+          axios.get(`${API_BASE}/students/getAllStudents`, {
+            headers: getAuthHeaders(),
+          }),
+          axios.get(`${API_BASE}/teachers/getAllTeachers`, {
+            headers: getAuthHeaders(),
+          }),
+          axios.get(`${API_BASE}/courses/getAllCourses`, {
+            headers: getAuthHeaders(),
+          }),
+        ]);
 
-    const studentPaid = filteredStudents.filter((s) => s.paid);
-    const studentRemaining = filteredStudents.filter((s) => !s.paid);
+        setAdminData({
+          students: studentsRes?.data?.students || [],
+          teachers: teachersRes?.data?.teachers || [],
+          courses: coursesRes?.data?.courses || [],
+        });
+      } catch (error) {
+        toast.error("Failed to load admin data");
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    const teacherPaid = filteredTeachers.filter((t) => t.paid);
-    const teacherRemaining = filteredTeachers.filter((t) => !t.paid);
+    fetchAdminData();
+  }, []);
+
+  const quickAccessItems = useMemo(
+    () => [
+      {
+        label: "Students",
+        icon: "fas fa-user-graduate",
+        href: "/studentManage",
+      },
+      {
+        label: "Teachers",
+        icon: "fas fa-chalkboard-user",
+        href: "/teacherManage",
+      },
+      {
+        label: "Courses",
+        icon: "fas fa-book-open",
+        href: "/courseManage",
+      },
+      {
+        label: "Attendance",
+        icon: "fas fa-calendar-check",
+        href: "/coming-soon",
+      },
+      {
+        label: "Timetable",
+        icon: "fas fa-calendar-days",
+        href: "/admin/timetable-manage",
+      },
+      {
+        label: "Leaves",
+        icon: "fas fa-envelope-open-text",
+        href: "/admin/view-and-approve-leaves",
+      },
+    ],
+    [],
+  );
+
+  const dashboardStats = useMemo(() => {
+    if (!adminData) return null;
 
     return {
-      studentPaidCount: studentPaid.length,
-      studentRemainingCount: studentRemaining.length,
-      studentTotalCount: filteredStudents.length,
-      teacherPaidCount: teacherPaid.length,
-      teacherRemainingCount: teacherRemaining.length,
-      teacherTotalCount: filteredTeachers.length,
-      studentPaidAmount: studentPaid.reduce(
-        (sum, item) => sum + item.amount,
-        0,
-      ),
-      studentRemainingAmount: studentRemaining.reduce(
-        (sum, item) => sum + item.amount,
-        0,
-      ),
-      teacherPaidAmount: teacherPaid.reduce(
-        (sum, item) => sum + item.amount,
-        0,
-      ),
-      teacherRemainingAmount: teacherRemaining.reduce(
-        (sum, item) => sum + item.amount,
-        0,
-      ),
+      totalStudents: adminData.students?.length || 0,
+      totalTeachers: adminData.teachers?.length || 0,
+      totalCourses: adminData.courses?.length || 0,
     };
-  }, [startDate, endDate]);
+  }, [adminData]);
 
-  const formatPKR = (amount) =>
-    new Intl.NumberFormat("en-PK", {
-      style: "currency",
-      currency: "PKR",
-      maximumFractionDigits: 0,
-    }).format(amount);
+  const chartData = useMemo(() => {
+    if (!dashboardStats) return null;
+
+    return {
+      labels: ["Students", "Teachers", "Courses"],
+      datasets: [
+        {
+          data: [
+            dashboardStats.totalStudents,
+            dashboardStats.totalTeachers,
+            dashboardStats.totalCourses,
+          ],
+          backgroundColor: [
+            CHART_COLORS.students,
+            CHART_COLORS.teachers,
+            CHART_COLORS.courses,
+          ],
+          borderWidth: 0,
+        },
+      ],
+    };
+  }, [dashboardStats]);
+
+  const chartOptions = useMemo(
+    () => ({
+      responsive: true,
+      cutout: "60%",
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: true,
+          position: "bottom",
+          labels: {
+            color: "#334155",
+            boxWidth: 12,
+            padding: 14,
+            font: { size: 12, weight: "600" },
+          },
+        },
+      },
+    }),
+    [],
+  );
+
+  const overviewChartOptions = useMemo(
+    () => ({
+      ...chartOptions,
+      plugins: {
+        ...chartOptions.plugins,
+        legend: {
+          ...chartOptions.plugins.legend,
+          display: false,
+        },
+      },
+    }),
+    [chartOptions],
+  );
+
+  if (loading) {
+    return (
+      <Sidebar>
+        <div className="text-center py-5">
+          <div className="spinner-border text-success" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      </Sidebar>
+    );
+  }
 
   return (
     <Sidebar>
-      <TopBar />
+      <Toaster position="top-right" />
 
-      <section className="ap-filter-card p-3 p-md-4 mb-4">
-        <div className="row g-3 align-items-end">
-          <div className="col-12 col-md-4" >
-            <label className="form-label fw-semibold">Start Date</label>
-            <input
-              type="date"
-              className="form-control"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              style={{cursor: "pointer"}}
-            />
-          </div>
-
-          <div className="col-12 col-md-4" >
-            <label className="form-label fw-semibold">End Date</label>
-            <input
-              type="date"
-              className="form-control"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              style={{cursor: "pointer"}}
-            />
-          </div>
-
-          <div className="col-12 col-md-4">
-            <button
-              className="btn btn-outline-secondary w-100"
-              type="button"
-              onClick={() => {
-                setStartDate("");
-                setEndDate("");
-              }}
-            >
-              Clear Date Filter
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <section className="row g-4">
-        <div className="col-12 col-md-6 col-xl-3">
-          <div className="ap-stat-card p-3 p-md-4" style={{cursor: "pointer"}}>
-            <div className="d-flex align-items-center justify-content-between mb-3">
-              <h6 className="mb-0 fw-semibold">Students Paid Amount</h6>
-              <span className="ap-icon ap-icon-student-paid">
-                <i className="fas fa-user-graduate"></i>
-              </span>
+      <div className="admin-dashboard">
+        <div className="container-fluid px-0 px-lg-2 bg-transparent">
+          {/* Hero Section */}
+          <div className="dashboard-hero mb-2 mt-2 mb-lg-4">
+            <div className="d-flex flex-column flex-md-row justify-content-between gap-2 align-items-start">
+              <div className="student-identity-card">
+                <div className="student-identity-avatar">
+                  <i className="fas fa-shield"></i>
+                </div>
+                <div>
+                  <h6 className="mb-1 text-dark fw-semibold">Welcome 👋</h6>
+                  <h5 className="mb-1">Admin Dashboard</h5>
+                  <div className="student-identity-meta">
+                    <span>
+                      <i className="fas fa-cog me-1"></i>
+                      Academy Management System
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
-            <p className="ap-amount">{formatPKR(summary.studentPaidAmount)}</p>
-            <p className="ap-sub mb-0">
-              {summary.studentPaidCount} paid / {summary.studentTotalCount}{" "}
-              total students
-            </p>
           </div>
-        </div>
 
-        <div className="col-12 col-md-6 col-xl-3">
-          <div className="ap-stat-card p-3 p-md-4" style={{cursor: "pointer"}}>
-            <div className="d-flex align-items-center justify-content-between mb-3">
-              <h6 className="mb-0 fw-semibold">
-                Students Remaining Amount
-              </h6>
-              <span className="ap-icon ap-icon-student-remaining">
-                <i className="fas fa-user-clock"></i>
-              </span>
+          {/* Quick Access */}
+          <div className="dashboard-card quick-access-grid-card p-3 p-lg-4 mb-2">
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <h5 className="dashboard-section-title mb-0">Quick Access</h5>
             </div>
-            <p className="ap-amount">
-              {formatPKR(summary.studentRemainingAmount)}
-            </p>
-            <p className="ap-sub mb-0">
-              {summary.studentRemainingCount} remaining /{" "}
-              {summary.studentTotalCount} total students
-            </p>
-          </div>
-        </div>
 
-        <div className="col-12 col-md-6 col-xl-3">
-          <div className="ap-stat-card p-3 p-md-4" style={{cursor: "pointer"}}>
-            <div className="d-flex align-items-center justify-content-between mb-3">
-              <h6 className="mb-0 fw-semibold">Teachers Paid Amount</h6>
-              <span className="ap-icon ap-icon-teacher-paid">
-                <i className="fas fa-chalkboard-teacher"></i>
-              </span>
+            <div className="quick-access-circle-grid">
+              {quickAccessItems.map((item) => (
+                <div
+                  key={item.label}
+                  className="quick-access-circle-item"
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => navigate(item.href)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      navigate(item.href);
+                    }
+                  }}
+                >
+                  <span className="quick-access-circle-icon">
+                    <i className={item.icon}></i>
+                  </span>
+                  <span className="quick-access-circle-text">{item.label}</span>
+                </div>
+              ))}
             </div>
-            <p className="ap-amount">{formatPKR(summary.teacherPaidAmount)}</p>
-            <p className="ap-sub mb-0">
-              {summary.teacherPaidCount} paid / {summary.teacherTotalCount}{" "}
-              total teachers
-            </p>
           </div>
-        </div>
 
-        <div className="col-12 col-md-6 col-xl-3">
-          <div className="ap-stat-card p-3 p-md-4" style={{cursor: "pointer"}}>
-            <div className="d-flex align-items-center justify-content-between mb-3">
-              <h6 className="mb-0 fw-semibold">
-                Teachers Remaining Amount
-              </h6>
-              <span className="ap-icon ap-icon-teacher-remaining">
-                <i className="fas fa-user-clock"></i>
-              </span>
+          {/* Overview Charts */}
+          <div className="dashboard-card overview-dashboard-card py-2 px-2 mb-2">
+            <div className="d-flex flex-column flex-md-row justify-content-between align-items-start gap-2 mb-2">
+              <div>
+                <h5 className="dashboard-section-title ms-2">Overview Stats</h5>
+              </div>
             </div>
-            <p className="ap-amount">
-              {formatPKR(summary.teacherRemainingAmount)}
-            </p>
-            <p className="ap-sub mb-0">
-              {summary.teacherRemainingCount} remaining /{" "}
-              {summary.teacherTotalCount} total teachers
-            </p>
+
+            <div className="row g-3 g-lg-4 overview-graphs-row">
+              <div className="col-12 col-lg-6">
+                <div className="chart-panel overview-donut-card h-100">
+                  <h6 className="mb-2 text-center">Academy Overview</h6>
+
+                  <div className="chart-canvas-wrap">
+                    <div className="chart-canvas-box chart-canvas-box--overview">
+                      {chartData && (
+                        <Doughnut
+                          data={chartData}
+                          options={overviewChartOptions}
+                        />
+                      )}
+                    </div>
+                    <div className="chart-hint-row mt-2">
+                      <span className="chart-hint-item">
+                        <span
+                          className="chart-hint-dot"
+                          style={{ backgroundColor: CHART_COLORS.students }}
+                        ></span>
+                        Students
+                      </span>
+                      <span className="chart-hint-item">
+                        <span
+                          className="chart-hint-dot"
+                          style={{ backgroundColor: CHART_COLORS.teachers }}
+                        ></span>
+                        Teachers
+                      </span>
+                      <span className="chart-hint-item">
+                        <span
+                          className="chart-hint-dot"
+                          style={{ backgroundColor: CHART_COLORS.courses }}
+                        ></span>
+                        Courses
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="col-12 col-lg-6">
+                <div className="chart-panel overview-donut-card h-100">
+                  <h6 className="mb-2 text-center">Key Metrics</h6>
+
+                  <div className="admin-metrics-wrap">
+                    <div className="admin-metric-item">
+                      <div className="admin-metric-circle students">
+                        {dashboardStats?.totalStudents || 0}
+                      </div>
+                      <div className="admin-metric-label">Total Students</div>
+                    </div>
+
+                    <div className="admin-metric-item">
+                      <div className="admin-metric-circle teachers">
+                        {dashboardStats?.totalTeachers || 0}
+                      </div>
+                      <div className="admin-metric-label">Total Teachers</div>
+                    </div>
+
+                    <div className="admin-metric-item">
+                      <div className="admin-metric-circle courses">
+                        {dashboardStats?.totalCourses || 0}
+                      </div>
+                      <div className="admin-metric-label">Active Courses</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Statistics Cards */}
+          <div className="dashboard-card result-progress-dashboard-card py-2">
+            <div className="d-flex flex-column flex-md-row justify-content-between align-items-start gap-2 mb-1">
+              <div>
+                <h5 className="dashboard-section-title ms-2 mb-1">
+                  Resource Summary
+                </h5>
+              </div>
+            </div>
+
+            <div className="row g-3">
+              <div className="col-12 col-md-6 col-lg-4">
+                <div className="admin-stat-card students">
+                  <div className="stat-icon">
+                    <i className="fas fa-user-graduate"></i>
+                  </div>
+                  <div className="stat-content">
+                    <div className="stat-value">
+                      {dashboardStats?.totalStudents || 0}
+                    </div>
+                    <div className="stat-label">Students Enrolled</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="col-12 col-md-6 col-lg-4">
+                <div className="admin-stat-card teachers">
+                  <div className="stat-icon">
+                    <i className="fas fa-chalkboard-user"></i>
+                  </div>
+                  <div className="stat-content">
+                    <div className="stat-value">
+                      {dashboardStats?.totalTeachers || 0}
+                    </div>
+                    <div className="stat-label">Faculty Members</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="col-12 col-md-6 col-lg-4">
+                <div className="admin-stat-card courses">
+                  <div className="stat-icon">
+                    <i className="fas fa-book-open"></i>
+                  </div>
+                  <div className="stat-content">
+                    <div className="stat-value">
+                      {dashboardStats?.totalCourses || 0}
+                    </div>
+                    <div className="stat-label">Courses Running</div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </section>
+      </div>
+      <Footer />
     </Sidebar>
   );
 }

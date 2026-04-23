@@ -366,7 +366,15 @@ function StudentRegister({ adminLoginType = "academy" }) {
 
       if (res.data?.success) {
         toast.success(res.data?.message || "Registration saved successfully");
-        fetchStudentRegistrationFor(activeStudentId);
+        // Store student data in localStorage for voucher page
+        localStorage.setItem("voucherStudent", JSON.stringify(student));
+        localStorage.setItem("voucherStudentId", student._id || student.id);
+        // Navigate to voucher page with student data
+        setTimeout(() => {
+          navigate(
+            `/student/fee-voucher?studentId=${student._id || student.id}`,
+          );
+        }, 1500);
       } else {
         toast.error(res.data?.message || "Failed to save registration");
       }

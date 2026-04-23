@@ -60,6 +60,11 @@ function Sidebar({ children }) {
         href: "/coming-soon",
       },
       {
+        title: "Fee Voucher",
+        icon: "fa-receipt",
+        href: "/student/fee-voucher",
+      },
+      {
         title: "Leave Applications",
         icon: "fa-envelope-open-text",
         href: "/admin/view-and-approve-leaves",
@@ -146,6 +151,7 @@ function Sidebar({ children }) {
         icon: "fa-chart-column",
         href: "/student/result-overview",
       },
+
       {
         title: "Apply for Leave",
         icon: "fa-envelope-open-text",

@@ -19,6 +19,7 @@ import ComingSoon from "./components/ComingSoon";
 import ApplyLeave from "./components/Teacher/ApplyLeave";
 import OverAllAttandanceStd from "./components/Student/OverAllAttandanceStd";
 import OverAllResult from "./components/Student/OverAllResult";
+import Voucher from "./components/Student/Voucher";
 import ViewTimeTable from "./components/Student/ViewTimeTable";
 import ViewAndApproveLeaves from "./components/Admin/ViewAndApproveLeaves";
 import TimeTableManage from "./components/Admin/TimeTableManage";
@@ -63,6 +64,7 @@ function App() {
         element={<OverAllAttandanceStd />}
       />
       <Route path="/student/result-overview" element={<OverAllResult />} />
+      <Route path="/student/fee-voucher" element={<Voucher />} />
       <Route path="/student/timetable" element={<ViewTimeTable />} />
       <Route path="/apply-leave" element={<ApplyLeave />} />
       <Route
