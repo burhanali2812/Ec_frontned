@@ -257,6 +257,15 @@ function StudentManage({ adminLoginType = "academy" }) {
     });
   };
 
+  const handleFeeManage = (student) => {
+    // Store student data for fee management
+    localStorage.setItem("voucherStudent", JSON.stringify(student));
+    localStorage.setItem("voucherStudentId", student._id || student.id);
+
+    // Navigate to fee management page
+    navigate(`/fee-management/${student._id || student.id}`);
+  };
+
   return (
     <Sidebar>
       <Toaster position="top-right" />
@@ -301,7 +310,6 @@ function StudentManage({ adminLoginType = "academy" }) {
                 <tr>
                   <th>#</th>
                   <th>Name</th>
-                  <th>Email</th>
                   <th>Contact</th>
                   <th>Roll No.</th>
                   <th>Class</th>
@@ -327,7 +335,6 @@ function StudentManage({ adminLoginType = "academy" }) {
                     <tr key={student._id || index}>
                       <td>{index + 1}</td>
                       <td>{student.name}</td>
-                      <td>{student.email}</td>
                       <td>{student.contact}</td>
                       <td>{student.rollNumber}</td>
                       <td>
@@ -351,6 +358,13 @@ function StudentManage({ adminLoginType = "academy" }) {
                             onClick={() => openRegistrationPage(student)}
                           >
                             <i className="fas fa-book me-1"></i>Register
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-warning"
+                            onClick={() => handleFeeManage(student)}
+                          >
+                            <i className="fas fa-dollar-sign me-1"></i>Fees
                           </button>
                         </div>
                       </td>

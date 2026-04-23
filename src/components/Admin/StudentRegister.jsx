@@ -366,6 +366,11 @@ function StudentRegister({ adminLoginType = "academy" }) {
 
       if (res.data?.success) {
         toast.success(res.data?.message || "Registration saved successfully");
+        await axios.post(`${STUDENT_API}/studentFee`, {
+          registrationId: res.data.registration._id,
+        }, {
+          headers: getAuthHeaders(),
+        });
         // Store student data in localStorage for voucher page
         localStorage.setItem("voucherStudent", JSON.stringify(student));
         localStorage.setItem("voucherStudentId", student._id || student.id);
@@ -389,7 +394,7 @@ function StudentRegister({ adminLoginType = "academy" }) {
     <Sidebar>
       <Toaster position="top-right" />
 
-      <div className="sr-page">
+      <div className="">
         <div className="sr-container">
           <div className="sr-header-card">
             <div className="sr-logo-wrap">

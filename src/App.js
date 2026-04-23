@@ -11,6 +11,7 @@ import TeacherManage from "./components/Admin/TeacherManage";
 import CourseManage from "./components/Admin/CourseManage";
 import StudentManage from "./components/Admin/StudentManage";
 import StudentRegister from "./components/Admin/StudentRegister";
+import FeeManagement from "./components/Admin/FeeManagement";
 import Attandance from "./components/Teacher/Attandance";
 import ViewAttandance from "./components/Teacher/ViewAttandance";
 import UploadResult from "./components/Teacher/UploadResult";
@@ -55,6 +56,7 @@ function App() {
         path="/student-register"
         element={<StudentRegister adminLoginType={adminLoginType} />}
       />
+      <Route path="/fee-management/:studentId" element={<FeeManagement />} />
       <Route path="/teacher/attendance" element={<Attandance />} />
       <Route path="/teacher/view-attendance" element={<ViewAttandance />} />
       <Route path="/teacher/upload-result" element={<UploadResult />} />

@@ -10,6 +10,7 @@ function Voucher() {
   const [student, setStudent] = useState(null);
   const [courses, setCourses] = useState([]);
   const [aboutCourse, setAboutCourse] = useState([]);
+  const [feeHistory, setFeeHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isPrinting, setIsPrinting] = useState(false);
   const voucherRef = useRef(null);
@@ -30,6 +31,7 @@ function Voucher() {
         const storedStudent = localStorage.getItem("voucherStudent");
         const storedStudentId =
           localStorage.getItem("voucherStudentId") || studentIdFromParams;
+        const storedFeeHistory = localStorage.getItem("feeHistory");
 
         let studentData = null;
 
@@ -56,6 +58,23 @@ function Voucher() {
           if (profileRes.data?.success) {
             studentData = profileRes.data.student;
             setStudent(studentData);
+          }
+        }
+
+        // Fetch fee history from stored data or API
+        if (storedFeeHistory) {
+          setFeeHistory(JSON.parse(storedFeeHistory));
+        } else if (storedStudentId) {
+          try {
+            const feeRes = await axios.get(
+              `${API_BASE}/students/getStudentFee/${storedStudentId}`,
+              { headers: getAuthHeaders() },
+            );
+            if (feeRes.data?.success && feeRes.data.fees) {
+              setFeeHistory(feeRes.data.fees);
+            }
+          } catch (error) {
+            console.log("Fee history not available");
           }
         }
 
@@ -155,6 +174,29 @@ function Voucher() {
     };
   };
 
+  const calculateFeeTotals = () => {
+    let paidAmount = 0;
+    let remainingAmount = 0;
+
+    feeHistory.forEach((fee) => {
+      paidAmount += Number(fee.amountPaid || 0);
+      remainingAmount += Number(fee.remainingFee || 0);
+    });
+
+    return {
+      paidAmount,
+      remainingAmount,
+    };
+  };
+
+  const calculateFeeStatus = () => {
+    if (feeHistory.length === 0) return "Unpaid";
+    const statuses = feeHistory.map((f) => f.status);
+    if (statuses.every((s) => s === "paid")) return "Paid";
+    if (statuses.some((s) => s === "paid" || s === "partial")) return "Partial";
+    return "Unpaid";
+  };
+
   const totals = calculateTotals();
 
   const downloadPDF = async (isAuto = false) => {
@@ -179,7 +221,7 @@ function Voucher() {
       >
         <button
           type="button"
-          className="btn btn-primary"
+          className="btn btn-primary mb-3"
           onClick={() => downloadPDF()}
           style={{ display: isPrinting ? "none" : "block" }}
         >
@@ -288,7 +330,9 @@ function Voucher() {
               {aboutCourse && aboutCourse.length > 0 ? (
                 aboutCourse.map((item, idx) => {
                   const originalFee = Number(item?.courseActualPrice || 0);
-                  const discountedFee = Number(item?.courseDiscountedPrice || 0);
+                  const discountedFee = Number(
+                    item?.courseDiscountedPrice || 0,
+                  );
                   const discount = originalFee - discountedFee;
                   const courseTitle = item?.course?.title || "N/A";
 
@@ -318,6 +362,35 @@ function Voucher() {
             </tbody>
           </table>
         </section>
+
+        {/* Fee Status Section */}
+        {feeHistory && feeHistory.length > 0 && (
+          <section className="voucher-section">
+            <h3 className="section-title">Fee Payment Status</h3>
+            <div className="fee-status-grid">
+              <div className="status-item">
+                <span className="status-label">Overall Status:</span>
+                <span
+                  className={`status-badge status-${calculateFeeStatus().toLowerCase()}`}
+                >
+                  {calculateFeeStatus()}
+                </span>
+              </div>
+              <div className="status-item">
+                <span className="status-label">Total Paid:</span>
+                <span className="status-value">
+                  PKR {calculateFeeTotals().paidAmount.toLocaleString()}
+                </span>
+              </div>
+              <div className="status-item">
+                <span className="status-label">Total Remaining:</span>
+                <span className="status-value">
+                  PKR {calculateFeeTotals().remainingAmount.toLocaleString()}
+                </span>
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* Summary Section */}
         <section className="voucher-section">
