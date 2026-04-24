@@ -36,6 +36,7 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/adminPanel" element={<AdminPanel />} />
       <Route path="/teacherPanel" element={<TeacherPanel />} />
+      <Route path="/teacher/dashboard" element={<TeacherPanel />} />
       <Route
         path="/teacherManage"
         element={<TeacherManage adminLoginType={adminLoginType} />}

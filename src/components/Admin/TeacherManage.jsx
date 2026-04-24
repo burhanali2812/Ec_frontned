@@ -23,6 +23,7 @@ function TeacherManage({ adminLoginType }) {
     email: "",
     cnic: "",
     address: "",
+    salary: "",
   });
 
   const API_BASE = "https://ec-backend-phi.vercel.app/api/teacher";
@@ -87,6 +88,7 @@ function TeacherManage({ adminLoginType }) {
         teacher.email,
         teacher.cnic,
         teacher.address,
+        teacher.salary,
       ]
         .filter(Boolean)
         .some((val) => String(val).toLowerCase().includes(q)),
@@ -105,13 +107,14 @@ function TeacherManage({ adminLoginType }) {
       email: "",
       cnic: "",
       address: "",
+      salary: "",
     });
     setEditingTeacherId("");
     setIsEditMode(false);
   };
 
   const validateForm = () => {
-    const { name, contact, email, cnic, address } = formData;
+    const { name, contact, email, cnic, address, salary } = formData;
 
     if (!name.trim()) {
       toast.error("Name is required");
@@ -137,6 +140,10 @@ function TeacherManage({ adminLoginType }) {
       toast.error("Address must be at least 5 characters");
       return false;
     }
+    if (!salary.trim() || isNaN(salary.trim()) || Number(salary.trim()) <= 0) {
+      toast.error("Salary must be a valid positive number");
+      return false;
+    }
     return true;
   };
 
@@ -149,6 +156,7 @@ function TeacherManage({ adminLoginType }) {
       email: teacher.email || "",
       cnic: teacher.cnic || "",
       address: teacher.address || "",
+      salary: teacher.salary || "",
     });
     setShowModal(true);
   };
@@ -198,6 +206,7 @@ function TeacherManage({ adminLoginType }) {
         email: formData.email.trim(),
         cnic: formData.cnic.trim(),
         address: formData.address.trim(),
+        salary: Number(formData.salary.trim()),
         institutionType: adminLoginType,
       };
       console.log("institutionType", institutionType);
@@ -309,19 +318,20 @@ function TeacherManage({ adminLoginType }) {
                 <th>Contact</th>
                 <th>Email</th>
                 <th>CNIC</th>
+                <th>Salary</th>
                 <th>Manage</th>
               </tr>
             </thead>
             <tbody>
               {loadingTeachers ? (
                 <tr>
-                  <td colSpan="7" className="text-center py-4">
+                  <td colSpan="8" className="text-center py-4">
                     Loading teachers...
                   </td>
                 </tr>
               ) : filteredTeachers.length === 0 ? (
                 <tr>
-                  <td colSpan="7" className="text-center py-4">
+                  <td colSpan="8" className="text-center py-4">
                     No teacher found.
                   </td>
                 </tr>
@@ -333,6 +343,7 @@ function TeacherManage({ adminLoginType }) {
                     <td>{teacher.contact}</td>
                     <td>{teacher.email}</td>
                     <td>{teacher.cnic}</td>
+                    <td>PKR {teacher.salary?.toLocaleString()}</td>
                     <td>
                       <button
                         type="button"
@@ -435,6 +446,20 @@ function TeacherManage({ adminLoginType }) {
                     onChange={handleChange}
                     placeholder="Enter address"
                   ></textarea>
+                </div>
+
+                <div className="col-12 col-md-6">
+                  <label className="form-label">Salary (PKR)</label>
+                  <input
+                    name="salary"
+                    type="number"
+                    className="form-control"
+                    value={formData.salary}
+                    onChange={handleChange}
+                    placeholder="Enter salary"
+                    min="0"
+                    step="0.01"
+                  />
                 </div>
               </div>
 
