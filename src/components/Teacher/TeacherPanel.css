@@ -399,9 +399,9 @@
   }
 }
 
-/* Scrollbar for teacher-dashboard */
+/* Hide scrollbar for teacher-dashboard */
 .teacher-dashboard::-webkit-scrollbar {
-  width: 8px;
+  width: 0;
 }
 
 .teacher-dashboard::-webkit-scrollbar-track {
@@ -409,10 +409,10 @@
 }
 
 .teacher-dashboard::-webkit-scrollbar-thumb {
-  background: rgba(139, 92, 246, 0.3);
+  background: transparent;
   border-radius: 4px;
 }
 
 .teacher-dashboard::-webkit-scrollbar-thumb:hover {
-  background: rgba(139, 92, 246, 0.5);
+  background: transparent;
 }

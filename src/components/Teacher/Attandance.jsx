@@ -255,28 +255,23 @@ function Attandance() {
       <Toaster position="top-right" />
       <div className="attendance-page mt-3 mt-lg-4">
         <div className="container-fluid px-0 px-lg-2">
-          <div className="attendance-hero mb-4">
-            <div className="d-flex flex-column flex-lg-row justify-content-between gap-3 align-items-start align-items-lg-center">
-              <div>
-                <p className="mb-1 text-white-50 fw-semibold">
-                  Teacher Attendance
-                </p>
-                <h3 className="mb-2">Mark present and absent students</h3>
-                <p className="mb-0 text-white-75">
-                  Select a registered course, filter its class and save
-                  attendance for the chosen date.
-                </p>
-              </div>
-              <div
-                className="attendance-card bg-white text-dark p-3"
-                style={{ minWidth: 240 }}
-              >
-                <div className="small text-muted">Selected course</div>
-                <div className="fw-bold">{selectedCourse?.title || "None"}</div>
-                <div className="small text-muted mt-2">Selected class</div>
-                <div className="fw-bold">{selectedClassInfo || "None"}</div>
-              </div>
-            </div>
+          <div
+            className="attendance-hero mb-3"
+            style={{
+              backgroundColor: "#ffffff",
+              padding: "1rem",
+              borderRadius: "0.5rem",
+              border: "1px solid #e2e8f0",
+            }}
+          >
+            <p className="mb-1 text-secondary fw-semibold">
+              Teacher Attendance
+            </p>
+            <h3 className="mb-2">Mark present and absent students</h3>
+            <p className="mb-0 text-muted">
+              Select a registered course, filter its class and save attendance
+              for the chosen date.
+            </p>
           </div>
 
           <div className="row g-4">
@@ -285,77 +280,113 @@ function Attandance() {
                 <h5 className="attendance-section-title mb-3">Filters</h5>
 
                 <div className="attendance-form">
-                  <div className="mb-3">
-                    <label>Course</label>
-                    <select
-                      className="form-select"
-                      value={selectedCourseId}
-                      onChange={handleCourseChange}
-                      disabled={loadingCourses}
-                    >
-                      <option value="">Select course</option>
-                      {courses.map((course) => (
-                        <option key={course._id} value={course._id}>
-                          {course.title}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="mb-3">
-                    <label>Class</label>
-                    <select
-                      className="form-select"
-                      value={selectedClassInfo}
-                      onChange={handleClassChange}
-                      disabled={!selectedCourseId}
-                    >
-                      <option value="">Select class</option>
-                      {selectedCourseClasses.map((classInfo) => (
-                        <option key={classInfo} value={classInfo}>
-                          {classInfo}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="mb-4">
-                    <label>Date</label>
-                    <input
-                      type="date"
-                      className="form-control"
-                      value={selectedDate}
-                      onChange={(e) => setSelectedDate(e.target.value)}
-                    />
-                  </div>
-
-                  <div className="mb-4">
-                    <label>Topic</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={topic}
-                      placeholder="Enter lecture topic"
-                      onChange={(e) => setTopic(e.target.value)}
-                    />
-                  </div>
-
-                  <div className="attendance-stats mb-4">
-                    <div className="attendance-stat">
-                      <span>Students</span>
-                      <strong>{students.length}</strong>
+                  <div className="row g-2 mb-3">
+                    <div className="col-6">
+                      <label>Course</label>
+                      <select
+                        className="form-select"
+                        value={selectedCourseId}
+                        onChange={handleCourseChange}
+                        disabled={loadingCourses}
+                      >
+                        <option value="">Select course</option>
+                        {courses.map((course) => (
+                          <option key={course._id} value={course._id}>
+                            {course.title}
+                          </option>
+                        ))}
+                      </select>
                     </div>
-                    <div className="attendance-stat">
-                      <span>Present</span>
-                      <strong>{presentCount}</strong>
+
+                    <div className="col-6">
+                      <label>Class</label>
+                      <select
+                        className="form-select"
+                        value={selectedClassInfo}
+                        onChange={handleClassChange}
+                        disabled={!selectedCourseId}
+                      >
+                        <option value="">Select class</option>
+                        {selectedCourseClasses.map((classInfo) => (
+                          <option key={classInfo} value={classInfo}>
+                            {classInfo}
+                          </option>
+                        ))}
+                      </select>
                     </div>
-                    <div className="attendance-stat">
-                      <span>Absent</span>
-                      <strong>{absentCount}</strong>
+                  </div>
+
+                  <div className="row g-2 mb-3">
+                    <div className="col-6">
+                      <label>Date</label>
+                      <input
+                        type="date"
+                        className="form-control"
+                        value={selectedDate}
+                        onChange={(e) => setSelectedDate(e.target.value)}
+                      />
                     </div>
-                    <div className="attendance-stat">
-                      <span>Status</span>
-                      <strong>{selectedDate || "-"}</strong>
+
+                    <div className="col-6">
+                      <label>Topic</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={topic}
+                        placeholder="Enter lecture topic"
+                        onChange={(e) => setTopic(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="row g-2 mb-4">
+                    <div className="col-6">
+                      <div
+                        className="attendance-card p-2"
+                        style={{ textAlign: "center" }}
+                      >
+                        <div className="small text-muted">Total Students</div>
+                        <strong style={{ fontSize: "1.4rem" }}>
+                          {students.length}
+                        </strong>
+                      </div>
+                    </div>
+                    <div className="col-6">
+                      <div
+                        className="attendance-card p-2"
+                        style={{ textAlign: "center" }}
+                      >
+                        <div className="small text-muted">Present</div>
+                        <strong
+                          style={{ fontSize: "1.4rem", color: "#10b981" }}
+                        >
+                          {presentCount}
+                        </strong>
+                      </div>
+                    </div>
+                    <div className="col-6">
+                      <div
+                        className="attendance-card p-2"
+                        style={{ textAlign: "center" }}
+                      >
+                        <div className="small text-muted">Absent</div>
+                        <strong
+                          style={{ fontSize: "1.4rem", color: "#ef4444" }}
+                        >
+                          {absentCount}
+                        </strong>
+                      </div>
+                    </div>
+                    <div className="col-6">
+                      <div
+                        className="attendance-card p-2"
+                        style={{ textAlign: "center" }}
+                      >
+                        <div className="small text-muted">Date</div>
+                        <strong style={{ fontSize: "1.4rem" }}>
+                          {selectedDate || "-"}
+                        </strong>
+                      </div>
                     </div>
                   </div>
 

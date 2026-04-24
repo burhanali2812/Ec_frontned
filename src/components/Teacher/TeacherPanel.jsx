@@ -106,12 +106,9 @@ function TeacherPanel() {
 
         // Fetch leaves info
         try {
-          const leavesRes = await axios.get(
-            `${API_BASE}/leave/myLeaves`,
-            {
-              headers: getAuthHeaders(),
-            },
-          );
+          const leavesRes = await axios.get(`${API_BASE}/leave/myLeaves`, {
+            headers: getAuthHeaders(),
+          });
 
           if (leavesRes.data?.leaves) {
             const pending = leavesRes.data.leaves.filter(
@@ -163,7 +160,7 @@ function TeacherPanel() {
         href: "/coming-soon",
       },
       {
-        label: "Assignments",
+        label: "Add Lectures & Notes",
         icon: "fas fa-file-import",
         href: "/coming-soon",
       },
@@ -297,14 +294,15 @@ function TeacherPanel() {
           </div>
 
           {/* Overview Stats */}
-          <div className="dashboard-card overview-dashboard-card py-2 px-2 mb-2">
+          <div className="dashboard-card overview-dashboard-card py-2 px-3  mb-2">
             <div className="d-flex flex-column flex-md-row justify-content-between align-items-start gap-2 mb-2">
               <div>
                 <h5 className="dashboard-section-title ms-2">Overview Stats</h5>
               </div>
             </div>
 
-            <div className="row g-3 g-lg-4 overview-graphs-row">
+           <div className="px-3">
+ <div className="row g-3 g-lg-4 overview-graphs-row">
               <div className="col-12 col-lg-6">
                 <div className="chart-panel overview-donut-card h-100">
                   <h6 className="mb-2 text-center">Teaching Overview</h6>
@@ -345,36 +343,32 @@ function TeacherPanel() {
                 </div>
               </div>
 
-              <div className="col-12 col-lg-6">
+              <div className="col-12 col-lg-12">
                 <div className="dashboard-card-row h-100">
-                  <div className="row g-3 h-100">
-                    <div className="col-12 col-md-6">
+                  <div className="row g-1 h-100">
+                    <div className="col-6 col-lg-6" >
                       <div className="stats-card stats-card-primary">
                         <div className="stats-icon">
                           <i className="fas fa-book-open"></i>
                         </div>
                         <div className="stats-content">
                           <h6 className="stats-label">Courses</h6>
-                          <h4 className="stats-value">
-                            {stats.totalCourses}
-                          </h4>
+                          <h4 className="stats-value">{stats.totalCourses}</h4>
                         </div>
                       </div>
                     </div>
-                    <div className="col-12 col-md-6">
+                    <div className="col-6 col-lg-6">
                       <div className="stats-card stats-card-success">
                         <div className="stats-icon">
                           <i className="fas fa-users"></i>
                         </div>
                         <div className="stats-content">
                           <h6 className="stats-label">Students</h6>
-                          <h4 className="stats-value">
-                            {stats.totalStudents}
-                          </h4>
+                          <h4 className="stats-value">{stats.totalStudents}</h4>
                         </div>
                       </div>
                     </div>
-                    <div className="col-12 col-md-6">
+                    <div className="col-6 col-lg-6">
                       <div className="stats-card stats-card-info">
                         <div className="stats-icon">
                           <i className="fas fa-calendar-check"></i>
@@ -385,16 +379,14 @@ function TeacherPanel() {
                         </div>
                       </div>
                     </div>
-                    <div className="col-12 col-md-6">
+                    <div className="col-6 col-lg-6">
                       <div className="stats-card stats-card-warning">
                         <div className="stats-icon">
                           <i className="fas fa-hourglass-end"></i>
                         </div>
                         <div className="stats-content">
                           <h6 className="stats-label">Pending Leaves</h6>
-                          <h4 className="stats-value">
-                            {stats.leavesPending}
-                          </h4>
+                          <h4 className="stats-value">{stats.leavesPending}</h4>
                         </div>
                       </div>
                     </div>
@@ -402,6 +394,7 @@ function TeacherPanel() {
                 </div>
               </div>
             </div>
+           </div>
           </div>
 
           {/* Courses Section */}

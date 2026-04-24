@@ -10,8 +10,7 @@
 }
 
 .attendance-hero {
-  background: linear-gradient(135deg, #0f766e, #14532d);
-  color: #fff;
+  color: black;
   border-radius: 1rem;
   padding: 1.2rem;
   box-shadow: 0 14px 40px rgba(20, 83, 45, 0.25);
