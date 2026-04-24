@@ -307,8 +307,10 @@ function Voucher() {
             </div>
 
             <div className="info-item">
-              <label className="info-label">Email</label>
-              <div className="info-value">{student?.email || "N/A"}</div>
+              <label className="info-label">Due Date</label>
+              <div className="info-value">
+                {new Date(new Date().setDate(new Date().getDate() + 7)).toLocaleDateString("en-GB")}
+              </div>
             </div>
           </div>
         </section>
@@ -365,26 +367,26 @@ function Voucher() {
 
         {/* Fee Status Section */}
         {feeHistory && feeHistory.length > 0 && (
-          <section className="voucher-section">
-            <h3 className="section-title">Fee Payment Status</h3>
-            <div className="fee-status-grid">
-              <div className="status-item">
-                <span className="status-label">Overall Status:</span>
+          <section className="voucher-section fee-payment-section">
+            <h3 className="section-title mt-2">Payment Status</h3>
+            <div className="payment-status-grid">
+              <div className="payment-status-item">
+                <span className="payment-status-label">Status</span>
                 <span
-                  className={`status-badge status-${calculateFeeStatus().toLowerCase()}`}
+                  className={`payment-status-badge status-${calculateFeeStatus().toLowerCase()}`}
                 >
                   {calculateFeeStatus()}
                 </span>
               </div>
-              <div className="status-item">
-                <span className="status-label">Total Paid:</span>
-                <span className="status-value">
+              <div className="payment-status-item">
+                <span className="payment-status-label">Total Paid</span>
+                <span className="payment-status-value">
                   PKR {calculateFeeTotals().paidAmount.toLocaleString()}
                 </span>
               </div>
-              <div className="status-item">
-                <span className="status-label">Total Remaining:</span>
-                <span className="status-value">
+              <div className="payment-status-item">
+                <span className="payment-status-label">Remaining</span>
+                <span className="payment-status-value">
                   PKR {calculateFeeTotals().remainingAmount.toLocaleString()}
                 </span>
               </div>
@@ -425,9 +427,14 @@ function Voucher() {
             records. Submit the proof of payment to the administration office
             within 7 days.
           </p>
-          <p className="voucher-date">
-            Generated on: {new Date().toLocaleDateString("en-GB")}
-          </p>
+          <div className="voucher-dates">
+            <p className="voucher-date">
+              Generated on: {new Date().toLocaleDateString("en-GB")}
+            </p>
+            <p className="voucher-due-date">
+              Due Date: {new Date(new Date().setDate(new Date().getDate() + 7)).toLocaleDateString("en-GB")}
+            </p>
+          </div>
         </div>
       </div>
     </div>

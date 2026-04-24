@@ -15,8 +15,9 @@ function FeeManagement() {
   const [aboutCourse, setAboutCourse] = useState([]);
   const [feeHistory, setFeeHistory] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [editingFeeId, setEditingFeeId] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [editingData, setEditingData] = useState({});
+  const [isSaving, setIsSaving] = useState(false);
 
   const API_BASE = "https://ec-backend-phi.vercel.app/api";
 
@@ -156,43 +157,47 @@ function FeeManagement() {
     return "Unpaid";
   };
 
-  const handleStatusChange = (feeId, newStatus) => {
-    const updatedHistory = feeHistory.map((fee) =>
-      fee._id === feeId ? { ...fee, status: newStatus } : fee,
-    );
-    setFeeHistory(updatedHistory);
-    toast.success("Status updated");
-  };
-
   const handleEditFee = (fee) => {
-    setEditingFeeId(fee._id);
     setEditingData({ ...fee });
+    setShowEditModal(true);
   };
 
   const handleSaveEdit = async () => {
     try {
-      const updatedHistory = feeHistory.map((fee) =>
-        fee._id === editingFeeId ? editingData : fee,
-      );
-      setFeeHistory(updatedHistory);
-      setEditingFeeId(null);
+      setIsSaving(true);
 
       // Update fee in backend
       if (editingData._id) {
         await axios.put(
-          `${API_BASE}/students/updateStudentFee/${editingData._id}`,
+          `${API_BASE}/students/payStudentFee/${editingData._id}`,
           {
             amountPaid: editingData.amountPaid,
-            status: editingData.status,
           },
           { headers: getAuthHeaders() },
         );
       }
 
-      toast.success("Fee updated successfully");
+      // Update local state
+      const updatedHistory = feeHistory.map((fee) =>
+        fee._id === editingData._id ? editingData : fee,
+      );
+      setFeeHistory(updatedHistory);
+      setShowEditModal(false);
+
+      toast.success("Fee updated successfully! Redirecting to voucher...");
+
+      // Store updated fee history and navigate to voucher
+      setTimeout(() => {
+        localStorage.setItem("voucherStudent", JSON.stringify(student));
+        localStorage.setItem("voucherStudentId", student._id);
+        localStorage.setItem("feeHistory", JSON.stringify(updatedHistory));
+        navigate(`/student/fee-voucher?studentId=${student._id}`);
+      }, 1000);
     } catch (error) {
       console.error("Error saving fee:", error);
       toast.error("Failed to save fee");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -223,8 +228,7 @@ function FeeManagement() {
 
   return (
     <Sidebar>
-    
-      <div >
+      <div>
         <div className="fm-header-card">
           <div className="fm-back-btn">
             <button
@@ -346,112 +350,30 @@ function FeeManagement() {
                         <strong>{fee.month || "N/A"}</strong>
                       </td>
                       <td>
-                        {editingFeeId === fee._id ? (
-                          <input
-                            type="number"
-                            className="form-control fm-input-small"
-                            value={
-                              editingData.finalFee || editingData.actualFee
-                            }
-                            onChange={(e) =>
-                              setEditingData({
-                                ...editingData,
-                                finalFee: Number(e.target.value),
-                              })
-                            }
-                          />
-                        ) : (
-                          `PKR ${(fee.finalFee || fee.actualFee || 0).toLocaleString()}`
-                        )}
+                        `PKR 
+                        {(fee.finalFee || fee.actualFee || 0).toLocaleString()}`
                       </td>
+                      <td>`PKR{(fee.amountPaid || 0).toLocaleString()}`</td>
+                      <td>`PKR{(fee.remainingFee || 0).toLocaleString()}`</td>
                       <td>
-                        {editingFeeId === fee._id ? (
-                          <input
-                            type="number"
-                            className="form-control fm-input-small"
-                            value={editingData.amountPaid || 0}
-                            onChange={(e) => {
-                              const paid = Number(e.target.value);
-                              const finalFee =
-                                editingData.finalFee || editingData.actualFee;
-                              setEditingData({
-                                ...editingData,
-                                amountPaid: paid,
-                                remainingFee: finalFee - paid,
-                              });
-                            }}
-                          />
-                        ) : (
-                          `PKR ${(fee.amountPaid || 0).toLocaleString()}`
-                        )}
-                      </td>
-                      <td>
-                        {editingFeeId === fee._id ? (
-                          <input
-                            type="number"
-                            className="form-control fm-input-small"
-                            value={editingData.remainingFee || 0}
-                            readOnly
-                          />
-                        ) : (
-                          `PKR ${(fee.remainingFee || 0).toLocaleString()}`
-                        )}
-                      </td>
-                      <td>
-                        {editingFeeId === fee._id ? (
-                          <select
-                            className="form-select fm-select-small"
-                            value={editingData.status || "unpaid"}
-                            onChange={(e) =>
-                              setEditingData({
-                                ...editingData,
-                                status: e.target.value,
-                              })
-                            }
-                          >
-                            <option value="paid">Paid</option>
-                            <option value="partial">Partial</option>
-                            <option value="unpaid">Unpaid</option>
-                          </select>
-                        ) : (
-                          <span
-                            className={`fm-status-badge fm-status-${(fee.status || "unpaid").toLowerCase()}`}
-                          >
-                            {fee.status
-                              ? fee.status.charAt(0).toUpperCase() +
-                                fee.status.slice(1)
-                              : "Unpaid"}
-                          </span>
-                        )}
+                        <span
+                          className={`fm-status-badge fm-status-${(fee.status || "unpaid").toLowerCase()}`}
+                        >
+                          {fee.status
+                            ? fee.status.charAt(0).toUpperCase() +
+                              fee.status.slice(1)
+                            : "Unpaid"}
+                        </span>
                       </td>
                       <td>
                         <div className="fm-row-actions">
-                          {editingFeeId === fee._id ? (
-                            <>
-                              <button
-                                type="button"
-                                className="btn btn-sm btn-success"
-                                onClick={handleSaveEdit}
-                              >
-                                <i className="fas fa-check"></i>
-                              </button>
-                              <button
-                                type="button"
-                                className="btn btn-sm btn-outline-secondary"
-                                onClick={() => setEditingFeeId(null)}
-                              >
-                                <i className="fas fa-times"></i>
-                              </button>
-                            </>
-                          ) : (
-                            <button
-                              type="button"
-                              className="btn btn-sm btn-primary"
-                              onClick={() => handleEditFee(fee)}
-                            >
-                              <i className="fas fa-edit"></i>
-                            </button>
-                          )}
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-primary"
+                            onClick={() => handleEditFee(fee)}
+                          >
+                            <i className="fas fa-edit"></i>
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -468,6 +390,177 @@ function FeeManagement() {
           </div>
         </div>
       </div>
+
+      {/* Edit Fee Modal */}
+      <div
+        className={`modal fade ${showEditModal ? "show" : ""}`}
+        id="editFeeModal"
+        tabIndex="-1"
+        aria-hidden={!showEditModal}
+        style={{ display: showEditModal ? "block" : "none" }}
+      >
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">Edit Fee - {editingData.month}</h5>
+              <button
+                type="button"
+                className="btn-close"
+                onClick={() => setShowEditModal(false)}
+              ></button>
+            </div>
+            <div className="modal-body">
+              <div className="fm-edit-form">
+                <div className="fm-form-group">
+                  <label className="fm-form-label">Total Fee</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={editingData.finalFee || editingData.actualFee || 0}
+                    onChange={(e) => {
+                      const totalFee = Number(e.target.value);
+                      const paid = editingData.amountPaid || 0;
+                      const remaining = totalFee - paid;
+                      
+                      // Auto-calculate status based on amounts
+                      let autoStatus = "unpaid";
+                      if (paid === 0) {
+                        autoStatus = "unpaid";
+                      } else if (remaining <= 0) {
+                        autoStatus = "paid";
+                      } else if (paid > 0 && remaining > 0) {
+                        autoStatus = "partial";
+                      }
+                      
+                      setEditingData({
+                        ...editingData,
+                        finalFee: totalFee,
+                        remainingFee: remaining > 0 ? remaining : 0,
+                        status: autoStatus,
+                      });
+                    }}
+                  />
+                </div>
+
+                <div className="fm-form-group">
+                  <label className="fm-form-label">Amount Paid</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={editingData.amountPaid || 0}
+                    onChange={(e) => {
+                      const paid = Number(e.target.value);
+                      const finalFee =
+                        editingData.finalFee || editingData.actualFee;
+                      const remaining = finalFee - paid;
+                      
+                      // Auto-calculate status based on amounts
+                      let autoStatus = "unpaid";
+                      if (paid === 0) {
+                        autoStatus = "unpaid";
+                      } else if (remaining <= 0) {
+                        autoStatus = "paid";
+                      } else if (paid > 0 && remaining > 0) {
+                        autoStatus = "partial";
+                      }
+                      
+                      setEditingData({
+                        ...editingData,
+                        amountPaid: paid,
+                        remainingFee: remaining > 0 ? remaining : 0,
+                        status: autoStatus,
+                      });
+                    }}
+                  />
+                </div>
+
+                <div className="fm-form-group">
+                  <label className="fm-form-label">Remaining Fee</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={editingData.remainingFee || 0}
+                    readOnly
+                    disabled
+                  />
+                </div>
+
+                <div className="fm-form-group">
+                  <label className="fm-form-label">Status</label>
+                  <select
+                    className="form-select"
+                    value={editingData.status || "unpaid"}
+                    onChange={(e) => {
+                      const selectedStatus = e.target.value;
+                      const finalFee = editingData.finalFee || editingData.actualFee || 0;
+                      
+                      // Auto-fill amounts based on selected status
+                      if (selectedStatus === "paid") {
+                        setEditingData({
+                          ...editingData,
+                          status: selectedStatus,
+                          amountPaid: finalFee,
+                          remainingFee: 0,
+                        });
+                      } else if (selectedStatus === "unpaid") {
+                        setEditingData({
+                          ...editingData,
+                          status: selectedStatus,
+                          amountPaid: 0,
+                          remainingFee: finalFee,
+                        });
+                      } else {
+                        // For partial, just update status
+                        setEditingData({
+                          ...editingData,
+                          status: selectedStatus,
+                        });
+                      }
+                    }}
+                  >
+                    <option value="paid">Paid</option>
+                    <option value="partial">Partial</option>
+                    <option value="unpaid">Unpaid</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => setShowEditModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={handleSaveEdit}
+                disabled={isSaving}
+              >
+                {isSaving ? (
+                  <>
+                    <span
+                      className="spinner-border spinner-border-sm me-2"
+                      role="status"
+                      aria-hidden="true"
+                    ></span>
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <i className="fas fa-save me-2"></i>Save Changes
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Modal Backdrop */}
+      {showEditModal && <div className="modal-backdrop fade show"></div>}
     </Sidebar>
   );
 }
