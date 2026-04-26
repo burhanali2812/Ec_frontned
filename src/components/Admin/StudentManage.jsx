@@ -310,7 +310,7 @@ function StudentManage({ adminLoginType = "academy" }) {
                 <tr>
                   <th>#</th>
                   <th>Name</th>
-                  <th>Contact</th>
+                  <th>Father Contact</th>
                   <th>Roll No.</th>
                   <th>Class</th>
                   <th>Father Name</th>
@@ -335,7 +335,30 @@ function StudentManage({ adminLoginType = "academy" }) {
                     <tr key={student._id || index}>
                       <td>{index + 1}</td>
                       <td>{student.name}</td>
-                      <td>{student.contact}</td>
+                      <td>
+                        {student.fatherContact ? (
+                          <a
+                            href={`https://wa.me/${student.fatherContact.replace(/\D/g, '')}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="sm-whatsapp-link"
+                            title="Open WhatsApp chat"
+                            style={{
+                              color: "#25D366",
+                              textDecoration: "none",
+                              fontWeight: "600",
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "0.5rem"
+                            }}
+                          >
+                            <i className="fab fa-whatsapp"></i>
+                            {student.fatherContact}
+                          </a>
+                        ) : (
+                          <span className="text-muted">N/A</span>
+                        )}
+                      </td>
                       <td>{student.rollNumber}</td>
                       <td>
                         <span className="sm-class-badge">

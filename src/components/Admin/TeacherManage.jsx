@@ -315,7 +315,7 @@ function TeacherManage({ adminLoginType }) {
               <tr>
                 <th>#</th>
                 <th>Name</th>
-                <th>Contact</th>
+                <th>WhatsApp</th>
                 <th>Email</th>
                 <th>CNIC</th>
                 <th>Salary</th>
@@ -340,7 +340,30 @@ function TeacherManage({ adminLoginType }) {
                   <tr key={teacher._id || index}>
                     <td>{index + 1}</td>
                     <td>{teacher.name}</td>
-                    <td>{teacher.contact}</td>
+                    <td>
+                      {teacher.contact ? (
+                        <a
+                          href={`https://wa.me/${teacher.contact.replace(/\D/g, '')}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="tm-whatsapp-link"
+                          title="Open WhatsApp chat"
+                          style={{
+                            color: "#25D366",
+                            textDecoration: "none",
+                            fontWeight: "600",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "0.5rem"
+                          }}
+                        >
+                          <i className="fab fa-whatsapp"></i>
+                          {teacher.contact}
+                        </a>
+                      ) : (
+                        <span className="text-muted">N/A</span>
+                      )}
+                    </td>
                     <td>{teacher.email}</td>
                     <td>{teacher.cnic}</td>
                     <td>PKR {teacher.salary?.toLocaleString()}</td>

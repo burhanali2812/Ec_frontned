@@ -212,6 +212,21 @@ function FeeManagement() {
     navigate(`/student/fee-voucher?studentId=${student._id}`);
   };
 
+  const handleViewMonthVoucher = (fee) => {
+    if (!student) {
+      toast.error("Student data not loaded");
+      return;
+    }
+    // Store only the current month's fee as an array
+    const monthFeeArray = [fee];
+    localStorage.setItem("voucherStudent", JSON.stringify(student));
+    localStorage.setItem("voucherStudentId", student._id);
+    localStorage.setItem("feeHistory", JSON.stringify(monthFeeArray));
+    navigate(
+      `/student/fee-voucher?studentId=${student._id}&month=${fee.month}`,
+    );
+  };
+
   const totals = calculateTotals();
 
   if (loading) {
@@ -243,72 +258,177 @@ function FeeManagement() {
           <h2 className="fm-title">Fee Management</h2>
 
           {/* Student Details */}
-          <div className="fm-student-details">
-            <div className="fm-detail-card">
-              <h5>Student Information</h5>
-              <div className="fm-detail-grid">
-                <div className="fm-detail-item">
-                  <span className="fm-label">Name:</span>
-                  <span className="fm-value">{student?.name || "N/A"}</span>
-                </div>
-                <div className="fm-detail-item">
-                  <span className="fm-label">Roll Number:</span>
-                  <span className="fm-value">
-                    {student?.rollNumber || "N/A"}
-                  </span>
-                </div>
-                <div className="fm-detail-item">
-                  <span className="fm-label">Email:</span>
-                  <span className="fm-value">{student?.email || "N/A"}</span>
-                </div>
-                <div className="fm-detail-item">
-                  <span className="fm-label">Contact:</span>
-                  <span className="fm-value">{student?.contact || "N/A"}</span>
-                </div>
-                <div className="fm-detail-item">
-                  <span className="fm-label">Class:</span>
-                  <span className="fm-value">
-                    {student?.classInfo || "N/A"}
-                  </span>
-                </div>
-                <div className="fm-detail-item">
-                  <span className="fm-label">Father Name:</span>
-                  <span className="fm-value">
-                    {student?.fatherName || "N/A"}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Fee Summary */}
-            <div className="fm-summary-card">
-              <h5>Fee Summary</h5>
-              <div className="fm-summary-grid">
-                <div className="fm-summary-item">
-                  <span className="fm-summary-label">Total Fee</span>
-                  <span className="fm-summary-value">
-                    PKR {totals.totalFee.toLocaleString()}
-                  </span>
-                </div>
-                <div className="fm-summary-item">
-                  <span className="fm-summary-label">Paid Amount</span>
-                  <span className="fm-summary-value paid">
-                    PKR {totals.paidAmount.toLocaleString()}
-                  </span>
-                </div>
-                <div className="fm-summary-item">
-                  <span className="fm-summary-label">Remaining</span>
-                  <span className="fm-summary-value pending">
-                    PKR {totals.remainingAmount.toLocaleString()}
-                  </span>
-                </div>
-                <div className="fm-summary-item">
-                  <span className="fm-summary-label">Status</span>
-                  <span
-                    className={`fm-status-badge fm-status-${totals.status.toLowerCase()}`}
+          <div className="fm-student-details" style={{ marginBottom: "2rem" }}>
+            <div
+              className="fm-detail-card"
+              style={{
+                background: "#ffffff",
+                border: "1px solid #e2e8f0",
+                borderRadius: "0.75rem",
+                padding: "1.5rem",
+                boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+              }}
+            >
+              <h5
+                style={{
+                  fontSize: "1.1rem",
+                  fontWeight: "700",
+                  color: "#0f172a",
+                  marginBottom: "1.5rem",
+                }}
+              >
+                Student Information
+              </h5>
+              <div className="row g-3">
+                <div className="col-6 col-md-4">
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "0.3rem",
+                    }}
                   >
-                    {totals.status}
-                  </span>
+                    <span
+                      style={{
+                        fontSize: "0.8rem",
+                        fontWeight: "600",
+                        color: "#64748b",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.5px",
+                      }}
+                    >
+                      Name
+                    </span>
+                    <span
+                      style={{
+                        fontSize: "0.95rem",
+                        fontWeight: "600",
+                        color: "#0f172a",
+                      }}
+                    >
+                      {student?.name || "N/A"}
+                    </span>
+                  </div>
+                </div>
+                <div className="col-6 col-md-4">
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "0.3rem",
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: "0.8rem",
+                        fontWeight: "600",
+                        color: "#64748b",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.5px",
+                      }}
+                    >
+                      Roll Number
+                    </span>
+                    <span
+                      style={{
+                        fontSize: "0.95rem",
+                        fontWeight: "600",
+                        color: "#0f172a",
+                      }}
+                    >
+                      {student?.rollNumber || "N/A"}
+                    </span>
+                  </div>
+                </div>
+                <div className="col-6 col-md-4">
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "0.3rem",
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: "0.8rem",
+                        fontWeight: "600",
+                        color: "#64748b",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.5px",
+                      }}
+                    >
+                      Class
+                    </span>
+                    <span
+                      style={{
+                        fontSize: "0.95rem",
+                        fontWeight: "600",
+                        color: "#0f172a",
+                      }}
+                    >
+                      {student?.classInfo || "N/A"}
+                    </span>
+                  </div>
+                </div>
+                <div className="col-6 col-md-4">
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "0.3rem",
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: "0.8rem",
+                        fontWeight: "600",
+                        color: "#64748b",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.5px",
+                      }}
+                    >
+                      Contact
+                    </span>
+                    <span
+                      style={{
+                        fontSize: "0.95rem",
+                        fontWeight: "600",
+                        color: "#0f172a",
+                      }}
+                    >
+                      {student?.contact || "N/A"}
+                    </span>
+                  </div>
+                </div>
+                <div className="col-6 col-md-4">
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "0.3rem",
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: "0.8rem",
+                        fontWeight: "600",
+                        color: "#64748b",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.5px",
+                      }}
+                    >
+                      Father Name
+                    </span>
+                    <span
+                      style={{
+                        fontSize: "0.95rem",
+                        fontWeight: "600",
+                        color: "#0f172a",
+                      }}
+                    >
+                      {student?.fatherName || "N/A"}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -317,17 +437,7 @@ function FeeManagement() {
 
         {/* Fee History Table */}
         <div className="fm-table-card">
-          <div className="fm-table-header">
-            <h5 className="mb-0">Monthly Fee History</h5>
-            <button
-              type="button"
-              className="btn btn-sm btn-primary"
-              onClick={handleViewVoucher}
-            >
-              <i className="fas fa-receipt me-2"></i>View Voucher
-            </button>
-          </div>
-
+          
           <div className="table-responsive">
             <table className="table table-hover fm-fee-table">
               <thead className="fm-table-head">
@@ -337,6 +447,7 @@ function FeeManagement() {
                   <th>Total Fee</th>
                   <th>Paid Amount</th>
                   <th>Remaining</th>
+                  <th>Due Date</th>
                   <th>Status</th>
                   <th>Actions</th>
                 </tr>
@@ -347,14 +458,34 @@ function FeeManagement() {
                     <tr key={fee._id || idx}>
                       <td>{idx + 1}</td>
                       <td>
-                        <strong>{fee.month || "N/A"}</strong>
+                        <strong>
+                          {fee.month
+                            ? (() => {
+                                // Check if format is YYYY-MM (e.g., "2026-04")
+                                const monthMatch = fee.month.match(/^(\d{4})-(\d{2})$/);
+                                if (monthMatch) {
+                                  const year = monthMatch[1];
+                                  const monthNum = parseInt(monthMatch[2], 10);
+                                  const date = new Date(year, monthNum - 1, 1);
+                                  return date.toLocaleString("default", { month: "long", year: "numeric" });
+                                }
+                                // Return as-is if already formatted
+                                return fee.month;
+                              })()
+                            : "N/A"}
+                        </strong>
                       </td>
                       <td>
-                        `PKR 
-                        {(fee.finalFee || fee.actualFee || 0).toLocaleString()}`
+                        PKR{" "}
+                        {(fee.finalFee || fee.actualFee || 0).toLocaleString()}
                       </td>
-                      <td>`PKR{(fee.amountPaid || 0).toLocaleString()}`</td>
-                      <td>`PKR{(fee.remainingFee || 0).toLocaleString()}`</td>
+                      <td>PKR {(fee.amountPaid || 0).toLocaleString()}</td>
+                      <td>PKR {(fee.remainingFee || 0).toLocaleString()}</td>
+                      <td>
+                        {fee.dueDate
+                          ? new Date(fee.dueDate).toLocaleDateString()
+                          : "N/A"}
+                      </td>
                       <td>
                         <span
                           className={`fm-status-badge fm-status-${(fee.status || "unpaid").toLowerCase()}`}
@@ -366,11 +497,23 @@ function FeeManagement() {
                         </span>
                       </td>
                       <td>
-                        <div className="fm-row-actions">
+                        <div
+                          className="fm-row-actions"
+                          style={{ display: "flex", gap: "0.5rem" }}
+                        >
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-primary"
+                            onClick={() => handleViewMonthVoucher(fee)}
+                            title="View Fee Voucher"
+                          >
+                            <i className="fas fa-receipt"></i>
+                          </button>
                           <button
                             type="button"
                             className="btn btn-sm btn-primary"
                             onClick={() => handleEditFee(fee)}
+                            title="Edit Fee"
                           >
                             <i className="fas fa-edit"></i>
                           </button>
@@ -380,7 +523,7 @@ function FeeManagement() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="7" className="text-center text-muted py-3">
+                    <td colSpan="8" className="text-center text-muted py-3">
                       No fee records found
                     </td>
                   </tr>
@@ -421,7 +564,7 @@ function FeeManagement() {
                       const totalFee = Number(e.target.value);
                       const paid = editingData.amountPaid || 0;
                       const remaining = totalFee - paid;
-                      
+
                       // Auto-calculate status based on amounts
                       let autoStatus = "unpaid";
                       if (paid === 0) {
@@ -431,7 +574,7 @@ function FeeManagement() {
                       } else if (paid > 0 && remaining > 0) {
                         autoStatus = "partial";
                       }
-                      
+
                       setEditingData({
                         ...editingData,
                         finalFee: totalFee,
@@ -453,7 +596,7 @@ function FeeManagement() {
                       const finalFee =
                         editingData.finalFee || editingData.actualFee;
                       const remaining = finalFee - paid;
-                      
+
                       // Auto-calculate status based on amounts
                       let autoStatus = "unpaid";
                       if (paid === 0) {
@@ -463,7 +606,7 @@ function FeeManagement() {
                       } else if (paid > 0 && remaining > 0) {
                         autoStatus = "partial";
                       }
-                      
+
                       setEditingData({
                         ...editingData,
                         amountPaid: paid,
@@ -492,8 +635,9 @@ function FeeManagement() {
                     value={editingData.status || "unpaid"}
                     onChange={(e) => {
                       const selectedStatus = e.target.value;
-                      const finalFee = editingData.finalFee || editingData.actualFee || 0;
-                      
+                      const finalFee =
+                        editingData.finalFee || editingData.actualFee || 0;
+
                       // Auto-fill amounts based on selected status
                       if (selectedStatus === "paid") {
                         setEditingData({

@@ -59,11 +59,7 @@ function Sidebar({ children }) {
         icon: "fa-calendar-check",
         href: "/coming-soon",
       },
-      {
-        title: "Fee Voucher",
-        icon: "fa-receipt",
-        href: "/student/fee-voucher",
-      },
+   
       {
         title: "Leave Applications",
         icon: "fa-envelope-open-text",

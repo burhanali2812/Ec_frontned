@@ -38,6 +38,7 @@ function Voucher() {
         if (storedStudent) {
           studentData = JSON.parse(storedStudent);
           setStudent(studentData);
+          console.log("Loaded student data from localStorage", studentData);
         } else if (storedStudentId) {
           // If only student ID is available, fetch student data
           const studentRes = await axios.get(
@@ -59,19 +60,23 @@ function Voucher() {
             studentData = profileRes.data.student;
             setStudent(studentData);
           }
+        
         }
-
+        console.log("Student data after fetching:", studentData);
         // Fetch fee history from stored data or API
         if (storedFeeHistory) {
           setFeeHistory(JSON.parse(storedFeeHistory));
-        } else if (storedStudentId) {
+          console.log("Loaded fee history from localStorage", JSON.parse(storedFeeHistory));
+        }  if (storedStudentId || studentData?._id) {
+          console.log("Fetching fee history from API for student ID:", storedStudentId || studentData._id);
           try {
             const feeRes = await axios.get(
-              `${API_BASE}/students/getStudentFee/${storedStudentId}`,
+              `${API_BASE}/students/getStudentFee/${storedStudentId || studentData._id}`,
               { headers: getAuthHeaders() },
             );
             if (feeRes.data?.success && feeRes.data.fees) {
               setFeeHistory(feeRes.data.fees);
+              console.log("Fetched fee history from API", feeRes.data.fees);
             }
           } catch (error) {
             console.log("Fee history not available");

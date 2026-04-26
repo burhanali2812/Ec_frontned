@@ -19,12 +19,7 @@
   margin-bottom: 1.5rem;
 }
 
-/* Student Details */
-.fm-student-details {
-  display: grid;
-  grid-template-columns: 2fr 1.2fr;
-  gap: 1.5rem;
-}
+
 
 .fm-detail-card,
 .fm-summary-card {
