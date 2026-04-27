@@ -205,8 +205,37 @@ function Voucher() {
   const totals = calculateTotals();
 
   const downloadPDF = async (isAuto = false) => {
-    // Just show print dialog for user to print to PDF
-    window.print();
+    try {
+      // Get the first fee month for filename
+      const firstFee = feeHistory && feeHistory.length > 0 ? feeHistory[0] : null;
+      let month = "Voucher";
+      
+      if (firstFee?.month) {
+        const monthMatch = firstFee.month.match(/^(\d{4})-(\d{2})$/);
+        if (monthMatch) {
+          const year = monthMatch[1];
+          const monthNum = parseInt(monthMatch[2], 10);
+          const date = new Date(year, monthNum - 1, 1);
+          month = date.toLocaleString("default", { month: "long", year: "numeric" });
+        } else {
+          month = firstFee.month;
+        }
+      }
+      
+      const studentName = student?.name || "Student";
+      const filename = `${studentName}_Voucher_${month}`;
+      
+      // Set document title for PDF filename
+      const originalTitle = document.title;
+      document.title = filename;
+      
+      setTimeout(() => {
+        window.print();
+        document.title = originalTitle;
+      }, 100);
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+    }
   };
 
   if (loading) {
@@ -224,15 +253,39 @@ function Voucher() {
       <div
         className={`voucher-print-header ${isPrinting ? "is-printing" : ""}`}
       >
-        <button
-          type="button"
-          className="btn btn-primary mb-3"
-          onClick={() => downloadPDF()}
-          style={{ display: isPrinting ? "none" : "block" }}
-        >
-          <i className="fas fa-print me-2"></i>
-          Print / Download PDF
-        </button>
+        <div style={{ display: "flex", gap: "0.75rem", flexDirection: "column", width: "fit-content" }}>
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => downloadPDF()}
+            style={{ display: isPrinting ? "none" : "block" }}
+          >
+            <i className="fas fa-print me-2"></i>
+            Print / Download PDF
+          </button>
+          {student?.fatherContact && (
+            <a
+              href={`https://wa.me/${student.fatherContact.replace(/\D/g, '')}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn"
+              style={{
+                display: isPrinting ? "none" : "inline-block",
+                backgroundColor: "#25D366",
+                color: "white",
+                border: "none",
+                textDecoration: "none",
+                padding: "0.375rem 0.75rem",
+                borderRadius: "0.25rem",
+                fontSize: "0.875rem",
+                fontWeight: "500"
+              }}
+            >
+              <i className="fab fa-whatsapp me-2"></i>
+              WhatsApp Parent
+            </a>
+          )}
+        </div>
       </div>
       <div className="voucher-container" ref={voucherRef}>
         {/* Watermark */}
