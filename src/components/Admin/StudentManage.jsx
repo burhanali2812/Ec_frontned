@@ -269,7 +269,7 @@ function StudentManage({ adminLoginType = "academy" }) {
   return (
     <Sidebar>
       <Toaster position="top-right" />
-   
+
       <div className="sm-content-wrapper">
         <section className="sm-header-card">
           <div className="sm-logo-wrap">
@@ -338,7 +338,7 @@ function StudentManage({ adminLoginType = "academy" }) {
                       <td>
                         {student.fatherContact ? (
                           <a
-                            href={`https://wa.me/${student.fatherContact.replace(/\D/g, '')}`}
+                            href={`https://wa.me/${student.fatherContact.replace(/\D/g, "")}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="sm-whatsapp-link"
@@ -349,7 +349,7 @@ function StudentManage({ adminLoginType = "academy" }) {
                               fontWeight: "600",
                               display: "inline-flex",
                               alignItems: "center",
-                              gap: "0.5rem"
+                              gap: "0.5rem",
                             }}
                           >
                             <i className="fab fa-whatsapp"></i>

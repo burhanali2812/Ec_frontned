@@ -366,11 +366,15 @@ function StudentRegister({ adminLoginType = "academy" }) {
 
       if (res.data?.success) {
         toast.success(res.data?.message || "Registration saved successfully");
-        await axios.post(`${STUDENT_API}/studentFee`, {
-          registrationId: res.data.registration._id,
-        }, {
-          headers: getAuthHeaders(),
-        });
+        await axios.post(
+          `${STUDENT_API}/studentFee`,
+          {
+            registrationId: res.data.registration._id,
+          },
+          {
+            headers: getAuthHeaders(),
+          },
+        );
         // Store student data in localStorage for voucher page
         localStorage.setItem("voucherStudent", JSON.stringify(student));
         localStorage.setItem("voucherStudentId", student._id || student.id);
@@ -445,33 +449,80 @@ function StudentRegister({ adminLoginType = "academy" }) {
               <div className="sr-student-grid mt-3">
                 <div className="sr-student-info">
                   <h5 className="sr-section-title">Student Details</h5>
-                  <div className="sr-info-item">
-                    <span>Name</span>
-                    <strong>{student.name}</strong>
-                  </div>
-                  <div className="sr-info-item">
-                    <span>Email</span>
-                    <strong>{student.email}</strong>
-                  </div>
-                  <div className="sr-info-item">
-                    <span>Contact</span>
-                    <strong>{student.contact}</strong>
-                  </div>
-                  <div className="sr-info-item">
-                    <span>Class</span>
-                    <strong>{student.classInfo}</strong>
-                  </div>
-                  <div className="sr-info-item">
-                    <span>Father Name</span>
-                    <strong>{student.fatherName}</strong>
-                  </div>
-                  <div className="sr-info-item">
-                    <span>Father Contact</span>
-                    <strong>{student.fatherContact || "-"}</strong>
-                  </div>
-                  <div className="sr-info-item">
-                    <span>Roll No</span>
-                    <strong>{student.rollNumber || "-"}</strong>
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "1fr",
+                      gap: "1rem",
+                    }}
+                  >
+                    <div
+                      className="sr-info-item"
+                      style={{ fontSize: "0.9rem" }}
+                    >
+                      <span style={{ fontSize: "0.8rem", color: "#666" }}>
+                        Name
+                      </span>
+                      <strong style={{ fontSize: "0.95rem" }}>
+                        {student.name}
+                      </strong>
+                    </div>
+                   
+                    <div
+                      className="sr-info-item"
+                      style={{ fontSize: "0.9rem" }}
+                    >
+                      <span style={{ fontSize: "0.8rem", color: "#666" }}>
+                        Contact
+                      </span>
+                      <strong style={{ fontSize: "0.95rem" }}>
+                        {student.contact}
+                      </strong>
+                    </div>
+                    <div
+                      className="sr-info-item"
+                      style={{ fontSize: "0.9rem" }}
+                    >
+                      <span style={{ fontSize: "0.8rem", color: "#666" }}>
+                        Class
+                      </span>
+                      <strong style={{ fontSize: "0.95rem" }}>
+                        {student.classInfo}
+                      </strong>
+                    </div>
+                    <div
+                      className="sr-info-item"
+                      style={{ fontSize: "0.9rem" }}
+                    >
+                      <span style={{ fontSize: "0.8rem", color: "#666" }}>
+                        Father Name
+                      </span>
+                      <strong style={{ fontSize: "0.95rem" }}>
+                        {student.fatherName}
+                      </strong>
+                    </div>
+                    <div
+                      className="sr-info-item"
+                      style={{ fontSize: "0.9rem" }}
+                    >
+                      <span style={{ fontSize: "0.8rem", color: "#666" }}>
+                        Father Contact
+                      </span>
+                      <strong style={{ fontSize: "0.95rem" }}>
+                        {student.fatherContact || "-"}
+                      </strong>
+                    </div>
+                    <div
+                      className="sr-info-item"
+                      style={{ fontSize: "0.9rem" }}
+                    >
+                      <span style={{ fontSize: "0.8rem", color: "#666" }}>
+                        Roll No
+                      </span>
+                      <strong style={{ fontSize: "0.95rem" }}>
+                        {student.rollNumber || "-"}
+                      </strong>
+                    </div>
                   </div>
                 </div>
 
@@ -481,174 +532,214 @@ function StudentRegister({ adminLoginType = "academy" }) {
                     <div className="sr-note">Loading registered courses...</div>
                   )}
                   <form onSubmit={handleSubmit}>
-                    <div className="sr-summary">
-                      <div>
-                        <div className="sr-summary-label">Selected Courses</div>
-                        <div className="sr-summary-value">
-                          {selectedCourses.length}
-                        </div>
-                      </div>
-                      <div>
-                        <div className="sr-summary-label">
-                          Total Actual Price
-                        </div>
-                        <div className="sr-summary-value">
-                          {totalActualPrice}
-                        </div>
-                      </div>
-                      <div>
-                        <div className="sr-summary-label">
-                          Total Discounted Price
-                        </div>
-                        <div className="sr-summary-value sr-positive">
-                          {totalDiscountedPrice}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="sr-course-columns">
-                      <div>
-                        <h6 className="sr-column-title">Registered Courses</h6>
-                        <div className="sr-course-list">
-                          {selectedCourses.length === 0 ? (
-                            <div className="sr-empty">
-                              No registered courses.
-                            </div>
-                          ) : (
-                            selectedCourses.map((course) => {
-                              const courseId = String(course._id || course.id);
-                              return (
-                                <div
-                                  key={`registered-${courseId}`}
-                                  className="sr-course-item"
-                                >
-                                  <label className="sr-course-label">
-                                    <input
-                                      type="checkbox"
-                                      checked={selectedCourseIds.includes(
-                                        courseId,
-                                      )}
-                                      onChange={() =>
-                                        handleToggleCourse(courseId)
-                                      }
-                                    />
-                                    <div className="sr-course-content">
-                                      <div className="sr-course-title-row">
-                                        <span className="sr-course-title">
-                                          {course.courseTitle || course.title}
-                                        </span>
-                                        <span className="sr-course-price">
-                                          Actual:{" "}
-                                          {Number(course.coursePrice || 0)}
-                                        </span>
-                                      </div>
-                                      <div className="sr-course-desc">
-                                        {course.courseDescription ||
-                                          course.description}
-                                      </div>
-                                      <div className="sr-price-input-wrap">
-                                        <label>Discounted Price</label>
-                                        <input
-                                          type="number"
-                                          min="0"
-                                          className="form-control form-control-sm"
-                                          value={
-                                            discountedPrices[courseId] ?? ""
-                                          }
-                                          onChange={(e) =>
-                                            handleDiscountedPriceChange(
-                                              courseId,
-                                              e.target.value,
-                                            )
-                                          }
-                                        />
-                                      </div>
-                                    </div>
-                                  </label>
-                                </div>
-                              );
-                            })
-                          )}
-                        </div>
-                      </div>
-
-                      <div>
-                        <h6 className="sr-column-title">Available Courses</h6>
-                        <div className="sr-course-list">
-                          {loadingCourses ? (
-                            <div className="sr-empty">Loading courses...</div>
-                          ) : availableCourses.length === 0 ? (
-                            <div className="sr-empty">
-                              No available courses.
-                            </div>
-                          ) : (
-                            availableCourses.map((course) => {
-                              const courseId = String(course._id || course.id);
-                              return (
-                                <div
-                                  key={`available-${courseId}`}
-                                  className="sr-course-item"
-                                >
-                                  <label className="sr-course-label">
-                                    <input
-                                      type="checkbox"
-                                      checked={selectedCourseIds.includes(
-                                        courseId,
-                                      )}
-                                      onChange={() =>
-                                        handleToggleCourse(courseId)
-                                      }
-                                    />
-                                    <div className="sr-course-content">
-                                      <div className="sr-course-title-row">
-                                        <span className="sr-course-title">
-                                          {course.courseTitle || course.title}
-                                        </span>
-                                        <span className="sr-course-price">
-                                          Actual:{" "}
-                                          {Number(course.coursePrice || 0)}
-                                        </span>
-                                      </div>
-                                      <div className="sr-course-desc">
-                                        {course.courseDescription ||
-                                          course.description}
-                                      </div>
-                                      <div className="sr-price-input-wrap">
-                                        <label>Discounted Price</label>
-                                        <input
-                                          type="number"
-                                          min="0"
-                                          className="form-control form-control-sm"
-                                          value={
-                                            discountedPrices[courseId] ?? ""
-                                          }
-                                          onChange={(e) =>
-                                            handleDiscountedPriceChange(
-                                              courseId,
-                                              e.target.value,
-                                            )
-                                          }
-                                        />
-                                      </div>
-                                    </div>
-                                  </label>
-                                </div>
-                              );
-                            })
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="sr-submit-row">
-                      <button
-                        type="submit"
-                        className="btn btn-success"
-                        disabled={submitting || !selectedCourseIds.length}
+                    {loadingCourses ? (
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          padding: "3rem",
+                          gap: "1rem",
+                        }}
                       >
-                        {submitting ? "Saving..." : "Save Registration"}
-                      </button>
-                    </div>
+                        <div
+                          className="spinner-border text-primary"
+                          role="status"
+                        >
+                          <span className="visually-hidden">
+                            Loading courses...
+                          </span>
+                        </div>
+                        <span style={{ fontSize: "1rem", color: "#666" }}>
+                          Loading courses...
+                        </span>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="sr-summary">
+                          <div>
+                            <div className="sr-summary-label">
+                              Selected Courses
+                            </div>
+                            <div className="sr-summary-value">
+                              {selectedCourses.length}
+                            </div>
+                          </div>
+                          <div>
+                            <div className="sr-summary-label">
+                              Total Actual Price
+                            </div>
+                            <div className="sr-summary-value">
+                              {totalActualPrice}
+                            </div>
+                          </div>
+                          <div>
+                            <div className="sr-summary-label">
+                              Total Discounted Price
+                            </div>
+                            <div className="sr-summary-value sr-positive">
+                              {totalDiscountedPrice}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="sr-course-columns">
+                          <div>
+                            <h6 className="sr-column-title">
+                              Registered Courses
+                            </h6>
+                            <div className="sr-course-list">
+                              {selectedCourses.length === 0 ? (
+                                <div className="sr-empty">
+                                  No registered courses.
+                                </div>
+                              ) : (
+                                selectedCourses.map((course) => {
+                                  const courseId = String(
+                                    course._id || course.id,
+                                  );
+                                  return (
+                                    <div
+                                      key={`registered-${courseId}`}
+                                      className="sr-course-item"
+                                    >
+                                      <label className="sr-course-label">
+                                        <input
+                                          type="checkbox"
+                                          checked={selectedCourseIds.includes(
+                                            courseId,
+                                          )}
+                                          onChange={() =>
+                                            handleToggleCourse(courseId)
+                                          }
+                                        />
+                                        <div className="sr-course-content">
+                                          <div className="sr-course-title-row">
+                                            <span className="sr-course-title">
+                                              {course.courseTitle ||
+                                                course.title}
+                                            </span>
+                                            <span className="sr-course-price">
+                                              Actual:{" "}
+                                              {Number(course.coursePrice || 0)}
+                                            </span>
+                                          </div>
+                                          <div className="sr-course-desc">
+                                            {course.courseDescription ||
+                                              course.description}
+                                          </div>
+                                          <div className="sr-price-input-wrap">
+                                            <label>Discounted Price</label>
+                                            <input
+                                              type="number"
+                                              min="0"
+                                              className="form-control form-control-sm"
+                                              value={
+                                                discountedPrices[courseId] ?? ""
+                                              }
+                                              onChange={(e) =>
+                                                handleDiscountedPriceChange(
+                                                  courseId,
+                                                  e.target.value,
+                                                )
+                                              }
+                                            />
+                                          </div>
+                                        </div>
+                                      </label>
+                                    </div>
+                                  );
+                                })
+                              )}
+                            </div>
+                          </div>
+
+                          <div>
+                            <h6 className="sr-column-title">
+                              Available Courses
+                            </h6>
+                            <div className="sr-course-list">
+                              {loadingCourses ? (
+                                <div className="sr-empty">
+                                  Loading courses...
+                                </div>
+                              ) : availableCourses.length === 0 ? (
+                                <div className="sr-empty">
+                                  No available courses.
+                                </div>
+                              ) : (
+                                availableCourses.map((course) => {
+                                  const courseId = String(
+                                    course._id || course.id,
+                                  );
+                                  return (
+                                    <div
+                                      key={`available-${courseId}`}
+                                      className="sr-course-item"
+                                    >
+                                      <label className="sr-course-label">
+                                        <input
+                                          type="checkbox"
+                                          checked={selectedCourseIds.includes(
+                                            courseId,
+                                          )}
+                                          onChange={() =>
+                                            handleToggleCourse(courseId)
+                                          }
+                                        />
+                                        <div className="sr-course-content">
+                                          <div className="sr-course-title-row">
+                                            <span className="sr-course-title">
+                                              {course.courseTitle ||
+                                                course.title}
+                                            </span>
+                                            <span className="sr-course-price">
+                                              Actual:{" "}
+                                              {Number(course.coursePrice || 0)}
+                                            </span>
+                                          </div>
+                                          <div className="sr-course-desc">
+                                            {course.courseDescription ||
+                                              course.description}
+                                          </div>
+                                          <div className="sr-price-input-wrap">
+                                            <label>Discounted Price</label>
+                                            <input
+                                              type="number"
+                                              min="0"
+                                              className="form-control form-control-sm"
+                                              value={
+                                                discountedPrices[courseId] ?? ""
+                                              }
+                                              onChange={(e) =>
+                                                handleDiscountedPriceChange(
+                                                  courseId,
+                                                  e.target.value,
+                                                )
+                                              }
+                                            />
+                                          </div>
+                                        </div>
+                                      </label>
+                                    </div>
+                                  );
+                                })
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="sr-submit-row">
+                          <button
+                            type="submit"
+                            className="btn btn-success"
+                            disabled={submitting || !selectedCourseIds.length}
+                          >
+                            {submitting ? "Saving..." : "Save Registration"}
+                          </button>
+                        </div>
+                      </>
+                    )}
                   </form>
                 </div>
               </div>

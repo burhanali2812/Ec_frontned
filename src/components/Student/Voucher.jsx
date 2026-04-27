@@ -60,15 +60,21 @@ function Voucher() {
             studentData = profileRes.data.student;
             setStudent(studentData);
           }
-        
         }
         console.log("Student data after fetching:", studentData);
         // Fetch fee history from stored data or API
         if (storedFeeHistory) {
           setFeeHistory(JSON.parse(storedFeeHistory));
-          console.log("Loaded fee history from localStorage", JSON.parse(storedFeeHistory));
-        }  if (storedStudentId || studentData?._id) {
-          console.log("Fetching fee history from API for student ID:", storedStudentId || studentData._id);
+          console.log(
+            "Loaded fee history from localStorage",
+            JSON.parse(storedFeeHistory),
+          );
+        }
+        if (storedStudentId || studentData?._id) {
+          console.log(
+            "Fetching fee history from API for student ID:",
+            storedStudentId || studentData._id,
+          );
           try {
             const feeRes = await axios.get(
               `${API_BASE}/students/getStudentFee/${storedStudentId || studentData._id}`,
@@ -159,6 +165,17 @@ function Voucher() {
   }, []);
 
   const calculateTotals = () => {
+    // Use fee data if available (already has prorated calculation)
+    if (feeHistory && feeHistory.length > 0) {
+      const fee = feeHistory[0];
+      return {
+        totalOriginalFee: Number(fee.actualFee || 0),
+        totalDiscountedFee: Number(fee.finalFee || 0),
+        totalDiscount: Number(fee.discount || 0),
+      };
+    }
+
+    // Fallback to aboutCourse calculation (for full month)
     let totalOriginalFee = 0;
     let totalDiscountedFee = 0;
 
@@ -207,28 +224,32 @@ function Voucher() {
   const downloadPDF = async (isAuto = false) => {
     try {
       // Get the first fee month for filename
-      const firstFee = feeHistory && feeHistory.length > 0 ? feeHistory[0] : null;
+      const firstFee =
+        feeHistory && feeHistory.length > 0 ? feeHistory[0] : null;
       let month = "Voucher";
-      
+
       if (firstFee?.month) {
         const monthMatch = firstFee.month.match(/^(\d{4})-(\d{2})$/);
         if (monthMatch) {
           const year = monthMatch[1];
           const monthNum = parseInt(monthMatch[2], 10);
           const date = new Date(year, monthNum - 1, 1);
-          month = date.toLocaleString("default", { month: "long", year: "numeric" });
+          month = date.toLocaleString("default", {
+            month: "long",
+            year: "numeric",
+          });
         } else {
           month = firstFee.month;
         }
       }
-      
+
       const studentName = student?.name || "Student";
       const filename = `${studentName}_Voucher_${month}`;
-      
+
       // Set document title for PDF filename
       const originalTitle = document.title;
       document.title = filename;
-      
+
       setTimeout(() => {
         window.print();
         document.title = originalTitle;
@@ -248,27 +269,36 @@ function Voucher() {
     );
   }
 
-const month = ()=>{
-  const firstFee = feeHistory && feeHistory.length > 0 ? feeHistory[0] : null;
-  if (firstFee?.month) {
-    const monthMatch = firstFee.month.match(/^(\d{4})-(\d{2})$/); 
-    if (monthMatch) {
-      const year = monthMatch[1];
-      const monthNum = parseInt(monthMatch[2], 10);
-      const date = new Date(year, monthNum - 1, 1);
-      return date.toLocaleString("default", { month: "long", year: "numeric" });
+  const month = () => {
+    const firstFee = feeHistory && feeHistory.length > 0 ? feeHistory[0] : null;
+    if (firstFee?.month) {
+      const monthMatch = firstFee.month.match(/^(\d{4})-(\d{2})$/);
+      if (monthMatch) {
+        const year = monthMatch[1];
+        const monthNum = parseInt(monthMatch[2], 10);
+        const date = new Date(year, monthNum - 1, 1);
+        return date.toLocaleString("default", {
+          month: "long",
+          year: "numeric",
+        });
+      }
+      return firstFee.month;
     }
-    return firstFee.month;
-  }
-}
-
+  };
 
   return (
     <div className="voucher-page">
       <div
         className={`voucher-print-header ${isPrinting ? "is-printing" : ""}`}
       >
-        <div style={{ display: "flex", gap: "0.75rem", flexDirection: "column", width: "fit-content" }}>
+        <div
+          style={{
+            display: "flex",
+            gap: "0.75rem",
+            flexDirection: "column",
+            width: "fit-content",
+          }}
+        >
           <button
             type="button"
             className="btn btn-primary"
@@ -280,7 +310,7 @@ const month = ()=>{
           </button>
           {student?.fatherContact && (
             <a
-              href={`https://wa.me/${student.fatherContact.replace(/\D/g, '')}`}
+              href={`https://wa.me/${student.fatherContact.replace(/\D/g, "")}`}
               target="_blank"
               rel="noopener noreferrer"
               className="btn"
@@ -293,7 +323,7 @@ const month = ()=>{
                 padding: "0.375rem 0.75rem",
                 borderRadius: "0.25rem",
                 fontSize: "0.875rem",
-                fontWeight: "500"
+                fontWeight: "500",
               }}
             >
               <i className="fab fa-whatsapp me-2"></i>
@@ -333,11 +363,9 @@ const month = ()=>{
           <div className="payment-info">
             <div className="payment-item">
               <span className="payment-label">Account Title:</span>
-              <span className="payment-value">
-                MUHAMMAD ALI
-              </span>
+              <span className="payment-value">MUHAMMAD ALI</span>
             </div>
-            
+
             <div className="payment-item">
               <span className="payment-label">Account Number:</span>
               <span className="payment-value">03164752672</span>
@@ -347,14 +375,12 @@ const month = ()=>{
               <span className="payment-value">EASYPAISA</span>
             </div>
           </div>
-            <div className="payment-info">
+          <div className="payment-info">
             <div className="payment-item">
               <span className="payment-label">Account Title:</span>
-              <span className="payment-value">
-               MUHAMMAD ALI
-              </span>
+              <span className="payment-value">MUHAMMAD ALI</span>
             </div>
-            
+
             <div className="payment-item">
               <span className="payment-label">IBAN Number:</span>
               <span className="payment-value">PK17ALFH0481001010298766</span>
@@ -400,7 +426,9 @@ const month = ()=>{
             <div className="info-item">
               <label className="info-label">Due Date</label>
               <div className="info-value">
-                {new Date(new Date().setDate(new Date().getDate() + 7)).toLocaleDateString("en-GB")}
+                {feeHistory && feeHistory.length > 0 && feeHistory[0]?.dueDate
+                  ? new Date(feeHistory[0].dueDate).toLocaleDateString("en-GB")
+                  : "N/A"}
               </div>
             </div>
           </div>
@@ -455,6 +483,36 @@ const month = ()=>{
             </tbody>
           </table>
         </section>
+
+        {/* Proration Note Section */}
+        {feeHistory && feeHistory.length > 0 && feeHistory[0]?.isProrated && (
+          <section
+            className="voucher-section"
+            style={{
+              backgroundColor: "#f0f4ff",
+              borderLeft: "4px solid #3b82f6",
+              padding: "1rem",
+            }}
+          >
+            <p style={{ margin: "0", fontSize: "0.9rem", color: "#1e40af" }}>
+              <strong>Note:</strong> This is a prorated fee for{" "}
+              <strong>{feeHistory[0].proratedDays} days</strong> from{" "}
+              <strong>
+                {new Date(feeHistory[0].proratedFromDate).toLocaleDateString(
+                  "en-GB",
+                )}
+              </strong>{" "}
+              to{" "}
+              <strong>
+                {new Date(feeHistory[0].proratedToDate).toLocaleDateString(
+                  "en-GB",
+                )}
+              </strong>{" "}
+              (end of month). Fee calculated as: Monthly Fee ÷ Total Days in
+              Month × {feeHistory[0].proratedDays} Days
+            </p>
+          </section>
+        )}
 
         {/* Fee Status Section */}
         {feeHistory && feeHistory.length > 0 && (
@@ -522,9 +580,7 @@ const month = ()=>{
             <p className="voucher-date">
               Generated on: {new Date().toLocaleDateString("en-GB")}
             </p>
-            <p className="voucher-due-date">
-              Due Date: {new Date(new Date().setDate(new Date().getDate() + 7)).toLocaleDateString("en-GB")}
-            </p>
+          
           </div>
         </div>
       </div>

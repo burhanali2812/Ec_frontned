@@ -343,7 +343,7 @@ function TeacherManage({ adminLoginType }) {
                     <td>
                       {teacher.contact ? (
                         <a
-                          href={`https://wa.me/${teacher.contact.replace(/\D/g, '')}`}
+                          href={`https://wa.me/${teacher.contact.replace(/\D/g, "")}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="tm-whatsapp-link"
@@ -354,7 +354,7 @@ function TeacherManage({ adminLoginType }) {
                             fontWeight: "600",
                             display: "inline-flex",
                             alignItems: "center",
-                            gap: "0.5rem"
+                            gap: "0.5rem",
                           }}
                         >
                           <i className="fab fa-whatsapp"></i>

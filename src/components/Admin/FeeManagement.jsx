@@ -437,7 +437,6 @@ function FeeManagement() {
 
         {/* Fee History Table */}
         <div className="fm-table-card">
-          
           <div className="table-responsive">
             <table className="table table-hover fm-fee-table">
               <thead className="fm-table-head">
@@ -462,12 +461,16 @@ function FeeManagement() {
                           {fee.month
                             ? (() => {
                                 // Check if format is YYYY-MM (e.g., "2026-04")
-                                const monthMatch = fee.month.match(/^(\d{4})-(\d{2})$/);
+                                const monthMatch =
+                                  fee.month.match(/^(\d{4})-(\d{2})$/);
                                 if (monthMatch) {
                                   const year = monthMatch[1];
                                   const monthNum = parseInt(monthMatch[2], 10);
                                   const date = new Date(year, monthNum - 1, 1);
-                                  return date.toLocaleString("default", { month: "long", year: "numeric" });
+                                  return date.toLocaleString("default", {
+                                    month: "long",
+                                    year: "numeric",
+                                  });
                                 }
                                 // Return as-is if already formatted
                                 return fee.month;
