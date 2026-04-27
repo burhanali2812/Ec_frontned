@@ -232,7 +232,7 @@ function Voucher() {
       setTimeout(() => {
         window.print();
         document.title = originalTitle;
-      }, 100);
+      }, 200);
     } catch (error) {
       console.error("Error generating PDF:", error);
     }
@@ -247,6 +247,21 @@ function Voucher() {
       </div>
     );
   }
+
+const month = ()=>{
+  const firstFee = feeHistory && feeHistory.length > 0 ? feeHistory[0] : null;
+  if (firstFee?.month) {
+    const monthMatch = firstFee.month.match(/^(\d{4})-(\d{2})$/); 
+    if (monthMatch) {
+      const year = monthMatch[1];
+      const monthNum = parseInt(monthMatch[2], 10);
+      const date = new Date(year, monthNum - 1, 1);
+      return date.toLocaleString("default", { month: "long", year: "numeric" });
+    }
+    return firstFee.month;
+  }
+}
+
 
   return (
     <div className="voucher-page">
@@ -304,9 +319,9 @@ function Voucher() {
           </div>
           <div className="voucher-title-section">
             <h1 className="voucher-main-title">
-              The Education's Cradle Academy
+              THE EDUCATION'S CRADLE INSTITUTE
             </h1>
-            <h2 className="voucher-subtitle">Fee Voucher</h2>
+            <h2 className="voucher-subtitle">Fee Voucher for {month()}</h2>
           </div>
         </div>
 
@@ -319,16 +334,34 @@ function Voucher() {
             <div className="payment-item">
               <span className="payment-label">Account Title:</span>
               <span className="payment-value">
-                The Education's Cradle Academy
+                MUHAMMAD ALI
               </span>
             </div>
+            
             <div className="payment-item">
               <span className="payment-label">Account Number:</span>
-              <span className="payment-value">1234567890</span>
+              <span className="payment-value">03164752672</span>
             </div>
             <div className="payment-item">
               <span className="payment-label">Bank:</span>
-              <span className="payment-value">HBL / MEEZAN BANK</span>
+              <span className="payment-value">EASYPAISA</span>
+            </div>
+          </div>
+            <div className="payment-info">
+            <div className="payment-item">
+              <span className="payment-label">Account Title:</span>
+              <span className="payment-value">
+               MUHAMMAD ALI
+              </span>
+            </div>
+            
+            <div className="payment-item">
+              <span className="payment-label">IBAN Number:</span>
+              <span className="payment-value">PK17ALFH0481001010298766</span>
+            </div>
+            <div className="payment-item">
+              <span className="payment-label">Bank:</span>
+              <span className="payment-value">BANK ALFALAH</span>
             </div>
           </div>
         </section>
