@@ -151,9 +151,9 @@ function Attandance() {
         });
         setStatusMap(nextMap);
 
-        // Fetch leaves for these students
+        // Fetch leaves in parallel (don't await - let it happen in background)
         if (res.data.students && res.data.students.length > 0) {
-          await fetchStudentLeaves(res.data.students, dateValue);
+          fetchStudentLeaves(res.data.students, dateValue);
         }
       } else {
         toast.error(res.data?.message || "Failed to load attendance session");
@@ -177,6 +177,7 @@ function Attandance() {
         },
         {
           headers: getAuthHeaders(),
+          timeout: 5000, // Add timeout to prevent hanging
         },
       );
 
@@ -191,6 +192,7 @@ function Attandance() {
       }
     } catch (error) {
       console.error("Error checking leaves:", error);
+      // Silently fail - don't block the main attendance flow
       setLeavesMap({});
     } finally {
       setLoadingLeaves(false);
@@ -285,7 +287,7 @@ function Attandance() {
       if (res.data?.success) {
         toast.success(res.data?.message || "Attendance saved");
         setTimeout(() => {
-          navigate("/teacherPanel")
+          navigate("/teacherPanel");
         }, 1000);
       } else {
         toast.error(res.data?.message || "Failed to save attendance");
@@ -499,9 +501,7 @@ function Attandance() {
                             </td>
                             <td>
                               <div className="fw-semibold">{student.name}</div>
-                              <div className="text-muted small">
-                                {student.email || "-"}
-                              </div>
+
                               <div className="mt-2">
                                 <div className="d-flex justify-content-between align-items-center mb-1 small text-muted">
                                   <span>Attendance</span>
@@ -528,12 +528,7 @@ function Attandance() {
                                 </div>
                               </div>
                             </td>
-                            <td>
-                              <div>{student.contact || "-"}</div>
-                              <div className="text-muted small">
-                                {student.fatherName || ""}
-                              </div>
-                            </td>
+
                             <td>
                               <div className="attendance-radio-group">
                                 {leavesMap[student._id] ? (

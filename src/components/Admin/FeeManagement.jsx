@@ -18,6 +18,9 @@ function FeeManagement() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingData, setEditingData] = useState({});
   const [isSaving, setIsSaving] = useState(false);
+  const [searchRollNumber, setSearchRollNumber] = useState("");
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [currentStudentId, setCurrentStudentId] = useState(studentId || null);
 
   const API_BASE = "https://ec-backend-phi.vercel.app/api";
 
@@ -25,17 +28,22 @@ function FeeManagement() {
     const token = localStorage.getItem("token");
     return token ? { Authorization: `Bearer ${token}` } : {};
   };
+  console.log("Current Student ID:", currentStudentId);
 
   useEffect(() => {
-    fetchData();
-  }, [studentId]);
+    if (currentStudentId) {
+      fetchData();
+    } else {
+      setLoading(false);
+    }
+  }, [currentStudentId]);
 
   const fetchData = async () => {
     setLoading(true);
     try {
       // Fetch student details
       const studentRes = await axios.get(
-        `${API_BASE}/students/getStudentById/${studentId}`,
+        `${API_BASE}/students/getStudentById/${currentStudentId}`,
         { headers: getAuthHeaders() },
       );
 
@@ -45,7 +53,7 @@ function FeeManagement() {
 
       // Fetch courses and registration info
       const coursesRes = await axios.get(
-        `${API_BASE}/registration/getStudentCourses/${studentId}`,
+        `${API_BASE}/registration/getStudentCourses/${currentStudentId}`,
         { headers: getAuthHeaders() },
       );
 
@@ -56,8 +64,7 @@ function FeeManagement() {
 
       // Fetch fee history
       const feeRes = await axios.get(
-        `${API_BASE}/students/getStudentFee/${studentId}?feeFetchType=all`, // Fetch all fees for the student
-    
+        `${API_BASE}/students/getStudentFee/${currentStudentId}?feeFetchType=all`,
         { headers: getAuthHeaders() },
       );
 
@@ -158,61 +165,86 @@ function FeeManagement() {
     return "Unpaid";
   };
 
+  const handleSearchStudent = async (e) => {
+    e.preventDefault();
+    if (!searchRollNumber.trim()) {
+      toast.error("Please enter a roll number");
+      return;
+    }
+
+    setSearchLoading(true);
+    try {
+      const res = await axios.get(
+        `${API_BASE}/students/getStudentByRollNumber/${searchRollNumber}`,
+        { headers: getAuthHeaders() },
+      );
+
+      if (res.data?.success && res.data?.student) {
+        setCurrentStudentId(res.data.student._id);
+        setSearchRollNumber("");
+        toast.success("Student found! Loading fee details...");
+      } else {
+        toast.error("Student not found");
+      }
+    } catch (error) {
+      console.error("Error searching student:", error);
+      toast.error(error.response?.data?.message || "Failed to search student");
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+
   const handleEditFee = (fee) => {
     setEditingData({ ...fee });
     setShowEditModal(true);
   };
 
- const handleSaveEdit = async () => {
-  try {
-    setIsSaving(true);
+  const handleSaveEdit = async () => {
+    try {
+      setIsSaving(true);
 
-    console.log("Sending amount:", editingData.amountPaid);
+      console.log("Sending amount:", editingData.amountPaid);
 
-    const res = await axios.put(
-      `${API_BASE}/students/payStudentFee/${editingData._id}`,
-      {
-        amountPaid: Number(editingData.amountPaid),
-      },
-      { headers: getAuthHeaders() }
-    );
-
-    console.log("API RESPONSE:", res.data);
-
-    if (!res.data.success) {
-      throw new Error(res.data.message);
-    }
-
-    const updatedFee = res.data.studentFee;
-
-    setFeeHistory((prev) =>
-      prev.map((fee) =>
-        fee._id === updatedFee._id ? updatedFee : fee
-      )
-    );
-
-    setShowEditModal(false);
-
-    toast.success("Fee updated successfully! Redirecting...");
-
-    setTimeout(() => {
-      localStorage.setItem("voucherStudent", JSON.stringify(student));
-      localStorage.setItem("voucherStudentId", student._id);
-      localStorage.setItem("feeHistory", JSON.stringify([updatedFee]));
-
-      navigate(
-        `/student/fee-voucher?studentId=${student._id}&month=${updatedFee.month}`
+      const res = await axios.put(
+        `${API_BASE}/students/payStudentFee/${editingData._id}`,
+        {
+          amountPaid: Number(editingData.amountPaid),
+        },
+        { headers: getAuthHeaders() },
       );
-    }, 1000);
 
-  } catch (error) {
-    console.error("Error saving fee:", error);
-    toast.error(error.message || "Failed to save fee");
-  } finally {
-    setIsSaving(false);
-  }
-};
+      console.log("API RESPONSE:", res.data);
 
+      if (!res.data.success) {
+        throw new Error(res.data.message);
+      }
+
+      const updatedFee = res.data.studentFee;
+
+      setFeeHistory((prev) =>
+        prev.map((fee) => (fee._id === updatedFee._id ? updatedFee : fee)),
+      );
+
+      setShowEditModal(false);
+
+      toast.success("Fee updated successfully! Redirecting...");
+
+      setTimeout(() => {
+        localStorage.setItem("voucherStudent", JSON.stringify(student));
+        localStorage.setItem("voucherStudentId", student._id);
+        localStorage.setItem("feeHistory", JSON.stringify([updatedFee]));
+
+        navigate(
+          `/student/fee-voucher?studentId=${student._id}&month=${updatedFee.month}`,
+        );
+      }, 1000);
+    } catch (error) {
+      console.error("Error saving fee:", error);
+      toast.error(error.message || "Failed to save fee");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const handleViewMonthVoucher = (fee) => {
     if (!student) {
@@ -230,6 +262,78 @@ function FeeManagement() {
   };
 
   const totals = calculateTotals();
+
+  // If no studentId, show search form
+  if (currentStudentId === ":studentId") {
+    return (
+      <Sidebar>
+        <div className="fm-search-container" style={{ padding: "2rem" }}>
+          <div
+            className="fm-search-card"
+            style={{
+              background: "#ffffff",
+              border: "1px solid #e2e8f0",
+              borderRadius: "0.75rem",
+              padding: "2rem",
+              boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+              maxWidth: "500px",
+              margin: "2rem auto",
+            }}
+          >
+            <h3 style={{ marginBottom: "1.5rem", color: "#0f172a" }}>
+              Search Student for Fee Management
+            </h3>
+            <form onSubmit={handleSearchStudent}>
+              <div style={{ marginBottom: "1.5rem" }}>
+                <label
+                  style={{
+                    display: "block",
+                    marginBottom: "0.5rem",
+                    fontWeight: "600",
+                    color: "#0f172a",
+                  }}
+                >
+                  Student Roll Number
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="e.g., ECS-10001"
+                  value={searchRollNumber}
+                  onChange={(e) => setSearchRollNumber(e.target.value)}
+                  style={{
+                    padding: "0.75rem",
+                    borderRadius: "0.5rem",
+                    border: "1px solid #cbd5e1",
+                  }}
+                />
+              </div>
+              <button
+                type="submit"
+                className="btn btn-primary w-100"
+                disabled={searchLoading}
+              >
+                {searchLoading ? (
+                  <>
+                    <span
+                      className="spinner-border spinner-border-sm me-2"
+                      role="status"
+                      aria-hidden="true"
+                    ></span>
+                    Searching...
+                  </>
+                ) : (
+                  <>
+                    <i className="fas fa-search me-2"></i>Search Student
+                  </>
+                )}
+              </button>
+            </form>
+          </div>
+        </div>
+      </Sidebar>
+    );
+  }
 
   if (loading) {
     return (

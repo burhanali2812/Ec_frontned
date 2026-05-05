@@ -42,6 +42,8 @@ function AdminPanel() {
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [loadingStats, setLoadingStats] = useState(true);
   const [lengthOfPendingLeaves, setLengthOfPendingLeaves] = useState(null);
+  const [todayAttendanceStatus, setTodayAttendanceStatus] = useState([]);
+  const [loadingTodayAttendance, setLoadingTodayAttendance] = useState(false);
   const navigate = useNavigate();
 
   const API_BASE = "https://ec-backend-phi.vercel.app/api";
@@ -51,8 +53,119 @@ function AdminPanel() {
     return token ? { Authorization: `Bearer ${token}` } : {};
   };
 
+  const getLocalToday = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  const fetchTodayAttendanceStatus = async (teachersList, coursesList) => {
+    console.log("Fetching attendance for courses:", coursesList);
+    
+    if (!coursesList || coursesList.length === 0) {
+      console.log("No courses available");
+      return;
+    }
+    
+    setLoadingTodayAttendance(true);
+    const dateValue = getLocalToday();
+    const requestQueue = [];
+    const requestMap = {};
+
+    try {
+      // Build all requests in parallel
+      for (const course of coursesList) {
+        // Get all classes for course - safely handle undefined items
+        const assignmentClasses = Array.isArray(course.assignments)
+          ? course.assignments
+              .filter((item) => item) // Filter out undefined items
+              .flatMap(
+                (item) => item?.targetClasses || item?.classes || []
+              )
+          : Array.isArray(course.classTarget)
+          ? course.classTarget
+              .filter((item) => item)
+              .flatMap((item) => item?.classes || [])
+          : [];
+
+        const directClasses = Array.isArray(course.classes)
+          ? course.classes
+          : [];
+
+        const allClasses = [
+          ...new Set([...directClasses, ...assignmentClasses].filter(Boolean)),
+        ];
+
+        if (allClasses.length === 0) continue;
+
+        for (const classItem of allClasses) {
+          const requestKey = `${course._id}|${classItem}`;
+          requestMap[requestKey] = {
+            courseId: course._id,
+            courseName: course.title || course.name,
+            class: classItem,
+          };
+
+          requestQueue.push(
+            axios.get(
+              `${API_BASE}/attendance/session?courseId=${course._id}&classInfo=${classItem}&date=${dateValue}`,
+              { headers: getAuthHeaders(), timeout: 8000 }
+            ).catch(err => ({ error: true, courseId: course._id, classItem }))
+          );
+        }
+      }
+
+      console.log(`Making ${requestQueue.length} parallel requests...`);
+
+      // Execute all requests in parallel
+      const responses = await Promise.all(requestQueue);
+
+      // Process all responses
+      const courseMap = {};
+      responses.forEach((res, idx) => {
+        const requestKey = Object.keys(requestMap)[idx];
+        const { courseId, courseName, class: classItem } = requestMap[requestKey];
+
+        if (!courseMap[courseId]) {
+          courseMap[courseId] = {
+            courseId,
+            courseName,
+            classes: [],
+          };
+        }
+
+        let isDone = false;
+        if (!res.error && res.data?.success && res.data?.hasAttendanceToday === true) {
+          isDone = true;
+        }
+
+        courseMap[courseId].classes.push({
+          class: classItem,
+          status: isDone ? "Done" : "Pending",
+        });
+      });
+
+      const attendanceData = Object.values(courseMap);
+      console.log("Attendance data:", attendanceData);
+      setTodayAttendanceStatus(attendanceData);
+    } catch (error) {
+      console.error("Error fetching today attendance status:", error);
+    } finally {
+      setLoadingTodayAttendance(false);
+    }
+  };
+
+  useEffect(() => {
+    if (adminData?.courses) {
+      fetchTodayAttendanceStatus(adminData.teachers, adminData.courses);
+    }
+  }, [adminData]);
+
   const token = localStorage.getItem("token");
   const userRole = token ? JSON.parse(atob(token.split(".")[1])).role : null;
+
   useEffect(() => {
     const fetchPendingLeaves = async () => {
       try {
@@ -163,7 +276,7 @@ function AdminPanel() {
       {
         label: "Fee Management",
         icon: "fas fa-money-bill-transfer",
-        href: "/coming-soon",
+        href: "/fee-management/:studentId",
       },
       {
         label: "Report Generation",
@@ -311,6 +424,76 @@ function AdminPanel() {
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* Today's Attendance Alert */}
+          <div className="dashboard-card attendance-alert-card p-3 p-lg-4 mb-2">
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <div>
+                <h5 className="dashboard-section-title mb-1">Today's Attendance Alert</h5>
+                <small className="text-muted">
+                  <i className="fas fa-calendar me-1"></i>
+                  {new Date().toLocaleDateString("en-US", {
+                    weekday: "long",
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </small>
+              </div>
+            </div>
+
+            {loadingTodayAttendance ? (
+              <div className="text-center py-4">
+                <div className="spinner-border spinner-border-sm text-success" role="status">
+                  <span className="visually-hidden">Loading attendance status...</span>
+                </div>
+              </div>
+            ) : todayAttendanceStatus && todayAttendanceStatus.length > 0 ? (
+              <div className="attendance-alert-container">
+                <div className="attendance-scroll-wrapper">
+                  <table className="attendance-alert-table">
+                    <thead>
+                      <tr>
+                        <th className="course-col">Course</th>
+                        {todayAttendanceStatus[0]?.classes?.map((cls, idx) => (
+                          <th key={idx} className="class-col">
+                            {cls.class}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {todayAttendanceStatus.map((course, idx) => (
+                        <tr key={idx}>
+                          <td className="course-col">
+                            <small className="fw-semibold">{course.courseName}</small>
+                          </td>
+                          {course.classes?.map((cls, classIdx) => (
+                            <td key={classIdx} className="class-col">
+                              <span
+                                className={`badge ${
+                                  cls.status === "Done"
+                                    ? "bg-success"
+                                    : "bg-warning text-dark"
+                                }`}
+                              >
+                                {cls.status}
+                              </span>
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ) : (
+              <div className="alert alert-info mb-0">
+                <i className="fas fa-info-circle me-2"></i>
+                No courses data available for today's attendance check.
+              </div>
+            )}
           </div>
 
           {/* Overview Charts */}

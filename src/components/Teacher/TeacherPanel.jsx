@@ -43,6 +43,8 @@ function TeacherPanel() {
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [loadingCourses, setLoadingCourses] = useState(true);
   const [loadingStats, setLoadingStats] = useState(true);
+  const [todayAttendanceStatus, setTodayAttendanceStatus] = useState([]);
+  const [loadingTodayAttendance, setLoadingTodayAttendance] = useState(false);
   const [stats, setStats] = useState({
     totalStudents: 0,
     totalCourses: 0,
@@ -152,6 +154,89 @@ function TeacherPanel() {
 
     fetchTeacherData();
   }, []);
+
+  const getLocalToday = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+const fetchTodayAttendanceStatus = async (coursesList) => {
+  if (!coursesList || coursesList.length === 0) return;
+
+  setLoadingTodayAttendance(true);
+
+  try {
+    const today = getLocalToday();
+    const API_ATTENDANCE = `${API_BASE}/attendance`;
+    const statusData = [];
+
+    for (const course of coursesList) {
+      // Get all classes for course
+      const assignmentClasses = Array.isArray(course.assignments)
+        ? course.assignments.flatMap(
+            (item) => item?.targetClasses || item?.classes || []
+          )
+        : Array.isArray(course.classTarget)
+        ? course.classTarget.flatMap((item) => item?.classes || [])
+        : [];
+
+      const directClasses = Array.isArray(course.classes)
+        ? course.classes
+        : [];
+
+      const allClasses = [
+        ...new Set([...directClasses, ...assignmentClasses].filter(Boolean)),
+      ];
+
+      const courseStatusMap = {
+        courseName: course.title,
+        courseId: course._id,
+        classes: {},
+      };
+
+      for (const classInfo of allClasses) {
+        try {
+          const res = await axios.get(`${API_ATTENDANCE}/session`, {
+            params: {
+              courseId: course._id,
+              classInfo,
+              date: today,
+            },
+            headers: getAuthHeaders(),
+          });
+
+          // ✅ FINAL FIX: correct attendance detection
+          const isDone =
+            res.data?.success &&
+            res.data?.hasAttendanceToday === true;
+
+          courseStatusMap.classes[classInfo] = isDone
+            ? "done"
+            : "pending";
+        } catch (error) {
+          courseStatusMap.classes[classInfo] = "pending";
+        }
+      }
+
+      statusData.push(courseStatusMap);
+    }
+
+    setTodayAttendanceStatus(statusData);
+  } catch (error) {
+    console.error("Error fetching today's attendance status:", error);
+  } finally {
+    setLoadingTodayAttendance(false);
+  }
+};
+
+  useEffect(() => {
+    if (courses.length > 0) {
+      fetchTodayAttendanceStatus(courses);
+    }
+  }, [courses]);
 
   const quickAccessItems = useMemo(
     () => [
@@ -368,6 +453,187 @@ function TeacherPanel() {
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* Today's Attendance Alert Card */}
+          <div
+            className="dashboard-card today-attendance-card p-3 p-lg-4 mb-2"
+            style={{
+              backgroundColor: "#f0f9ff",
+              border: "2px solid #0ea5e9",
+              borderRadius: "0.75rem",
+            }}
+          >
+            <div className="d-flex align-items-center mb-3">
+              <i
+                className="fas fa-bell me-2"
+                style={{ color: "#0ea5e9", fontSize: "1.3rem" }}
+              ></i>
+              <div>
+                <h5
+                  className="dashboard-section-title mb-0"
+                  style={{ color: "#0c63e4" }}
+                >
+                  Today's Attendance Alert
+                </h5>
+                <small style={{ color: "#0284c7" }}>
+                  Date: {new Date(getLocalToday()).toLocaleDateString()}
+                </small>
+              </div>
+            </div>
+
+            {loadingTodayAttendance ? (
+              <div className="text-center text-muted py-3">
+                <div
+                  className="spinner-border spinner-border-sm me-2"
+                  role="status"
+                ></div>
+                Loading attendance status...
+              </div>
+            ) : todayAttendanceStatus.length === 0 ? (
+              <div className="text-muted small">No courses assigned.</div>
+            ) : (
+              <div style={{ overflowX: "auto" }}>
+                <table
+                  style={{
+                    width: "100%",
+                    borderCollapse: "collapse",
+                    fontSize: "0.95rem",
+                  }}
+                >
+                  <thead>
+                    <tr
+                      style={{
+                        backgroundColor: "#ffffff",
+                        borderBottom: "2px solid #cbd5e1",
+                      }}
+                    >
+                      <th
+                        style={{
+                          padding: "1rem",
+                          textAlign: "left",
+                          fontWeight: "600",
+                          color: "#0f172a",
+                        }}
+                      >
+                        Course
+                      </th>
+                      {todayAttendanceStatus.length > 0 &&
+                        Object.keys(todayAttendanceStatus[0].classes).map(
+                          (classInfo) => (
+                            <th
+                              key={classInfo}
+                              style={{
+                                padding: "1rem",
+                                textAlign: "center",
+                                fontWeight: "600",
+                                color: "#0f172a",
+                              }}
+                            >
+                              {classInfo}
+                            </th>
+                          ),
+                        )}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {todayAttendanceStatus.map((courseData, idx) => (
+                      <tr
+                        key={idx}
+                        style={{
+                          borderBottom: "1px solid #e2e8f0",
+                        }}
+                      >
+                        <td
+                          style={{
+                            padding: "1rem",
+                            fontWeight: "600",
+                            color: "#0f172a",
+                          }}
+                        >
+                          {courseData.courseName}
+                        </td>
+                        {Object.entries(courseData.classes).map(
+                          ([classInfo, status]) => (
+                            <td
+                              key={classInfo}
+                              style={{
+                                padding: "1rem",
+                                textAlign: "center",
+                              }}
+                            >
+                              {status === "done" ? (
+                                <span
+                                  className="badge"
+                                  style={{
+                                    backgroundColor: "#10b981",
+                                    color: "#ffffff",
+                                    fontSize: "0.85rem",
+                                    padding: "0.5rem 0.75rem",
+                                  }}
+                                >
+                                  <i className="fas fa-check-circle me-1"></i>
+                                  Done
+                                </span>
+                              ) : (
+                                <span
+                                  className="badge"
+                                  style={{
+                                    backgroundColor: "#f59e0b",
+                                    color: "#ffffff",
+                                    fontSize: "0.85rem",
+                                    padding: "0.5rem 0.75rem",
+                                  }}
+                                >
+                                  <i className="fas fa-hourglass-end me-1"></i>
+                                  Pending
+                                </span>
+                              )}
+                            </td>
+                          ),
+                        )}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {todayAttendanceStatus.length > 0 && (
+              <div
+                className="mt-3 pt-3"
+                style={{ borderTop: "1px solid #bae6fd" }}
+              >
+                <div className="d-flex gap-3 justify-content-between small">
+                  <div>
+                    <strong style={{ color: "#10b981" }}>
+                      {todayAttendanceStatus.reduce(
+                        (count, course) =>
+                          count +
+                          Object.values(course.classes).filter(
+                            (s) => s === "done",
+                          ).length,
+                        0,
+                      )}
+                    </strong>
+                    <span style={{ color: "#64748b" }}> Done</span>
+                  </div>
+                  <div>
+                    <strong style={{ color: "#f59e0b" }}>
+                      {todayAttendanceStatus.reduce(
+                        (count, course) =>
+                          count +
+                          Object.values(course.classes).filter(
+                            (s) => s === "pending",
+                          ).length,
+                        0,
+                      )}
+                    </strong>
+                    <span style={{ color: "#64748b" }}> Pending</span>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Overview Stats */}
