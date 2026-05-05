@@ -1,0 +1,1523 @@
+/* Main Container */
+.ac-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: #f8f9fa;
+  min-height: 100vh;
+}
+
+/* Hero Section */
+.ac-hero {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.ac-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 0.5rem;
+}
+
+.ac-subtitle {
+  font-size: 1rem;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+/* Card Styling */
+.ac-card {
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 1rem;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+  transition: all 0.3s ease;
+  margin-bottom: 2rem;
+  overflow: hidden;
+}
+
+.ac-card:hover {
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+}
+
+/* Filter Card */
+.ac-filter-card {
+  padding: 2rem;
+}
+
+.ac-filter-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Form Grid */
+.ac-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.ac-form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.ac-label {
+  font-weight: 600;
+  color: #0f172a;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.3px;
+}
+
+.ac-input,
+.ac-select {
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  background: #ffffff;
+  color: #0f172a;
+  font-family: inherit;
+}
+
+.ac-select option {
+  color: #0f172a;
+  background-color: #ffffff;
+  padding: 0.5rem;
+  border: none;
+  font-size: 0.95rem;
+}
+
+.ac-select option:checked {
+  background: linear-gradient(#3b82f6, #3b82f6);
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+.ac-input:focus,
+.ac-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Button Styling */
+.ac-button-group {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.ac-btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: capitalize;
+}
+
+.ac-btn-primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: #ffffff;
+  min-width: 120px;
+}
+
+.ac-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3);
+}
+
+.ac-btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Filter Button Group */
+.ac-button-group-filter {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.ac-btn-filter {
+  padding: 0.6rem 1.2rem;
+  background: #f1f5f9;
+  color: #0f172a;
+  border: 2px solid transparent;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.ac-btn-filter:hover {
+  background: #e2e8f0;
+  border-color: #3b82f6;
+}
+
+.ac-btn-filter.ac-btn-active {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: #ffffff;
+  border-color: #2563eb;
+}
+
+/* Student Card */
+.ac-student-card {
+  padding: 2rem;
+}
+
+.ac-student-header {
+  margin-bottom: 1.5rem;
+}
+
+.ac-card-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.ac-student-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.ac-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ac-info-label {
+  font-weight: 600;
+  color: #64748b;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ac-info-value {
+  font-size: 1rem;
+  color: #0f172a;
+  font-weight: 500;
+  word-break: break-word;
+}
+
+/* Course Filter Card */
+.ac-course-filter-card {
+  padding: 2rem;
+}
+
+/* Summary & Daily Cards */
+.ac-summary-card,
+.ac-daily-card {
+  padding: 2rem;
+}
+
+/* Summary Card Header */
+.ac-summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+}
+  .voucher-logo {
+    width: 85px;
+    height: 85px;
+  }
+
+.ac-summary-header .ac-card-title {
+  margin: 0;
+}
+
+/* PDF Button */
+.ac-btn-pdf {
+  padding: 0.6rem 1.2rem;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.ac-btn-pdf:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(245, 158, 11, 0.3);
+}
+
+.ac-btn-pdf:active {
+  transform: translateY(0);
+}
+
+/* Table Wrapper */
+.ac-table-wrapper {
+  overflow-x: auto;
+  border-radius: 0.5rem;
+}
+
+.ac-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.ac-table thead {
+  background: #f1f5f9;
+  border-bottom: 2px solid rgba(15, 23, 42, 0.1);
+}
+
+.ac-table th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #0f172a;
+  white-space: nowrap;
+}
+
+.ac-table td {
+  padding: 1rem;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  color: #475569;
+}
+
+.ac-table tbody tr {
+  transition: background 0.2s ease;
+}
+
+.ac-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.ac-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.ac-center {
+  text-align: center;
+}
+
+.ac-course-name {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.ac-present {
+  color: #22c55e;
+  font-weight: 600;
+}
+
+.ac-absent {
+  color: #ef4444;
+  font-weight: 600;
+}
+
+/* Badge Styling */
+.ac-badge {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.25rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.ac-badge-success {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.ac-badge-danger {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* Status Badge */
+.ac-status-badge {
+  display: inline-block;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.25rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.ac-status-present {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.ac-status-absent {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* No Record State */
+.ac-no-record {
+  display: inline-block;
+  color: #94a3b8;
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 1px;
+}
+
+/* Date-Grouped Attendance Records */
+.ac-daily-records-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.ac-date-group {
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background: #f8f9fa;
+}
+
+.ac-date-header {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: #ffffff;
+  padding: 0.875rem 1rem;
+  font-weight: 700;
+  font-size: 1rem;
+  text-align: center;
+}
+
+.ac-horizontal-table {
+  background: #ffffff;
+}
+
+.ac-horizontal-table thead tr {
+  background: #f1f5f9;
+  border-bottom: 2px solid rgba(15, 23, 42, 0.1);
+}
+
+.ac-horizontal-table th {
+  text-align: center;
+  font-weight: 600;
+  color: #0f172a;
+  font-size: 0.9rem;
+  padding: 0.875rem 1rem;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.ac-horizontal-table tbody td {
+  text-align: center;
+  padding: 1rem;
+  border-bottom: none;
+  border-right: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.ac-horizontal-table tbody td:last-child {
+  border-right: none;
+}
+
+.ac-horizontal-table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+/* Empty State */
+.ac-empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: #ffffff;
+  border: 2px dashed rgba(15, 23, 42, 0.1);
+  border-radius: 1rem;
+  margin-bottom: 2rem;
+}
+
+.ac-empty-state.ac-initial {
+  background: #f8fafc;
+}
+
+.ac-empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.ac-empty-state h3 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 0.5rem;
+}
+
+.ac-empty-state p {
+  color: #64748b;
+  margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .ac-container {
+    padding: 1.5rem;
+  }
+
+  .ac-title {
+    font-size: 2rem;
+  }
+
+  .ac-form-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+
+  .ac-table {
+    font-size: 0.85rem;
+  }
+
+  .ac-table th,
+  .ac-table td {
+    padding: 0.75rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .ac-container {
+    padding: 1rem;
+  }
+
+  .ac-hero {
+    margin-bottom: 1.5rem;
+  }
+
+  .ac-title {
+    font-size: 1.5rem;
+  }
+
+  .ac-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .ac-card {
+    margin-bottom: 1.5rem;
+  }
+
+  .ac-filter-card,
+  .ac-student-card,
+  .ac-course-filter-card,
+  .ac-summary-card,
+  .ac-daily-card {
+    padding: 1.5rem;
+  }
+
+  .ac-summary-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .ac-btn-pdf {
+    width: 100%;
+  }
+
+  .ac-form-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .ac-button-group {
+    gap: 0.5rem;
+  }
+
+  .ac-btn {
+    padding: 0.65rem 1.2rem;
+    font-size: 0.9rem;
+  }
+
+  .ac-student-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .ac-table-wrapper {
+    overflow-x: scroll;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .ac-table {
+    font-size: 0.8rem;
+    min-width: 600px;
+  }
+
+  .ac-table th,
+  .ac-table td {
+    padding: 0.5rem;
+  }
+
+  .ac-horizontal-table th {
+    padding: 0.6rem 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  .ac-horizontal-table tbody td {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .ac-badge,
+  .ac-status-badge {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.6rem;
+  }
+
+  .ac-button-group-filter {
+    gap: 0.5rem;
+  }
+
+  .ac-btn-filter {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .ac-empty-state {
+    padding: 2rem 1rem;
+  }
+
+  .ac-empty-icon {
+    font-size: 2rem;
+  }
+
+  .ac-empty-state h3 {
+    font-size: 1rem;
+  }
+
+  .ac-empty-state p {
+    font-size: 0.9rem;
+  }
+
+  .ac-date-header {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .ac-container {
+    padding: 0.75rem;
+  }
+
+  .ac-title {
+    font-size: 1.25rem;
+  }
+
+  .ac-card {
+    border-radius: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .ac-filter-card,
+  .ac-student-card,
+  .ac-course-filter-card,
+  .ac-summary-card,
+  .ac-daily-card {
+    padding: 1rem;
+  }
+
+  .ac-form-grid {
+    gap: 0.75rem;
+  }
+
+  .ac-label {
+    font-size: 0.85rem;
+  }
+
+  .ac-input,
+  .ac-select {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.9rem;
+  }
+
+  .ac-btn-primary {
+    width: 100%;
+    min-width: auto;
+  }
+
+  .ac-button-group-filter {
+    gap: 0.4rem;
+  }
+
+  .ac-btn-filter {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+
+  .ac-table {
+    font-size: 0.7rem;
+    min-width: 500px;
+  }
+
+  .ac-table th,
+  .ac-table td {
+    padding: 0.4rem;
+  }
+
+  .ac-horizontal-table th {
+    padding: 0.5rem 0.3rem;
+    font-size: 0.7rem;
+  }
+
+  .ac-horizontal-table tbody td {
+    padding: 0.5rem 0.3rem;
+  }
+
+  .ac-card-title {
+    font-size: 1.1rem;
+  }
+
+  .ac-info-label {
+    font-size: 0.75rem;
+  }
+
+  .ac-info-value {
+    font-size: 0.9rem;
+  }
+
+  .ac-date-header {
+    padding: 0.6rem 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  .ac-daily-records-container {
+    gap: 1rem;
+  }
+}
+
+/* Print View Styles */
+.ac-print-container {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: #ffffff;
+  font-family: "Arial", sans-serif;
+  position: relative;
+}
+
+/* Watermark */
+.ac-print-watermark {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 600px;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.08;
+}
+
+.ac-print-watermark img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.ac-print-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  border-bottom: 3px solid #0f172a;
+  padding-bottom: 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.ac-print-logo {
+  width: 100px;
+  height: auto;
+  margin-bottom: 0.5rem;
+  display: inline-block;
+}
+
+.ac-print-institute-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0.5rem 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.ac-print-report-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0.5rem 0;
+}
+
+.ac-print-date-range {
+  font-size: 0.95rem;
+  color: #64748b;
+  margin: 0.5rem 0 0 0;
+}
+
+/* Student Information Section */
+.ac-print-student-section {
+  margin-bottom: 1rem;
+  page-break-inside: avoid;
+}
+
+.ac-print-section-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #3b82f6;
+  padding-bottom: 0.5rem;
+}
+
+.ac-print-student-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.ac-print-info-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.ac-print-label {
+  font-weight: 600;
+  color: #475569;
+  min-width: 100px;
+}
+
+.ac-print-value {
+  color: #0f172a;
+  font-weight: 500;
+}
+
+/* Summary Table */
+.ac-print-summary-section {
+  margin-bottom: 0.5rem;
+  page-break-inside: avoid;
+}
+
+.ac-print-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  margin-top: 0.5rem;
+}
+
+.ac-print-table thead {
+  background: #f1f5f9;
+  border-bottom: 2px solid #0f172a;
+}
+
+.ac-print-table th {
+  padding: 0.75rem;
+  text-align: left;
+  font-weight: 700;
+  color: #0f172a;
+  border: 1px solid #cbd5e1;
+}
+
+.ac-print-table td {
+  padding: 0.75rem;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+}
+
+.ac-print-center {
+  text-align: center;
+}
+
+/* Daily Records Section */
+.ac-print-daily-section {
+  margin-bottom: 1rem;
+  page-break-before: always;
+  margin-top: 0;
+  padding-top: 1rem;
+}
+
+.ac-print-daily-records {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.ac-print-date-group {
+  page-break-inside: avoid;
+}
+
+.ac-print-date-header {
+  background: #3b82f6;
+  color: #ffffff;
+  padding: 0.75rem 1rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+}
+
+.ac-print-daily-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.ac-print-daily-table thead {
+  background: #f1f5f9;
+  border-bottom: 2px solid #0f172a;
+}
+
+.ac-print-daily-table th {
+  padding: 0.6rem;
+  text-align: center;
+  font-weight: 700;
+  color: #0f172a;
+  border: 1px solid #cbd5e1;
+  font-size: 0.85rem;
+}
+
+.ac-print-daily-table td {
+  padding: 0.6rem;
+  text-align: center;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+  font-weight: 500;
+}
+
+/* Print Media Queries */
+@media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  body {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background: white;
+  }
+
+  /* HIDE ALL SIDEBAR AND NAVIGATION ELEMENTS */
+  nav,
+  header,
+  footer,
+  .sidebar,
+  .Sidebar,
+  [class*="sidebar"],
+  [class*="Sidebar"],
+  [role="navigation"],
+  .ac-container,
+  .ac-card,
+  .ac-filter-card,
+  .ac-button-group,
+  .ac-btn,
+  input,
+  select,
+  textarea,
+  button,
+  .ac-hero {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  .ac-print-container {
+    width: 100%;
+    max-width: 100%;
+    padding: 0.5cm;
+    margin: 0;
+    position: relative;
+    display: block !important;
+    visibility: visible !important;
+  }
+
+  /* Watermark in print - visible behind all content */
+  .ac-print-watermark {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 800px;
+    height: 800px;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.08;
+  }
+
+  .ac-print-watermark img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .ac-print-header {
+    margin-bottom: 1.5rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ac-print-student-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .ac-print-section-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.8rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ac-print-table,
+  .ac-print-daily-table {
+    width: 100%;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ac-print-table th,
+  .ac-print-daily-table th {
+    padding: 0.5rem;
+  }
+
+  .ac-print-table td,
+  .ac-print-daily-table td {
+    padding: 0.5rem;
+  }
+
+  .ac-print-date-group {
+    page-break-inside: avoid;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Hide scrollbars in print */
+  .ac-print-daily-records {
+    page-break-inside: avoid;
+  }
+
+  /* Ensure content sections have z-index above watermark */
+  .ac-print-student-section,
+  .ac-print-summary-section,
+  .ac-print-daily-section {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Mobile-specific print styles */
+  @media (max-width: 768px) {
+    .ac-print-container {
+      padding: 0.3cm;
+      font-size: 12pt;
+    }
+
+    .ac-print-header {
+      margin-bottom: 1rem;
+    }
+
+    .ac-print-institute-title {
+      font-size: 1.4rem !important;
+    }
+
+    .ac-print-report-title {
+      font-size: 1.1rem !important;
+    }
+
+    .ac-print-student-grid,
+    .ac-print-info-grid,
+    .ac-modal-info-grid {
+      grid-template-columns: 1fr !important;
+    }
+
+    .ac-print-table,
+    .ac-print-daily-table {
+      font-size: 11pt;
+    }
+
+    .ac-print-table th,
+    .ac-print-table td,
+    .ac-print-daily-table th,
+    .ac-print-daily-table td {
+      padding: 0.3rem !important;
+    }
+
+    .ac-print-date-group {
+      margin-bottom: 1rem;
+    }
+
+    .ac-print-section-title {
+      font-size: 1rem !important;
+      margin-bottom: 0.5rem;
+    }
+  }
+}
+
+/* Edit/Add Button Styling */
+.ac-summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.ac-summary-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.ac-btn-edit {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+  color: #ffffff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ac-btn-edit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(139, 92, 246, 0.3);
+}
+
+.ac-btn-edit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Modal Overlay */
+.ac-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(15, 23, 42, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 1rem;
+}
+
+/* Modal Container */
+.ac-modal {
+  background: #ffffff;
+  border-radius: 1rem;
+  box-shadow: 0 20px 64px rgba(15, 23, 42, 0.15);
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  animation: ac-modal-slide-in 0.3s ease;
+}
+
+@keyframes ac-modal-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Modal Header */
+.ac-modal-header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: #ffffff;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+.ac-modal-header-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.ac-modal-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.ac-modal-close {
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.ac-modal-close:hover {
+  transform: scale(1.1);
+}
+
+/* Modal Body */
+.ac-modal-body {
+  padding: 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+.ac-modal-body::-webkit-scrollbar {
+  display: none;
+}
+
+/* Modal Message Display */
+.ac-modal-message {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.4rem;
+  font-weight: 500;
+  animation: ac-message-slide-in 0.3s ease;
+  font-size: 0.9rem;
+  width: 100%;
+}
+
+@keyframes ac-message-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ac-modal-message-success {
+  background: rgba(220, 252, 231, 0.95);
+  color: #15803d;
+  border: 1px solid rgba(134, 239, 172, 0.8);
+}
+
+.ac-modal-message-success i {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.ac-modal-message-error {
+  background: rgba(254, 226, 226, 0.95);
+  color: #7f1d1d;
+  border: 1px solid rgba(248, 113, 113, 0.8);
+}
+
+.ac-modal-message-error i {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.ac-modal-message span {
+  word-break: break-word;
+}
+
+.ac-modal-message-error {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+}
+
+.ac-modal-message-error i {
+  font-size: 1.2rem;
+}
+
+.ac-modal-form-group {
+  margin-bottom: 1.5rem;
+}
+
+.ac-modal-form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #0f172a;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+/* Input and Select Styling in Modal */
+.ac-modal-form-group .ac-input,
+.ac-modal-form-group .ac-select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #3b82f6;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  color: #0f172a;
+  background: #ffffff;
+  transition: all 0.3s ease;
+}
+
+.ac-modal-form-group .ac-select option {
+  color: #0f172a;
+  background-color: #ffffff;
+  padding: 0.5rem;
+  font-weight: 500;
+  border: none;
+}
+
+.ac-modal-form-group .ac-select option:checked {
+  background: linear-gradient(#3b82f6, #3b82f6);
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+.ac-modal-form-group .ac-input:focus,
+.ac-modal-form-group .ac-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Status Display */
+.ac-status-display {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.ac-status-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.ac-status-badge.ac-status-present {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.ac-status-badge.ac-status-absent {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+/* Radio Group */
+.ac-radio-group {
+  display: flex;
+  gap: 2rem;
+}
+
+.ac-radio-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-weight: 500;
+  color: #0f172a;
+}
+
+.ac-radio-label input[type="radio"] {
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+  accent-color: #3b82f6;
+}
+
+/* Status Button Group */
+.ac-status-button-group {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.ac-status-btn {
+  flex: 1;
+  min-width: 120px;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid;
+}
+
+.ac-status-btn-dark {
+  background: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
+}
+
+.ac-status-btn-dark:hover {
+  background: #1e293b;
+  border-color: #1e293b;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+}
+
+.ac-status-btn-outlined {
+  background: #ffffff;
+  color: #0f172a;
+  border-color: #0f172a;
+}
+
+.ac-status-btn-outlined:hover {
+  background: #f1f5f9;
+  border-color: #0f172a;
+}
+
+/* Modal Footer */
+.ac-modal-footer {
+  padding: 1.5rem;
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.ac-btn-secondary {
+  background: #e2e8f0;
+  color: #0f172a;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.ac-btn-secondary:hover:not(:disabled) {
+  background: #cbd5e1;
+}
+
+.ac-btn-secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Responsive Modal */
+@media (max-width: 768px) {
+  .ac-modal {
+    max-width: 90vw;
+  }
+
+  .ac-modal-header {
+    padding: 1rem;
+  }
+
+  .ac-modal-body {
+    padding: 1rem;
+  }
+
+  .ac-modal-footer {
+    padding: 1rem;
+    flex-direction: column-reverse;
+  }
+
+  .ac-modal-footer .ac-btn {
+    width: 100%;
+  }
+
+  .ac-summary-buttons {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  @media (max-width: 480px) {
+    .ac-summary-buttons {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .ac-summary-buttons .ac-btn {
+      width: 100%;
+    }
+
+    .ac-radio-group {
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .ac-modal-footer {
+      gap: 0.75rem;
+    }
+  }
+}
+
+/* Modal Student Info */
+.ac-modal-student-info,
+.ac-modal-attendance-info {
+  background: #f0f9ff;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.ac-modal-student-info h4,
+.ac-modal-attendance-info h4 {
+  margin: 0 0 1rem 0;
+  color: #0f172a;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.ac-modal-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.ac-modal-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.ac-modal-info-label {
+  font-size: 0.85rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.ac-modal-info-value {
+  color: #0f172a;
+  font-weight: 500;
+  word-break: break-word;
+}
+
+@media (max-width: 480px) {
+  .ac-modal-info-grid {
+    grid-template-columns: 1fr;
+  }
+}

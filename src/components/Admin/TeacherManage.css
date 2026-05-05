@@ -1,0 +1,111 @@
+.tm-header-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 1.25rem 1rem;
+  text-align: center;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+}
+
+.tm-logo-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.tm-logo {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+}
+
+.tm-heading {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.tm-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.tm-add-btn {
+  border-radius: 10px;
+  padding: 0.55rem 1rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.tm-search-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 240px;
+}
+
+.tm-search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6b7280;
+}
+
+.tm-search-input {
+  height: 42px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  padding-left: 2rem;
+}
+
+.tm-table-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+  overflow: hidden;
+}
+
+.tm-table-head th {
+  background: #f8fafc;
+  color: #0f172a;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.tm-manage-actions {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.tm-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.tm-modal-card {
+  width: min(780px, 100%);
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 1rem;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.25);
+}
+
+@media (max-width: 767px) {
+  .tm-logo {
+    width: 74px;
+    height: 74px;
+  }
+
+  .tm-heading {
+    font-size: 1.35rem;
+  }
+}

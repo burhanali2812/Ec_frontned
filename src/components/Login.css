@@ -1,0 +1,106 @@
+.login-page {
+  min-height: 100vh;
+  background: radial-gradient(circle at top left, #bafcff 0%, #86f8ff 36%, #65ffff 100%);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 450px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.93);
+  box-shadow: 0 16px 45px rgba(2, 32, 58, 0.2);
+}
+
+/* Force all input-group children to same height */
+.input-group .form-control,
+.input-group .form-select,
+.input-group-text,
+.input-group .btn {
+  height: 40px;           /* same fixed height */
+  display: flex;
+  align-items: center;
+}
+
+/* Fix icon centering */
+.input-group-text {
+  justify-content: center;
+  padding: 0 12px;
+}
+
+/* Fix select vertical alignment */
+.login-page .form-select {
+  padding-top: 0;
+  padding-bottom: 0;
+  line-height: 4px;
+}
+
+/* Fix button (eye icon) alignment */
+.input-group .btn {
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.login-title {
+  color: #06263f;
+  font-weight: 700;
+}
+
+.login-subtitle {
+  color: #244e6d;
+  font-size: 0.96rem;
+}
+
+/* Keep button height fixed during loading */
+.login-loading-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 44px; /* same as normal login-btn rendering */
+}
+
+/* Prevent spinner from affecting vertical alignment */
+.login-spinner {
+  margin: 0 !important;
+  position: relative;
+  top: 0;
+}
+
+/* Lock text baseline so it doesn't shift layout */
+.login-loading-text {
+  line-height: 1;
+  display: inline-block;
+}
+
+.login-note {
+  color: #4f6980;
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.login-forgot {
+  color: #4f6980;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.login-btn {
+  font-weight: 600;
+  border-radius: 10px;
+  padding: 0.62rem 1rem;
+}
+
+.login-register-text {
+  color: #244e6d;
+}
+
+.login-register-link {
+  color: #0b4f75;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.login-register-link:hover {
+  color: #083a57;
+}

@@ -1,0 +1,774 @@
+import React, { useEffect, useMemo, useState } from "react";
+import axios from "axios";
+import { Toaster, toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import Footer from "../footer";
+import {
+  ArcElement,
+  BarElement,
+  CategoryScale,
+  Chart as ChartJS,
+  Legend as ChartLegend,
+  LinearScale,
+  Title,
+  Tooltip as ChartTooltip,
+} from "chart.js";
+import { Doughnut } from "react-chartjs-2";
+import Sidebar from "../Sidebar";
+import "./StudentDashboard.css";
+
+ChartJS.register(
+  ArcElement,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  ChartTooltip,
+  ChartLegend,
+);
+
+const CHART_COLORS = {
+  present: "#65ffff",
+  absent: "#f97316",
+  grid: "#e2e8f0",
+  axis: "#64748b",
+  pass: "#3b82f6",
+  average: "#f59e0b",
+  improve: "#ef4444",
+};
+
+function StudentDashboard() {
+  const [student, setStudent] = useState(null);
+  const [courses, setCourses] = useState([]);
+  const [coursePercentageMap, setCoursePercentageMap] = useState({});
+  const [courseResultPercentageMap, setCourseResultPercentageMap] = useState(
+    {},
+  );
+  const [loadingProfile, setLoadingProfile] = useState(true);
+  const [loadingCourses, setLoadingCourses] = useState(true);
+  const [loadingStats, setLoadingStats] = useState(true);
+  const [courseStatsMap, setCourseStatsMap] = useState({});
+  const [courseResultStatsMap, setCourseResultStatsMap] = useState({});
+  const navigate = useNavigate();
+
+  const handleLogOut = () => {
+    const confirmed = window.confirm("Are you sure you want to logout?");
+    if (confirmed) {
+      localStorage.removeItem("token");
+      navigate("/");
+    }
+  };
+
+  const API_BASE = "https://ec-backend-phi.vercel.app/api";
+
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem("token");
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  };
+
+  const getErrorMessage = (error, fallback) => {
+    const backendMessage = error?.response?.data?.message;
+    if (backendMessage && backendMessage !== "Server error") {
+      return backendMessage;
+    }
+    if (error?.response?.status === 401 || error?.response?.status === 403) {
+      return "You are not authorized. Please login again.";
+    }
+    return fallback;
+  };
+
+  const fetchProfile = async () => {
+    setLoadingProfile(true);
+    try {
+      const res = await axios.get(`${API_BASE}/students/myProfile`, {
+        headers: getAuthHeaders(),
+      });
+
+      if (res.data?.success) {
+        setStudent(res.data.student);
+      } else {
+        toast.error(res.data?.message || "Failed to load profile");
+      }
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Unable to load profile."));
+    } finally {
+      setLoadingProfile(false);
+    }
+  };
+
+  const fetchCourses = async () => {
+    setLoadingCourses(true);
+    try {
+      const res = await axios.get(`${API_BASE}/registration/myCourses`, {
+        headers: getAuthHeaders(),
+      });
+
+      if (res.data?.success) {
+        setCourses(res.data.courses || []);
+      } else {
+        toast.error(res.data?.message || "Failed to load courses");
+      }
+    } catch (error) {
+      toast.error(getErrorMessage(error, "Unable to load courses."));
+    } finally {
+      setLoadingCourses(false);
+    }
+  };
+
+  const fetchCourseStats = async (courseList) => {
+    setLoadingStats(true);
+    try {
+      if (!courseList || courseList.length === 0) {
+        setCoursePercentageMap({});
+        setCourseStatsMap({});
+        setCourseResultPercentageMap({});
+        setCourseResultStatsMap({});
+        setLoadingStats(false);
+        return;
+      }
+
+      const entries = await Promise.all(
+        courseList.map(async (course) => {
+          try {
+            const [attendanceRes, resultRes] = await Promise.all([
+              axios.get(`${API_BASE}/attendance/studentStats/${course._id}`, {
+                headers: getAuthHeaders(),
+              }),
+              axios.get(`${API_BASE}/results/studentStats/${course._id}`, {
+                headers: getAuthHeaders(),
+              }),
+            ]);
+
+            return [
+              String(course._id),
+              {
+                attendance: {
+                  percentage: Number(
+                    attendanceRes?.data?.stats?.percentage || 0,
+                  ),
+                  present: Number(attendanceRes?.data?.stats?.present || 0),
+                  absent: Number(attendanceRes?.data?.stats?.absent || 0),
+                  total: Number(attendanceRes?.data?.stats?.total || 0),
+                },
+                result: {
+                  percentage: Number(resultRes?.data?.stats?.percentage || 0),
+                  obtainedMarks: Number(
+                    resultRes?.data?.stats?.obtainedMarks || 0,
+                  ),
+                  totalMarks: Number(resultRes?.data?.stats?.totalMarks || 0),
+                  totalExams: Number(resultRes?.data?.stats?.totalExams || 0),
+                },
+              },
+            ];
+          } catch {
+            return [
+              String(course._id),
+              {
+                attendance: { percentage: 0, present: 0, absent: 0, total: 0 },
+                result: {
+                  percentage: 0,
+                  obtainedMarks: 0,
+                  totalMarks: 0,
+                  totalExams: 0,
+                },
+              },
+            ];
+          }
+        }),
+      );
+
+      const statsEntries = Object.fromEntries(entries);
+      const attendanceStatsMap = Object.fromEntries(
+        Object.entries(statsEntries).map(([courseId, stats]) => [
+          courseId,
+          stats.attendance,
+        ]),
+      );
+      const resultStatsMap = Object.fromEntries(
+        Object.entries(statsEntries).map(([courseId, stats]) => [
+          courseId,
+          stats.result,
+        ]),
+      );
+
+      setCourseStatsMap(attendanceStatsMap);
+      setCourseResultStatsMap(resultStatsMap);
+      setCoursePercentageMap(
+        Object.fromEntries(
+          Object.entries(attendanceStatsMap).map(([courseId, stats]) => [
+            courseId,
+            stats.percentage,
+          ]),
+        ),
+      );
+      setCourseResultPercentageMap(
+        Object.fromEntries(
+          Object.entries(resultStatsMap).map(([courseId, stats]) => [
+            courseId,
+            stats.percentage,
+          ]),
+        ),
+      );
+    } catch (error) {
+      console.error("Error fetching course stats:", error);
+    } finally {
+      setLoadingStats(false);
+    }
+  };
+
+  useEffect(() => {
+    const headers = getAuthHeaders();
+
+    const init = async () => {
+      // Fetch profile first
+      try {
+        const profileRes = await axios.get(`${API_BASE}/students/myProfile`, {
+          headers,
+        });
+        if (profileRes.data?.success) {
+          setStudent(profileRes.data.student);
+        }
+      } catch (error) {
+        console.error("Profile fetch error:", error);
+      } finally {
+        setLoadingProfile(false);
+      }
+
+      // Fetch courses
+      try {
+        const coursesRes = await axios.get(
+          `${API_BASE}/registration/myCourses`,
+          {
+            headers,
+          },
+        );
+        if (coursesRes.data?.success) {
+          const courseList = coursesRes.data.courses || [];
+          setCourses(courseList);
+          // Fetch stats for these courses
+          if (courseList.length > 0) {
+            await fetchCourseStats(courseList);
+          } else {
+            setLoadingStats(false);
+          }
+        } else {
+          setCourses([]);
+          setLoadingStats(false);
+        }
+      } catch (error) {
+        console.error("Courses fetch error:", error);
+        setCourses([]);
+        setLoadingStats(false);
+      } finally {
+        setLoadingCourses(false);
+      }
+    };
+
+    init();
+  }, []);
+
+  useEffect(() => {
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+
+    if (!isMobile) {
+      document.documentElement.classList.add("no-dashboard-scroll");
+      document.body.classList.add("no-dashboard-scroll");
+    }
+
+    return () => {
+      document.documentElement.classList.remove("no-dashboard-scroll");
+      document.body.classList.remove("no-dashboard-scroll");
+    };
+  }, []);
+
+  const getTeacherNamesForClass = (course, classInfo) => {
+    const assignments = Array.isArray(course?.assignments)
+      ? course.assignments
+      : [];
+
+    const filteredAssignments = assignments.filter((assignment) => {
+      const targetClasses = Array.isArray(assignment?.targetClasses)
+        ? assignment.targetClasses
+        : [];
+      return classInfo ? targetClasses.includes(classInfo) : true;
+    });
+
+    const names = filteredAssignments
+      .map((assignment) => {
+        const teacher = assignment?.teacher;
+        if (teacher && typeof teacher === "object") {
+          return teacher.name || "Unknown";
+        }
+        return "Unknown";
+      })
+      .filter(Boolean);
+
+    return names.length ? [...new Set(names)].join(", ") : "N/A";
+  };
+
+  const coursesWithPercentage = useMemo(
+    () =>
+      courses.map((course) => {
+        const percentage = Number(coursePercentageMap[String(course._id)] || 0);
+        const resultPercentage = Number(
+          courseResultPercentageMap[String(course._id)] || 0,
+        );
+        const teacherNames = getTeacherNamesForClass(
+          course,
+          student?.classInfo,
+        );
+        return { ...course, percentage, resultPercentage, teacherNames };
+      }),
+    [courses, coursePercentageMap, courseResultPercentageMap, student],
+  );
+
+  const overallAttendanceData = useMemo(() => {
+    const totals = Object.values(courseStatsMap).reduce(
+      (acc, stats) => {
+        acc.present += Number(stats?.present || 0);
+        acc.absent += Number(stats?.absent || 0);
+        return acc;
+      },
+      { present: 0, absent: 0 },
+    );
+
+    return [
+      { name: "Present", value: totals.present },
+      { name: "Absent", value: totals.absent },
+    ];
+  }, [courseStatsMap]);
+
+  const overallAttendancePieData = useMemo(
+    () => ({
+      labels: overallAttendanceData.map((item) => item.name),
+      datasets: [
+        {
+          data: overallAttendanceData.map((item) => item.value),
+          backgroundColor: [CHART_COLORS.present, CHART_COLORS.absent],
+          borderWidth: 0,
+        },
+      ],
+    }),
+    [overallAttendanceData],
+  );
+
+  const resultProgressSummary = useMemo(() => {
+    const totals = Object.values(courseResultStatsMap).reduce(
+      (acc, stats) => {
+        acc.obtained += Number(stats?.obtainedMarks || 0);
+        acc.total += Number(stats?.totalMarks || 0);
+        return acc;
+      },
+      { obtained: 0, total: 0 },
+    );
+
+    const overallPercent =
+      totals.total > 0 ? Math.round((totals.obtained / totals.total) * 100) : 0;
+
+    return {
+      obtainedMarks: totals.obtained,
+      totalMarks: totals.total,
+      overallPercent,
+    };
+  }, [courseResultStatsMap]);
+
+  const pieOptions = useMemo(
+    () => ({
+      responsive: true,
+      cutout: "60%",
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: true,
+          position: "bottom",
+          labels: {
+            color: "#334155",
+            boxWidth: 12,
+            padding: 14,
+            font: { size: 12, weight: "600" },
+          },
+        },
+      },
+    }),
+    [],
+  );
+
+  const overviewAttendanceOptions = useMemo(
+    () => ({
+      ...pieOptions,
+      plugins: {
+        ...pieOptions.plugins,
+        legend: {
+          ...pieOptions.plugins.legend,
+          display: false,
+        },
+      },
+    }),
+    [pieOptions],
+  );
+
+  const courseResultProgressList = useMemo(
+    () =>
+      coursesWithPercentage.map((course) => {
+        const rawPercent = Number(
+          course?.resultPercentage ?? course?.percentage ?? 0,
+        );
+        const percent = Math.max(0, Math.min(100, Math.round(rawPercent)));
+        return {
+          id: String(course?._id || course?.title || "course"),
+          title: course?.title || "Course",
+          percent,
+        };
+      }),
+    [coursesWithPercentage],
+  );
+
+  const quickAccessItems = useMemo(
+    () => [
+      {
+        label: "TimeTable",
+        icon: "fas fa-calendar-alt",
+        href: "/student/timetable",
+      },
+      {
+        label: "Courses",
+        icon: "fas fa-book-open",
+        href: "#registeredCourses",
+      },
+      {
+        label: "E-Learning",
+        icon: "fas fa-laptop-code",
+        href: "/coming-soon",
+      },
+      {
+        label: "Fee Statuses",
+        icon: "fas fa-file-invoice-dollar",
+        href: "/student/viewFeeStatuses",
+      },
+      {
+        label: "Result",
+        icon: "fas fa-chart-column",
+        href: "/student/result-overview",
+      },
+      {
+        label: "Apply leave",
+        icon: "fas fa-envelope-open-text",
+        href: "/apply-leave",
+      },
+    ],
+    [],
+  );
+
+  const showPasswordResetDialog =
+    !loadingProfile && student?.isPasswordChanged === false;
+
+  return (
+    <Sidebar>
+      <Toaster position="top-right" />
+
+      {showPasswordResetDialog && (
+        <div className="dashboard-modal-backdrop password-reset-warning-backdrop">
+          <div className="dashboard-modal-card password-reset-warning-card">
+            <div className="password-reset-warning-icon">
+              <i className="fas fa-lock"></i>
+            </div>
+
+            <h5 className="password-reset-warning-title">
+              Reset Your Password
+            </h5>
+            <p className="password-reset-warning-text">
+              Your account password has not been changed yet. For better
+              security, please reset your password before continuing to use the
+              portal.
+            </p>
+
+            <div className="password-reset-warning-info">
+              <div className="warning-info-row">
+                <span>Name</span>
+                <strong>{student?.name || "Student"}</strong>
+              </div>
+              <div className="warning-info-row">
+                <span>Roll Number</span>
+                <strong>{student?.rollNumber || "-"}</strong>
+              </div>
+              <div className="warning-info-row">
+                <span>Status</span>
+                <strong className="warning-status-badge">
+                  Password Pending
+                </strong>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              className="btn btn-outline-dark px-3 py-2 w-100 rounded-4"
+                
+              onClick={() => navigate("/password-reset", { state: { role: "Student" } })}
+            >
+              <i className="fas fa-key me-2"></i>
+              Reset Password Now
+            </button>
+             <button
+              type="button"
+              className="btn btn-danger px-3 py-2 w-100 rounded-4 mt-2"
+                
+              onClick={handleLogOut}
+            >
+              <i className="fas fa-sign-out-alt me-2"></i>
+              Log Out
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className="student-dashboard">
+        <div className="container-fluid px-0 px-lg-2 bg-transparent">
+          {/* Hero Section */}
+          <div className="dashboard-hero mb-2  mt-2 mb-lg-4">
+            <div className="d-flex flex-column flex-md-row justify-content-between gap-2 align-items-start">
+              <div className="student-identity-card">
+                <div className="student-identity-avatar">
+                  {(student?.name || "S").charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <h6 className="mb-1 text-dark fw-semibold">Hi 👋</h6>
+                  {loadingProfile ? (
+                    <>
+                      <div
+                        className="placeholder-glow"
+                        style={{ maxWidth: "250px" }}
+                      >
+                        <span
+                          className="placeholder col-8"
+                          style={{ height: "1.5rem" }}
+                        ></span>
+                      </div>
+                      <div className="placeholder-glow mt-2">
+                        <span
+                          className="placeholder col-10"
+                          style={{ height: "1rem" }}
+                        ></span>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <h5 className="mb-1">{student?.name || "Student"}</h5>
+
+                      <div className="student-identity-meta">
+                        <span>
+                          <i className="fas fa-id-badge me-1"></i>
+                          {student?.rollNumber || "-"}
+                        </span>
+                        <span className="d-none d-sm-inline">
+                          <i className="fas fa-graduation-cap me-1"></i>
+                          {student?.classInfo || "-"}
+                        </span>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="dashboard-card quick-access-grid-card p-3 p-lg-4 mb-2">
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <h5 className="dashboard-section-title mb-0">Quick Access</h5>
+            </div>
+
+            <div className="quick-access-circle-grid">
+              {quickAccessItems.map((item) => {
+                const isHashLink = item.href.startsWith("#");
+                return isHashLink ? (
+                  <a
+                    key={item.label}
+                    href={item.href}
+                    className="quick-access-circle-item"
+                    style={{ textDecoration: "none", color: "inherit" }}
+                  >
+                    <span className="quick-access-circle-icon">
+                      <i className={item.icon}></i>
+                    </span>
+                    <span className="quick-access-circle-text">
+                      {item.label}
+                    </span>
+                  </a>
+                ) : (
+                  <div
+                    key={item.label}
+                    className="quick-access-circle-item"
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => navigate(item.href)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        navigate(item.href);
+                      }
+                    }}
+                  >
+                    <span className="quick-access-circle-icon">
+                      <i className={item.icon}></i>
+                    </span>
+                    <span className="quick-access-circle-text">
+                      {item.label}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="dashboard-card overview-dashboard-card  py-2  mb-2">
+            <div className="d-flex flex-column flex-md-row justify-content-between align-items-start gap-2 mb-2">
+              <div>
+                <h5 className="dashboard-section-title  ms-2">
+                  Overview Charts
+                </h5>
+              </div>
+            </div>
+
+            {loadingCourses ? (
+              <div className="text-center py-4">
+                <div className="spinner-border text-success" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </div>
+              </div>
+            ) : loadingStats ? (
+              <div className="text-center py-4">
+                <div className="spinner-border text-success" role="status">
+                  <span className="visually-hidden">Loading charts...</span>
+                </div>
+              </div>
+            ) : coursesWithPercentage.length === 0 ? (
+              <div className="alert alert-info mb-0">
+                No courses registered yet.
+              </div>
+            ) : (
+              <>
+                <div className="row g-2 g-lg-4 overview-graphs-row">
+                  <div
+                    className="col-6"
+                    onClick={() => navigate("/student/attendance-overview")}
+                  >
+                    <div className="chart-panel overview-donut-card h-100">
+                      <h6 className="mb-2 text-center">Attendance</h6>
+
+                      <div className="chart-canvas-wrap">
+                        <div className="chart-canvas-box chart-canvas-box--overview">
+                          <Doughnut
+                            data={overallAttendancePieData}
+                            options={overviewAttendanceOptions}
+                          />
+                        </div>
+                        <div className="chart-hint-row mt-2">
+                          <span className="chart-hint-item">
+                            <span className="chart-hint-dot present"></span>
+                            Present (
+                            {overallAttendanceData.find(
+                              (item) => item.name === "Present",
+                            )?.value || 0}
+                            )
+                          </span>
+                          <span className="chart-hint-item">
+                            <span className="chart-hint-dot absent"></span>
+                            Absent (
+                            {overallAttendanceData.find(
+                              (item) => item.name === "Absent",
+                            )?.value || 0}
+                            )
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div
+                    className="col-6"
+                    onClick={() => navigate("/student/result-overview")}
+                  >
+                    <div className="chart-panel overview-donut-card h-100">
+                      <h6 className="mb-2 text-center">Results</h6>
+
+                      <div className="chart-canvas-wrap">
+                        <div className="result-progress-wrap">
+                          <div
+                            className="result-progress"
+                            style={{
+                              background: `conic-gradient(${CHART_COLORS.pass} 0% ${resultProgressSummary.overallPercent}%, #e2e8f0 ${resultProgressSummary.overallPercent}% 100%)`,
+                            }}
+                          >
+                            <div className="result-progress-inner">
+                              <div className="result-progress-value">
+                                {resultProgressSummary.overallPercent}%
+                              </div>
+                              <div className="result-progress-label">
+                                Overall Score
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+
+          <div className="dashboard-card px-2 py-2  " id="registeredCourses">
+            <div className="d-flex flex-column flex-md-row justify-content-between align-items-start gap-2 mb-1 ">
+              <div>
+                <h5 className="dashboard-section-title ms-2 mb-1">
+                  Course Result Progress
+                </h5>
+              </div>
+            </div>
+
+            {loadingCourses ? (
+              <div className="text-center py-4">
+                <div className="spinner-border text-success" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </div>
+              </div>
+            ) : loadingStats ? (
+              <div className="text-center py-4">
+                <div className="spinner-border text-success" role="status">
+                  <span className="visually-hidden">Loading courses...</span>
+                </div>
+              </div>
+            ) : courseResultProgressList.length === 0 ? (
+              <div className="alert alert-info mb-0">
+                No courses registered yet.
+              </div>
+            ) : (
+              <div className="result-course-progress-card mt-1">
+                <div className="result-course-progress-list">
+                  {courseResultProgressList.map((item) => (
+                    <div key={item.id} className="result-course-progress-item">
+                      <div className="result-course-progress-head">
+                        <span className="result-course-name">{item.title}</span>
+                        <span className="result-course-percent">
+                          {item.percent}%
+                        </span>
+                      </div>
+                      <div className="result-course-track">
+                        <div
+                          className="result-course-fill"
+                          style={{ width: `${item.percent}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+      <Footer />
+    </Sidebar>
+  );
+}
+
+export default StudentDashboard;

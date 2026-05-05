@@ -1,0 +1,61 @@
+.apply-leave-page {
+  min-height: 100vh;
+  background: #f8fafc;
+}
+
+.apply-leave-hero {
+  background: linear-gradient(135deg, #0f766e, #14532d);
+  color: #fff;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 14px 40px rgba(20, 83, 45, 0.22);
+}
+
+.leave-card {
+  background: #fff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+}
+
+.leave-card h5 {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.leave-history-table thead th {
+  font-size: 0.82rem;
+  color: #64748b;
+  border-bottom: 2px solid rgba(148, 163, 184, 0.26);
+}
+
+.leave-history-table td {
+  font-size: 0.92rem;
+}
+
+.status-badge {
+  font-weight: 600;
+  padding: 0.45rem 0.65rem;
+  border-radius: 999px;
+}
+
+.status-badge.pending {
+  background: #fff7e6;
+  color: #b45309;
+}
+
+.status-badge.approved {
+  background: #e8fff2;
+  color: #047857;
+}
+
+.status-badge.rejected {
+  background: #ffe9ec;
+  color: #be123c;
+}
+
+@media (max-width: 575px) {
+  .apply-leave-hero {
+    padding: 1rem;
+  }
+}
