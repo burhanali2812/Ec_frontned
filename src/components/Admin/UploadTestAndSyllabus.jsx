@@ -1,13 +1,13 @@
 import React, { useMemo, useState } from "react";
 import { useAppContext } from "../../contextApi/AppContext";
-import axios from "axios"; // ⚠️ swap for your project's axios instance
+import axios from "axios"; //  swap for your project's axios instance
 import "./UploadTestAndSyllabus.css";
 import Sidebar from "../Sidebar";
 import ViewTestAndSyllabus from "../Student/ViewTestAndSyllabus"; // for date formatting
 import { useNavigate } from "react-router-dom";
 
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-const API_BASE = "https://ec-backend-phi.vercel.app/api/testScheduleAndSyllabus"; // ⚠️ adjust to your mount path
+const API_BASE = "https://ec-backend-phi.vercel.app/api/testScheduleAndSyllabus"; //  adjust to your mount path
 
 function buildDateRange(from, to) {
     const dates = [];
@@ -35,12 +35,9 @@ function UploadTestAndSyllabus() {
     const [isShowingScheduleTest, setIsShowingScheduleTest] = useState(false);
     const [buttonText, setButtonText] = useState("Show Test Schedule");
     const navigate = useNavigate();
+    const user = JSON.parse(localStorage.getItem("user"));
 
-    // ⚠️ Assumes allcourses items look like { _id, title, classInfo }
-    const subjectsForClass = useMemo(
-        () => (allcourses || []).filter((c) => c.classInfo === classInfo || !c.classInfo),
-        [allcourses, classInfo]
-    );
+
 
     const goToStep3 = () => {
         if (!from || !to) return;
@@ -115,6 +112,8 @@ function UploadTestAndSyllabus() {
     const selectedClassName =
         (classOptions || []).find((c) => (c._id || c) === classInfo)?.name || "";
 
+        console.log("allcourses:", allcourses);
+console.log("rows:", rows);
     return (
         <Sidebar>
             <div className="uts-page">
@@ -320,8 +319,8 @@ function UploadTestAndSyllabus() {
                                                         <td>
                                                             <select value={r.courseId} onChange={(e) => updateRow(idx, "courseId", e.target.value)}>
                                                                 <option value="">Select</option>
-                                                                {subjectsForClass.map((s) => (
-                                                                    <option key={s._id} value={s._id}>{s.title}</option>
+                                                                {allcourses.map((c) => (
+                                                                    <option key={c._id} value={c._id}>{c.title}</option>
                                                                 ))}
                                                             </select>
                                                         </td>

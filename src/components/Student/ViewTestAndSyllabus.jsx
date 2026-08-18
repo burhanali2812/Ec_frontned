@@ -1,11 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useAppContext } from "../../contextApi/AppContext";
-import axios from "axios"; // ⚠️ swap for your project's axios instance
+import axios from "axios"; 
 import "./ViewTestAndSyllabus.css";
 import Sidebar from "../Sidebar";
 
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-const API_BASE = "https://ec-backend-phi.vercel.app/api/testScheduleAndSyllabus"; // ⚠️ adjust to your mount path
+const API_BASE = "https://ec-backend-phi.vercel.app/api/testScheduleAndSyllabus"; 
 
 function formatDate(d) {
     return new Date(d).toLocaleDateString(undefined, {
@@ -42,8 +42,7 @@ function ViewTestAndSyllabus() {
         return token ? { Authorization: `Bearer ${token}` } : {};
     };
 
-    // Admin sees everything (with a class filter). Students only ever see
-    // their own class's schedule — no filter, no way to peek at others.
+   
     const loadSheets = () => {
         setLoading(true);
         setError("");
@@ -61,9 +60,9 @@ function ViewTestAndSyllabus() {
     };
 
     useEffect(() => {
-        if (!isAdmin && !user?.classInfo) return; // wait until we know the student's class
+        if (!isAdmin && !user?.classInfo) return; 
         loadSheets();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+  
     }, [isAdmin, user?.classInfo]);
 
     const filtered = useMemo(() => {
@@ -73,7 +72,7 @@ function ViewTestAndSyllabus() {
 
     const totalEntries = (sheet) => sheet.schedules?.length || 0;
 
-    // ---------- Sheet title editing (admin only) ----------
+
     const startEditSheet = (sheet) => {
         setEditingSheetId(sheet._id);
         setSheetTitleDraft(sheet.title);
@@ -102,7 +101,7 @@ function ViewTestAndSyllabus() {
         }
     };
 
-    // ---------- Delete whole sheet (admin only) ----------
+
     const deleteSheet = async (sheetId) => {
         if (!window.confirm("Delete this entire test sheet and all its dates? This can't be undone.")) return;
         setBusyId(sheetId);
@@ -116,7 +115,7 @@ function ViewTestAndSyllabus() {
         }
     };
 
-    // ---------- Entry editing (admin only) ----------
+  
     const startEditEntry = (sheetId, entry) => {
         setEditingEntry({ sheetId, entryId: entry._id });
         setEntryDraft({
