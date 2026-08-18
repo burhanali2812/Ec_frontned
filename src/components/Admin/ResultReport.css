@@ -1,0 +1,295 @@
+.rr-page {
+  min-height: 100%;
+}
+
+.rr-shell {
+  background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06);
+}
+
+.rr-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.rr-title {
+  margin: 0;
+  color: #0f172a;
+  font-size: 1.7rem;
+  font-weight: 800;
+}
+
+.rr-subtitle {
+  margin: 6px 0 0;
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+.rr-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.rr-printable {
+  color: #0f172a;
+}
+
+.rr-student-card,
+.rr-summary-card,
+.rr-course-card,
+.rr-empty-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+}
+
+.rr-student-card {
+  padding: 16px;
+}
+
+.rr-student-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.rr-student-meta {
+  padding: 12px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.rr-student-meta .label {
+  display: block;
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+
+.rr-student-meta .value {
+  font-size: 0.96rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.rr-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.rr-summary-card {
+  padding: 16px;
+  min-height: 116px;
+}
+
+.rr-summary-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #64748b;
+  font-weight: 800;
+}
+
+.rr-summary-value {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-top: 6px;
+}
+
+.rr-summary-note {
+  margin-top: 6px;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.rr-chart-card {
+  padding: 16px;
+}
+
+.rr-chart-wrap {
+  height: 280px;
+}
+
+.rr-course-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.rr-course-card {
+  padding: 16px;
+}
+
+.rr-course-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.rr-course-title {
+  margin: 0;
+  font-size: 1.08rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.rr-course-stat {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.rr-table {
+  margin-bottom: 0;
+}
+
+.rr-table thead th {
+  background: #f8fafc;
+  color: #475569;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.rr-table tbody td {
+  padding: 0.85rem 0.75rem;
+  vertical-align: middle;
+  color: #0f172a;
+}
+
+.rr-table tbody tr:hover {
+  background: #f8fbff;
+}
+
+.rr-empty-card {
+  padding: 18px;
+}
+
+.rr-empty-message {
+  text-align: center;
+  color: #64748b;
+}
+
+.rr-detail-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.rr-detail-chip .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #65ffff;
+  display: inline-block;
+}
+
+@media (max-width: 1199px) {
+  .rr-student-grid,
+  .rr-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .rr-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .rr-chart-wrap {
+    height: 240px;
+  }
+}
+
+@media (max-width: 575px) {
+  .rr-student-grid,
+  .rr-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .rr-summary-value {
+    font-size: 1.5rem;
+  }
+
+  .rr-course-card,
+  .rr-student-card,
+  .rr-summary-card,
+  .rr-chart-card,
+  .rr-empty-card {
+    border-radius: 14px;
+  }
+}
+
+@media print {
+  body {
+    background: #fff !important;
+  }
+
+  .sb-desktop-sidebar,
+  .sb-mobile-topbar,
+  .sb-mobile-panel,
+  .sb-overlay,
+  .rr-actions,
+  .no-print,
+  footer {
+    display: none !important;
+  }
+
+  .sb-main-content {
+    margin-left: 0 !important;
+    margin-top: 0 !important;
+    padding: 0 !important;
+  }
+
+  .rr-page {
+    padding: 0 !important;
+  }
+
+  .rr-shell {
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+  }
+
+  .rr-student-card,
+  .rr-summary-card,
+  .rr-course-card,
+  .rr-empty-card {
+    box-shadow: none !important;
+  }
+
+  .rr-chart-wrap {
+    height: 240px;
+  }
+}

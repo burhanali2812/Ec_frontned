@@ -1,0 +1,350 @@
+/* ====== Student Management Styles ====== */
+
+
+
+.sm-main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.sm-content-wrapper {
+  flex: 1;
+ 
+  overflow-y: auto;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.sm-header-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 1.25rem 1rem;
+  text-align: center;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+}
+
+.sm-logo-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.sm-logo {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+}
+
+.sm-heading {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+/* Class Filter Section */
+.sm-class-filter-section {
+  width: 100%;
+}
+
+.sm-class-filter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+  padding: 0;
+}
+
+.sm-class-filter-box {
+  background: #ffffff;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.sm-class-filter-box:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+  transform: translateY(-2px);
+}
+
+.sm-class-filter-box.active {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  border-color: #1e40af;
+  color: white;
+  box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3);
+}
+
+.sm-class-title {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #0f172a;
+}
+
+.sm-class-filter-box.active .sm-class-title {
+  color: white;
+}
+
+.sm-class-count {
+  font-size: 0.85rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.sm-class-filter-box.active .sm-class-count {
+  color: #e0e7ff;
+}
+
+.sm-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.sm-add-btn {
+  border-radius: 10px;
+  padding: 0.55rem 1rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.sm-search-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 240px;
+}
+
+.sm-search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6b7280;
+}
+
+.sm-search-input {
+  height: 42px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  padding-left: 2rem;
+}
+
+.sm-table-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+  overflow: hidden;
+}
+
+.sm-table-head th {
+  background: #f8fafc;
+  color: #0f172a;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.sm-class-badge {
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  background: #e8f2ff;
+  color: #0d4ea6;
+  border: 1px solid #d5e7ff;
+}
+
+.sm-manage-actions {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.sm-manage-actions .btn {
+  font-size: 0.8rem;
+  padding: 0.35rem 0.65rem;
+  white-space: nowrap;
+}
+
+.sm-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.sm-modal-card {
+  width: min(780px, 100%);
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 1rem;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.25);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.sm-courses-list {
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  padding: 0.65rem;
+  max-height: 220px;
+  overflow-y: auto;
+  background: #fbfdff;
+}
+
+.sm-course-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.45rem 0.6rem;
+  margin-bottom: 0.45rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+.sm-course-item:last-child {
+  margin-bottom: 0;
+}
+
+.sm-course-title {
+  font-weight: 600;
+  color: #0f172a;
+  font-size: 0.92rem;
+}
+
+.sm-course-desc {
+  font-size: 0.78rem;
+  color: #475569;
+}
+
+.sm-table-card .table > :not(caption) > * > * {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.sm-table-card tbody tr:hover {
+  background: #f8fbff;
+}
+
+@media (max-width: 767px) {
+ 
+
+  .sm-logo {
+    width: 74px;
+    height: 74px;
+  }
+
+  .sm-heading {
+    font-size: 1.35rem;
+  }
+
+  .sm-class-filter-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.8rem;
+  }
+
+  .sm-class-filter-box {
+    padding: 1rem 0.8rem;
+  }
+
+  .sm-class-title {
+    font-size: 0.9rem;
+  }
+
+  .sm-class-count {
+    font-size: 0.75rem;
+  }
+
+  .sm-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sm-search-wrap {
+    min-width: 100%;
+  }
+
+  .sm-add-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .sm-table-card {
+    border-radius: 8px;
+    font-size: 0.85rem;
+  }
+
+  .sm-table-card .table {
+    font-size: 0.75rem;
+  }
+
+  .sm-table-head th {
+    padding: 0.5rem 0.3rem !important;
+    font-size: 0.7rem;
+  }
+
+  .sm-table-card tbody td {
+    padding: 0.4rem 0.3rem !important;
+  }
+
+  .sm-manage-actions {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .sm-manage-actions .btn {
+    font-size: 0.65rem;
+    padding: 0.3rem 0.5rem;
+    width: 100%;
+    text-align: center;
+  }
+
+  .sm-manage-actions .btn i {
+    display: none;
+  }
+
+  .sm-class-badge {
+    font-size: 0.65rem;
+    padding: 0.2rem 0.4rem;
+  }
+}
+
+@media (max-width: 480px) {
+ 
+
+  .sm-heading {
+    font-size: 1.1rem;
+  }
+
+  .sm-table-card .table {
+    font-size: 0.65rem;
+  }
+
+  .sm-table-head th {
+    padding: 0.3rem 0.2rem !important;
+    font-size: 0.6rem;
+  }
+
+  .sm-table-card tbody td {
+    padding: 0.25rem 0.15rem !important;
+  }
+
+  .sm-manage-actions .btn {
+    font-size: 0.6rem;
+    padding: 0.25rem 0.3rem;
+  }
+}

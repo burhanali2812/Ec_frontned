@@ -1,0 +1,313 @@
+.ar-page {
+  min-height: 100%;
+}
+
+.ar-shell {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06);
+  position: relative;
+}
+/* Append to AttendanceReport.css */
+
+.ar-noattendance-banner {
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.ar-noattendance-sunday {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+.ar-noattendance-holiday {
+  background: #fff7e6;
+  color: #92700a;
+  border: 1px solid #f5deA1;
+}
+
+/* Toolbar (screen only) */
+.ar-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.ar-btn {
+  padding: 0.6rem 1.2rem;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ar-btn-secondary {
+  background: #fff;
+  color: #334155;
+  border-color: #cbd5e1;
+}
+
+.ar-btn-secondary:hover {
+  border-color: #94a3b8;
+}
+
+.ar-btn-pdf {
+  background: #0f172a;
+  color: #fff;
+}
+
+.ar-btn-pdf:hover {
+  background: #1e293b;
+}
+
+/* Printable content */
+.ar-printable {
+  position: relative;
+  color: #0f172a;
+}
+
+.ar-print-watermark {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.06;
+}
+
+.ar-print-watermark img {
+  width: 60%;
+  max-width: 420px;
+}
+
+.ar-print-header {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 2px solid #0f172a;
+}
+
+.ar-print-logo {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  margin-bottom: 8px;
+}
+
+.ar-institute-title {
+  margin: 0;
+  color: #0f172a;
+  font-size: 1.3rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.ar-report-title {
+  margin: 4px 0 0;
+  color: #334155;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.ar-info-block {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 20px;
+}
+
+.ar-info-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 6px 0;
+  font-size: 0.94rem;
+  flex-wrap: wrap;
+}
+
+.ar-info-row strong {
+  color: #0f172a;
+  font-weight: 700;
+  margin-right: 4px;
+}
+
+.ar-section {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 22px;
+}
+
+.ar-section-title {
+  margin: 0 0 10px;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #0f172a;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #cbd5e1;
+}
+
+.ar-summary-table,
+.ar-daily-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.ar-summary-table th,
+.ar-summary-table td,
+.ar-daily-table th,
+.ar-daily-table td {
+  border: 1px solid #94a3b8;
+  padding: 0.55rem 0.7rem;
+  font-size: 0.88rem;
+}
+
+.ar-summary-table thead th {
+  background: #2563eb;
+  color: #fff;
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  letter-spacing: 0.03em;
+  border-color: #2563eb;
+}
+
+.ar-daily-table thead th {
+  background: #f1f5f9;
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.ar-center {
+  text-align: center;
+}
+
+.ar-daily-records {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ar-date-group {
+  page-break-inside: avoid;
+}
+
+.ar-date-header {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: #fff;
+  background: #0f172a;
+  padding: 6px 16px;
+  border-radius: 999px;
+  margin-bottom: 8px;
+}
+
+.ar-date-icon {
+  font-size: 0.9rem;
+}
+
+.ar-status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 72px;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.ar-status-present {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.ar-status-absent {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.ar-status-onleave {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.ar-status-none {
+  background: #f1f5f9;
+  color: #94a3b8;
+}
+
+.ar-empty-message {
+  text-align: center;
+  color: #64748b;
+  padding: 24px 0;
+}
+
+@media (max-width: 767px) {
+  .ar-info-row {
+    flex-direction: column;
+    gap: 2px;
+  }
+}
+
+@media print {
+  body {
+    background: #fff !important;
+  }
+
+  .sb-desktop-sidebar,
+  .sb-mobile-topbar,
+  .sb-mobile-panel,
+  .sb-overlay,
+  .ar-toolbar,
+  .no-print,
+  footer {
+    display: none !important;
+  }
+
+  .sb-main-content {
+    margin-left: 0 !important;
+    margin-top: 0 !important;
+    padding: 0 !important;
+  }
+
+  .ar-page {
+    padding: 0 !important;
+  }
+
+  .ar-shell {
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+  }
+
+  .ar-summary-table thead th,
+  .ar-date-header,
+  .ar-status-badge {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .ar-date-group {
+    break-inside: avoid;
+  }
+}

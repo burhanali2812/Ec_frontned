@@ -1,0 +1,15 @@
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import App from "./App";
+import { BrowserRouter } from "react-router-dom"; // Remove 'Route' from here
+import { AppProvider } from "./contextApi/AppContext";
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(
+  <AppProvider>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </AppProvider>,
+);

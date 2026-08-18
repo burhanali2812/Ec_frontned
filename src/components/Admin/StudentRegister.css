@@ -1,0 +1,279 @@
+.sr-page {
+  min-height: 100vh;
+}
+
+.sr-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.sr-header-card,
+.sr-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+}
+
+.sr-header-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  flex-wrap: wrap;
+}
+
+.sr-logo-wrap {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.sr-logo {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+}
+
+.sr-heading {
+  color: #0f172a;
+  font-weight: 700;
+  margin: 0;
+}
+
+.sr-subheading {
+  color: #64748b;
+  font-size: 0.92rem;
+}
+
+.sr-back-btn {
+  white-space: nowrap;
+}
+
+.sr-card {
+  padding: 1rem;
+}
+
+.sr-student-picker {
+  border: 1px solid #e5e7eb;
+  background: #f8fafc;
+  border-radius: 14px;
+  padding: 1rem;
+}
+
+.sr-student-picker select {
+  width: 100%;
+  height: 44px;
+  border-radius: 10px;
+}
+
+.sr-loading,
+.sr-empty,
+.sr-note {
+  padding: 1rem;
+  color: #64748b;
+}
+
+.sr-student-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 1rem;
+}
+
+.sr-student-info,
+.sr-form-wrap {
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 1rem;
+  background: #fff;
+}
+
+.sr-section-title,
+.sr-column-title {
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 0.85rem;
+}
+
+.sr-info-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 0.95rem;
+}
+
+.sr-info-item span {
+  color: #64748b;
+}
+
+.sr-info-item strong {
+  color: #0f172a;
+  text-align: right;
+}
+
+.sr-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.sr-summary > div {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.85rem;
+}
+
+.sr-summary-label {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.sr-summary-value {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.sr-positive {
+  color: #16a34a;
+}
+
+.sr-course-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.sr-course-list {
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  padding: 0.75rem;
+  background: #fbfdff;
+  max-height: 520px;
+  overflow: auto;
+}
+
+.sr-course-item {
+  margin-bottom: 0.65rem;
+}
+
+.sr-course-item:last-child {
+  margin-bottom: 0;
+}
+
+.sr-course-label {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  padding: 0.7rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.sr-course-label input[type="checkbox"] {
+  margin-top: 0.2rem;
+  transform: scale(1.08);
+}
+
+.sr-course-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.sr-course-title-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.sr-course-title {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.sr-course-price {
+  font-size: 0.82rem;
+  color: #475569;
+  white-space: nowrap;
+}
+
+.sr-course-desc {
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.sr-price-input-wrap {
+  margin-top: 0.65rem;
+}
+
+.sr-price-input-wrap label {
+  display: block;
+  font-size: 0.8rem;
+  color: #334155;
+  margin-bottom: 0.25rem;
+}
+
+.sr-submit-row {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (max-width: 992px) {
+  .sr-student-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sr-course-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .sr-summary {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 576px) {
+  .sr-page {
+    padding: 0.75rem;
+  }
+
+  .sr-header-card {
+    padding: 0.85rem;
+  }
+
+  .sr-logo {
+    width: 52px;
+    height: 52px;
+  }
+
+  .sr-card {
+    padding: 0.8rem;
+  }
+
+  .sr-student-picker {
+    padding: 0.8rem;
+  }
+
+  .sr-info-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.2rem;
+  }
+
+  .sr-info-item strong {
+    text-align: left;
+  }
+}

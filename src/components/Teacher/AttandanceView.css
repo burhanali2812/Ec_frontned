@@ -1,0 +1,454 @@
+/* =========================================================
+   Attendance Register — design tokens & layout
+   Palette: deep indigo primary, slate neutrals, semantic status
+   ========================================================= */
+
+.attendance-page {
+  --att-primary: #2f3676;
+  --att-primary-dark: #232a5c;
+  --att-primary-soft: #eef0fb;
+
+  --att-ink: #1a1f36;
+  --att-ink-muted: #6b7280;
+  --att-border: #e6e8f0;
+  --att-bg-soft: #f7f8fb;
+
+  --att-present: #1a9c6b;
+  --att-present-bg: #e7f7f1;
+  --att-absent: #d64545;
+  --att-absent-bg: #fdeceb;
+  --att-leave: #b8860b;
+  --att-leave-bg: #fdf5e3;
+  --att-unmarked: #8a94a6;
+  --att-unmarked-bg: #f1f2f5;
+
+  color: var(--att-ink);
+}
+
+/* ---------- Header ---------- */
+
+.attendance-eyebrow {
+  margin: 0 0 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--att-primary);
+}
+
+.attendance-title {
+  margin: 0 0 6px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--att-ink);
+}
+
+.attendance-subtitle {
+  margin: 0;
+  color: var(--att-ink-muted);
+  font-size: 0.92rem;
+  max-width: 640px;
+}
+
+/* ---------- Toolbar ---------- */
+
+.attendance-toolbar {
+  background: #fff;
+  border: 1px solid var(--att-border);
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+
+.toolbar-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--att-ink-muted);
+  margin-bottom: 6px;
+}
+
+.attendance-toolbar .form-select,
+.attendance-toolbar .form-control {
+  border-radius: 9px;
+  border-color: var(--att-border);
+  padding: 0.55rem 0.75rem;
+}
+
+.attendance-toolbar .form-select:focus,
+.attendance-toolbar .form-control:focus {
+  border-color: var(--att-primary);
+  box-shadow: 0 0 0 3px rgba(47, 54, 118, 0.12);
+}
+
+.btn-fetch {
+  background: var(--att-primary);
+  border: 1px solid var(--att-primary);
+  color: #fff;
+  border-radius: 9px;
+  padding: 0.6rem 1rem;
+  font-weight: 600;
+  transition: background 0.15s ease, transform 0.05s ease;
+}
+
+.btn-fetch:hover:not(:disabled) {
+  background: var(--att-primary-dark);
+  color: #fff;
+}
+
+.btn-fetch:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.btn-fetch:disabled {
+  opacity: 0.55;
+}
+
+/* ---------- Summary strip ---------- */
+
+.summary-strip {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+}
+
+.summary-tile {
+  background: #fff;
+  border: 1px solid var(--att-border);
+  border-left: 4px solid var(--att-border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+
+.summary-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--att-ink-muted);
+  font-weight: 700;
+}
+
+.summary-value {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--att-ink);
+}
+
+.summary-tile.accent-present {
+  border-left-color: var(--att-present);
+}
+.summary-tile.accent-present .summary-value {
+  color: var(--att-present);
+}
+
+.summary-tile.accent-absent {
+  border-left-color: var(--att-absent);
+}
+.summary-tile.accent-absent .summary-value {
+  color: var(--att-absent);
+}
+
+.summary-tile.accent-leave {
+  border-left-color: var(--att-leave);
+}
+.summary-tile.accent-leave .summary-value {
+  color: var(--att-leave);
+}
+
+.summary-tile.accent-unmarked {
+  border-left-color: var(--att-unmarked);
+}
+.summary-tile.accent-unmarked .summary-value {
+  color: var(--att-unmarked);
+}
+
+/* ---------- Records panel ---------- */
+
+.records-panel {
+  background: #fff;
+  border: 1px solid var(--att-border);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+
+.records-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--att-border);
+  flex-wrap: wrap;
+}
+
+.records-title {
+  font-weight: 700;
+  color: var(--att-ink);
+}
+
+.records-context {
+  font-size: 0.82rem;
+  color: var(--att-ink-muted);
+}
+
+.records-panel-body {
+  padding: 0;
+}
+
+.attendance-empty {
+  padding: 56px 20px;
+  text-align: center;
+  color: var(--att-ink-muted);
+  font-size: 0.92rem;
+}
+
+/* ---------- Table (desktop/tablet) ---------- */
+
+.attendance-table-wrap {
+  display: block;
+}
+
+.attendance-table-pro thead th {
+  background: var(--att-bg-soft);
+  color: var(--att-ink-muted);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 700;
+  border-bottom: 1px solid var(--att-border);
+  padding: 12px 20px;
+  white-space: nowrap;
+}
+
+.attendance-table-pro tbody td {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--att-border);
+  vertical-align: middle;
+}
+
+.attendance-table-pro tbody tr {
+  border-left: 3px solid transparent;
+  transition: background 0.12s ease;
+}
+
+.attendance-table-pro tbody tr:hover {
+  background: var(--att-bg-soft);
+}
+
+.attendance-table-pro tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.attendance-table-pro tbody tr.status-present {
+  border-left-color: var(--att-present);
+}
+.attendance-table-pro tbody tr.status-absent {
+  border-left-color: var(--att-absent);
+}
+.attendance-table-pro tbody tr.status-leave {
+  border-left-color: var(--att-leave);
+}
+.attendance-table-pro tbody tr.status-unmarked {
+  border-left-color: var(--att-unmarked);
+}
+
+.pct-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+  font-size: 0.82rem;
+  color: var(--att-ink-muted);
+}
+
+.attendance-progress {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--att-bg-soft);
+}
+
+.attendance-progress .progress-bar {
+  border-radius: 999px;
+}
+
+/* ---------- Status pill ---------- */
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.status-pill.status-present {
+  color: var(--att-present);
+  background: var(--att-present-bg);
+}
+.status-pill.status-absent {
+  color: var(--att-absent);
+  background: var(--att-absent-bg);
+}
+.status-pill.status-leave {
+  color: var(--att-leave);
+  background: var(--att-leave-bg);
+}
+.status-pill.status-unmarked {
+  color: var(--att-unmarked);
+  background: var(--att-unmarked-bg);
+}
+
+.status-select {
+  border-radius: 8px;
+  min-width: 110px;
+}
+
+/* ---------- Action buttons ---------- */
+
+.btn-edit {
+  background: #fff;
+  border: 1px solid var(--att-primary);
+  color: var(--att-primary);
+  border-radius: 8px;
+  font-weight: 600;
+  padding: 0.3rem 0.75rem;
+}
+.btn-edit:hover {
+  background: var(--att-primary-soft);
+  color: var(--att-primary-dark);
+}
+
+.btn-save {
+  background: var(--att-present);
+  border: 1px solid var(--att-present);
+  color: #fff;
+  border-radius: 8px;
+  font-weight: 600;
+  padding: 0.3rem 0.75rem;
+}
+.btn-save:hover:not(:disabled) {
+  background: #158058;
+  color: #fff;
+}
+
+.btn-cancel {
+  background: #fff;
+  border: 1px solid var(--att-border);
+  color: var(--att-ink-muted);
+  border-radius: 8px;
+  font-weight: 600;
+  padding: 0.3rem 0.75rem;
+}
+.btn-cancel:hover:not(:disabled) {
+  background: var(--att-bg-soft);
+}
+
+/* ---------- Mobile card list (hidden by default) ---------- */
+
+.attendance-card-list {
+  display: none;
+}
+
+.student-row-card {
+  border-bottom: 1px solid var(--att-border);
+  padding: 14px 16px;
+  border-left: 3px solid transparent;
+}
+
+.student-row-card:last-child {
+  border-bottom: none;
+}
+
+.student-row-card.status-present {
+  border-left-color: var(--att-present);
+}
+.student-row-card.status-absent {
+  border-left-color: var(--att-absent);
+}
+.student-row-card.status-leave {
+  border-left-color: var(--att-leave);
+}
+.student-row-card.status-unmarked {
+  border-left-color: var(--att-unmarked);
+}
+
+.student-row-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.student-row-card-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+
+/* =========================================================
+   Responsive breakpoints
+   ========================================================= */
+
+/* Tablet: tighten summary strip to 3 columns */
+@media (max-width: 991.98px) {
+  .summary-strip {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Mobile: switch table -> stacked cards, single-column summary */
+@media (max-width: 767.98px) {
+  .attendance-title {
+    font-size: 1.35rem;
+  }
+
+  .attendance-toolbar {
+    padding: 14px;
+  }
+
+  .summary-strip {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .summary-tile {
+    padding: 10px 12px;
+  }
+
+  .summary-value {
+    font-size: 1.1rem;
+  }
+
+  .records-panel-header {
+    padding: 14px 16px;
+  }
+
+  .attendance-table-wrap {
+    display: none;
+  }
+
+  .attendance-card-list {
+    display: block;
+  }
+
+  .attendance-empty {
+    padding: 40px 16px;
+  }
+}
+
+@media (max-width: 420px) {
+  .summary-strip {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
