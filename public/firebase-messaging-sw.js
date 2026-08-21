@@ -26,14 +26,29 @@ messaging.onBackgroundMessage((payload) => {
   );
 
   const title =
-    payload.notification?.title || "The Education's Cradle";
+    payload.notification?.title ||
+    payload.data?.title ||
+    "Education Cradle";
 
-  const options = {
-    body:
-      payload.notification?.body ||
-      "You have a new notification.",
+  const body =
+    payload.notification?.body ||
+    payload.data?.body ||
+    "You have a new notification.";
+
+  console.log("Notification title:", title);
+  console.log("Notification body:", body);
+
+  const notificationOptions = {
+    body: body,
     icon: "/logo512.png",
+    data: {
+      type: payload.data?.type || "GENERAL",
+      url: payload.data?.url || "/",
+    },
   };
 
-  self.registration.showNotification(title, options);
+  self.registration.showNotification(
+    title,
+    notificationOptions
+  );
 });
