@@ -1,5 +1,5 @@
 import "./App.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import Home from "./components/Home";
 import Login from "./components/Login";
@@ -38,10 +38,14 @@ import CreateAnnouncement from "./components/Admin/CreateAnnouncement";
 import Notifications from "./components/Student/Notifications";
 import ViewTestAndSyllabus from "./components/Student/ViewTestAndSyllabus"; 
 import UploadTestAndSyllabus from "./components/Admin/UploadTestAndSyllabus"; 
+import { listenForMessages } from "./services/notificationService";
 
 function App() {
   const token = localStorage.getItem("token");
   const [adminLoginType, setAdminLoginType] = useState("academy");
+    useEffect(() => {
+    listenForMessages();
+  }, []); // Start listening for foreground messages
   return (
     <Routes>
       <Route path="/" element={<Home />} />

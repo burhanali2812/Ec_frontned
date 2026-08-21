@@ -25,18 +25,15 @@ messaging.onBackgroundMessage((payload) => {
     payload
   );
 
-  const notificationTitle =
-    payload.notification?.title || "The 'Education's Cradle";
+  const title =
+    payload.notification?.title || "The Education's Cradle";
 
-  const notificationOptions = {
+  const options = {
     body:
       payload.notification?.body ||
       "You have a new notification.",
     icon: "/logo512.png",
   };
 
-  self.registration.showNotification(
-    notificationTitle,
-    notificationOptions
-  );
+  self.registration.showNotification(title, options);
 });
