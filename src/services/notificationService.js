@@ -51,21 +51,27 @@ export const getFCMToken = async () => {
 
 // FOREGROUND MESSAGE LISTENER
 export const listenForMessages = () => {
-  onMessage(messaging, (payload) => {
-    console.log("🔔 FOREGROUND MESSAGE RECEIVED:", payload);
+ onMessage(messaging, (payload) => {
+  console.log("🔔 FULL FCM PAYLOAD:", JSON.stringify(payload, null, 2));
 
-    const title =
-      payload.notification?.title || "The Education's Cradle";
+  const title =
+    payload.notification?.title ||
+    payload.data?.title ||
+    "Education Cradle";
 
-    const body =
-      payload.notification?.body ||
-      "You have a new notification.";
+  const body =
+    payload.notification?.body ||
+    payload.data?.body ||
+    "You have a new notification.";
 
-    if (Notification.permission === "granted") {
-      new Notification(title, {
-        body,
-        icon: "/logo512.png",
-      });
-    }
-  });
+  console.log("🔔 TITLE:", title);
+  console.log("🔔 BODY:", body);
+
+  if (Notification.permission === "granted") {
+    new Notification(title, {
+      body: body,
+      icon: "/frontend/public/logo512.png",
+    });
+  }
+});
 };
