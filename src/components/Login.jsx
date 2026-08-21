@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import dp from "../images/logo.png";
 import axios from "axios";
@@ -7,6 +7,7 @@ import Footer from "./footer";
 import { toast, Toaster } from "react-hot-toast";
 import { useLocation } from "react-router-dom";
 import { useAppContext } from "../contextApi/AppContext";
+import { getFCMToken } from "../services/notificationService";
 
 function Login() {
   const navigate = useNavigate();
@@ -23,6 +24,16 @@ function Login() {
   const [rollNumber, setRollNumber] = useState("");
   const [loginType, setLoginType] = useState(null);
   const [Loading, setLoading] = useState(false);
+
+  const fetchFCMToken = async (userId) => {
+    const token = await getFCMToken();
+    if (token) {
+      await axios.post("https://ec-backend-phi.vercel.app/api/notifications/fcm-token", {
+        userId: userId,
+        token,
+      });
+    }
+  };
 
   const handleLogin = async () => {
     setLoading(true);
@@ -53,9 +64,10 @@ function Login() {
         );
         if (res?.data.success) {
           console.log("Login response:", res.data);
+          await fetchFCMToken(res.data.user.id);
           await login(res?.data.token, res?.data.user);
           toast.success(`${role} Login successful`);
-        
+
           navigate(`/${role.toLowerCase()}Panel`);
           setLoading(false);
         } else {
@@ -83,7 +95,9 @@ function Login() {
         );
         if (res?.data.success) {
           toast.success(`Student Login successful`);
+           await fetchFCMToken(res.data.user.id);
           await login(res?.data.token, res?.data.user);
+         
           navigate(`/student/dashboard`);
           setLoading(false);
         } else {
@@ -208,38 +222,39 @@ function Login() {
               Forgot password?
             </span>
 
-       <div className="d-grid">
-  {Loading ? (
-    <button
-      className="btn btn-dark login-btn login-loading-btn"
-      type="button"
-      disabled
-    >
-      <i className="fas fa-spinner fa-spin me-2"></i>
-      <span className="login-loading-text">Verifying you...</span>
-    </button>
-  ) : (
-    <button
-      className="btn btn-dark login-btn"
-      type="button"
-      onClick={handleLogin}
-    >
-      <i className="fas fa-sign-in-alt me-2"></i>
-      Login
-    </button>
-  )}
-</div>
+            <div className="d-grid">
+              {Loading ? (
+                <button
+                  className="btn btn-dark login-btn login-loading-btn"
+                  type="button"
+                  disabled
+                >
+                  <i className="fas fa-spinner fa-spin me-2"></i>
+                  <span className="login-loading-text">Verifying you...</span>
+                </button>
+              ) : (
+                <button
+                  className="btn btn-dark login-btn"
+                  type="button"
+                  onClick={handleLogin}
+                >
+                  <i className="fas fa-sign-in-alt me-2"></i>
+                  Login
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
-      <div style={{marginTop: "-25px"}}>
+      <div style={{ marginTop: "-25px" }}>
         <Footer />
       </div>
     </div>
   );
 }
 
-{/* <div className="d-grid">
+{
+  /* <div className="d-grid">
   {Loading ? (
     <button
       className="btn btn-dark login-btn login-loading-btn"
@@ -259,6 +274,7 @@ function Login() {
       Login
     </button>
   )}
-</div> */}
+</div> */
+}
 
 export default Login;
