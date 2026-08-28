@@ -7,6 +7,7 @@ import ViewTestAndSyllabus from "../Student/ViewTestAndSyllabus"; // for date fo
 import { useNavigate } from "react-router-dom";
 
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const titleOptions = ["Mid Term","Weekly Test", "Final Term", "Monthly Test"];
 const API_BASE = "https://ec-backend-phi.vercel.app/api/testScheduleAndSyllabus"; //  adjust to your mount path
 
 function buildDateRange(from, to) {
@@ -195,12 +196,24 @@ console.log("rows:", rows);
 
                                 <div className="uts-field" style={{ marginBottom: 20 }}>
                                     <label>Sheet Title</label>
-                                    <input
+                                    {/* <input
                                         type="text"
                                         placeholder="e.g. Monthly Test - August, Weekly Test Schedule"
                                         value={sheetTitle}
                                         onChange={(e) => setSheetTitle(e.target.value)}
-                                    />
+                                    /> */}
+                                    {/*instead of dropdown show the buttons with active state */}
+                                    <div className="uts-title-options">
+                                        {titleOptions.map((title) => (
+                                            <button
+                                                key={title}
+                                                className={`uts-title-btn ${sheetTitle === title ? "active" : ""}`}
+                                                onClick={() => setSheetTitle(title)}
+                                            >
+                                                {title}
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
                                 <div className="uts-grid-2">
                                     <div className="uts-field">

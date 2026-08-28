@@ -425,6 +425,29 @@
   font-size: 26px;
   margin: 0 auto 16px;
 }
+.uts-title-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  justify-content: center;
+  margin-bottom: 20px;
+  
+}
+.uts-title-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  color: #475569;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.uts-title-btn.active {
+  background: #dbeafe;
+  color: #1d4ed8;
+  border-color: #93c5fd;
+}
 
 .uts-done h2 { margin: 0 0 6px; color: #1a2332; }
 .uts-done p { margin: 0 0 20px; color: #64748b; font-size: 14px; }

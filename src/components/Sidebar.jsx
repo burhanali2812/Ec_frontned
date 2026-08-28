@@ -102,9 +102,9 @@ function Sidebar({ children }) {
       },
      
       {
-        label: "Announcements & Notices",
+        title: "Announcements & Notices",
         icon: "fas fa-bullhorn",
-        href: "/admin/announcements",
+        to: "/admin/announcements",
       }, 
       
     ],
