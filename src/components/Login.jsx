@@ -25,13 +25,19 @@ function Login() {
   const [loginType, setLoginType] = useState(null);
   const [Loading, setLoading] = useState(false);
 
+  // Fire-and-forget: registering the FCM token is not needed to show the
+  // dashboard, so it should never block login/navigation.
   const fetchFCMToken = async (userId) => {
-    const token = await getFCMToken();
-    if (token) {
-      await axios.post("https://ec-backend-phi.vercel.app/api/notifications/fcm-token", {
-        userId: userId,
-        token,
-      });
+    try {
+      const token = await getFCMToken();
+      if (token) {
+        await axios.post("https://api.theecportal.com/api/notifications/fcm-token", {
+          userId: userId,
+          token,
+        });
+      }
+    } catch (err) {
+      console.error("FCM token registration failed:", err);
     }
   };
 
@@ -56,7 +62,7 @@ function Login() {
       console.log("Logging in as:", role, "with email:", email);
       try {
         const res = await axios.post(
-          `https://ec-backend-phi.vercel.app/api/${role.toLowerCase()}/login`,
+          `https://api.theecportal.com/api/${role.toLowerCase()}/login`,
           {
             email,
             password,
@@ -64,19 +70,19 @@ function Login() {
         );
         if (res?.data.success) {
           console.log("Login response:", res.data);
-          await fetchFCMToken(res.data.user.id);
+          // Don't await: neither of these need to finish before we navigate.
+          fetchFCMToken(res.data.user.id);
           await login(res?.data.token, res?.data.user);
           toast.success(`${role} Login successful`);
 
           navigate(`/${role.toLowerCase()}Panel`);
-          setLoading(false);
         } else {
-          setLoading(false);
           toast.error(res?.data.message || "Login failed");
         }
       } catch (error) {
-        setLoading(false);
         toast.error(error.response?.data.message || "Login failed");
+      } finally {
+        setLoading(false);
       }
     } else {
       if (!rollNumber || !password) {
@@ -86,7 +92,7 @@ function Login() {
       }
       try {
         const res = await axios.post(
-          `https://ec-backend-phi.vercel.app/api/students/login`,
+          `https://api.theecportal.com/api/students/login`,
           {
             institutionPrefix: loginType,
             rollNumber,
@@ -95,18 +101,18 @@ function Login() {
         );
         if (res?.data.success) {
           toast.success(`Student Login successful`);
-           await fetchFCMToken(res.data.user.id);
+          // Don't await: neither of these need to finish before we navigate.
+          fetchFCMToken(res.data.user.id);
           await login(res?.data.token, res?.data.user);
-         
+
           navigate(`/student/dashboard`);
-          setLoading(false);
         } else {
-          setLoading(false);
           toast.error(res?.data.message || "Login failed");
         }
       } catch (error) {
-        setLoading(false);
         toast.error(error.response?.data.message || "Login failed");
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -251,30 +257,6 @@ function Login() {
       </div>
     </div>
   );
-}
-
-{
-  /* <div className="d-grid">
-  {Loading ? (
-    <button
-      className="btn btn-dark login-btn login-loading-btn"
-      type="button"
-      disabled
-    >
-      <i className="fas fa-spinner fa-spin me-2"></i>
-      <span className="login-loading-text">Verifying you...</span>
-    </button>
-  ) : (
-    <button
-      className="btn btn-dark login-btn"
-      type="button"
-      onClick={handleLogin}
-    >
-      <i className="fas fa-sign-in-alt me-2"></i>
-      Login
-    </button>
-  )}
-</div> */
 }
 
 export default Login;

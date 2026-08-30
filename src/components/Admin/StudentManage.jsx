@@ -34,7 +34,7 @@ function StudentManage({ adminLoginType = "academy" }) {
   });
   const { classOptions, students , fetchStudents } = useAppContext();
 
-  const STUDENT_API = "https://ec-backend-phi.vercel.app/api/students";
+  const STUDENT_API = "https://api.theecportal.com/api/students";
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem("token");

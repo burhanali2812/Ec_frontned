@@ -5,7 +5,7 @@ import "./ViewTestAndSyllabus.css";
 import Sidebar from "../Sidebar";
 
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-const API_BASE = "https://ec-backend-phi.vercel.app/api/testScheduleAndSyllabus"; 
+const API_BASE = "https://api.theecportal.com/api/testScheduleAndSyllabus"; 
 
 function formatDate(d) {
     return new Date(d).toLocaleDateString(undefined, {

@@ -66,7 +66,7 @@ function StudentDashboard() {
     }
   };
 
-  const API_BASE = "https://ec-backend-phi.vercel.app/api";
+  const API_BASE = "https://api.theecportal.com/api";
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem("token");

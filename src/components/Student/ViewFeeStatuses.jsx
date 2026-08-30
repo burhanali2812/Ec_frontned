@@ -14,7 +14,7 @@ function ViewFeeStatuses() {
   const [filterMonth, setFilterMonth] = useState("");
   const navigate = useNavigate();
 
-  const API_BASE = "https://ec-backend-phi.vercel.app/api";
+  const API_BASE = "https://api.theecportal.com/api";
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem("token");

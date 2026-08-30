@@ -16,7 +16,7 @@ function Voucher() {
   const [isPrinting, setIsPrinting] = useState(false);
   const voucherRef = useRef(null);
 
-  const API_BASE = "https://ec-backend-phi.vercel.app/api";
+  const API_BASE = "https://api.theecportal.com/api";
   const studentIdFromParams = searchParams.get("studentId");
   const monthFromParams = searchParams.get("month");
 

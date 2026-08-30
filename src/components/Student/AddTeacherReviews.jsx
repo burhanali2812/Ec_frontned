@@ -41,7 +41,7 @@ function AddTeacherReviews() {
 
       // Fetch student's registered courses with teachers
       const coursesResponse = await fetch(
-        "https://ec-backend-phi.vercel.app/api/registration/myCourses",
+        "https://api.theecportal.com/api/registration/myCourses",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -139,7 +139,7 @@ function AddTeacherReviews() {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        "https://ec-backend-phi.vercel.app/api/students/teacherReview",
+        "https://api.theecportal.com/api/students/teacherReview",
         {
           method: "POST",
           headers: {

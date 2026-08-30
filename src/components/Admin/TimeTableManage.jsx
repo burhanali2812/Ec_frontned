@@ -18,7 +18,7 @@ const DAYS = [
 
 
 function TimeTableManage() {
-  const API_BASE = "https://ec-backend-phi.vercel.app/api";
+  const API_BASE = "https://api.theecportal.com/api";
   const [timeTables, setTimeTables] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);

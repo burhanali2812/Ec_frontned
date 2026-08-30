@@ -50,7 +50,7 @@ function AdminPanel() {
   const [showAllMenuItems, setShowAllMenuItems] = useState(false);
   const navigate = useNavigate();
 
-  const API_BASE = "https://ec-backend-phi.vercel.app/api";
+  const API_BASE = "https://api.theecportal.com/api";
   const {
     courses,
     teachers,
@@ -93,7 +93,7 @@ const classOrder = classOptions?.length
     const fetchPendingLeaves = async () => {
       try {
         const res = await axios.get(
-          `https://ec-backend-phi.vercel.app/api/leave/lengthOfPendingLeaves`,
+          `https://api.theecportal.com/api/leave/lengthOfPendingLeaves`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

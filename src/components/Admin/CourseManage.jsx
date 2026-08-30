@@ -32,7 +32,7 @@ function CourseManage({ adminLoginType = "academy" }) {
     classTarget: [],
   });
 
-  const COURSE_API = "https://ec-backend-phi.vercel.app/api/courses";
+  const COURSE_API = "https://api.theecportal.com/api/courses";
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem("token");

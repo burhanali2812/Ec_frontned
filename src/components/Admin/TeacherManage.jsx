@@ -28,7 +28,7 @@ function TeacherManage({ adminLoginType }) {
     salary: "",
   });
 
-  const API_BASE = "https://ec-backend-phi.vercel.app/api/teacher";
+  const API_BASE = "https://api.theecportal.com/api/teacher";
   const { teachers, fetchTeachers, setTeachers } = useAppContext();
 
   const getAuthHeaders = () => {

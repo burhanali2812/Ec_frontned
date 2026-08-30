@@ -16,7 +16,7 @@ import { Bar } from "react-chartjs-2";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
-const API_BASE = "https://ec-backend-phi.vercel.app/api";
+const API_BASE = "https://api.theecportal.com/api";
 
 function ResultReport() {
   const { studentId } = useParams();

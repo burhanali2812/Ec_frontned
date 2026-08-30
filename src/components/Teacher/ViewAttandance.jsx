@@ -22,7 +22,7 @@ function ViewAttandance() {
   const [savingStudentId, setSavingStudentId] = useState(null);
   const{classOptions} = useAppContext()
 
-  const API_BASE = "https://ec-backend-phi.vercel.app/api/attendance";
+  const API_BASE = "https://api.theecportal.com/api/attendance";
 
   const getLocalToday = () => {
     const today = new Date();

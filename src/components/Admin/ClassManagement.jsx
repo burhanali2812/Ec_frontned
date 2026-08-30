@@ -5,7 +5,7 @@ import Sidebar from "../Sidebar";
 import Footer from "../footer";
 import { useAppContext } from "../../contextApi/AppContext";
 
-const API_BASE_URL = "https://ec-backend-phi.vercel.app/api/classes";
+const API_BASE_URL = "https://api.theecportal.com/api/classes";
 
 function getToken() {
   return localStorage.getItem("token") || "";

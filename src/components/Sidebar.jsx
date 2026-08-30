@@ -18,7 +18,7 @@ function Sidebar({ children }) {
     const fetchPendingLeaves = async () => {
       try {
         const res = await axios.get(
-          `https://ec-backend-phi.vercel.app/api/leave/lengthOfPendingLeaves`,
+          `https://api.theecportal.com/api/leave/lengthOfPendingLeaves`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

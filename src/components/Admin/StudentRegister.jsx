@@ -32,9 +32,9 @@ function StudentRegister({ adminLoginType = "academy" }) {
   const [discountedPrices, setDiscountedPrices] = useState({});
   const { classOptions , students} = useAppContext();
 
-  const STUDENT_API = "https://ec-backend-phi.vercel.app/api/students";
-  const COURSE_API = "https://ec-backend-phi.vercel.app/api/courses";
-  const REGISTRATION_API = "https://ec-backend-phi.vercel.app/api/registration";
+  const STUDENT_API = "https://api.theecportal.com/api/students";
+  const COURSE_API = "https://api.theecportal.com/api/courses";
+  const REGISTRATION_API = "https://api.theecportal.com/api/registration";
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem("token");

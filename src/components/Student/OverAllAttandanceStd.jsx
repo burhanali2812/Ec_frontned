@@ -32,7 +32,7 @@ function OverAllAttandanceStd() {
   const [approvedLeaveCount, setApprovedLeaveCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  const API_BASE = "https://ec-backend-phi.vercel.app/api";
+  const API_BASE = "https://api.theecportal.com/api";
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem("token");

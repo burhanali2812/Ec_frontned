@@ -6,7 +6,7 @@ import Footer from "../footer";
 import "./ApplyLeave.css";
 
 function ApplyLeave() {
-  const API_BASE = "https://ec-backend-phi.vercel.app/api";
+  const API_BASE = "https://api.theecportal.com/api";
 
   const [profile, setProfile] = useState({ name: "", email: "" });
   const [loadingProfile, setLoadingProfile] = useState(false);

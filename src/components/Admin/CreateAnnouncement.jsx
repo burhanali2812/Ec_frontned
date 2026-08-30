@@ -3,7 +3,7 @@ import "./CreateAnnouncement.css";
 import Sidebar from "../Sidebar";
 
 // Adjust this to wherever your app centralizes the API base URL.
-const API_BASE = "https://ec-backend-phi.vercel.app/api";
+const API_BASE = "https://api.theecportal.com/api";
 
 const AUDIENCE_LABEL = {
   students: "Students",

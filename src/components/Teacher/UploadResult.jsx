@@ -21,9 +21,9 @@ function UploadResult() {
     return `${y}-${m}-${day}`;
   };
 
-  const ATTENDANCE_API = "https://ec-backend-phi.vercel.app/api/attendance";
-  // const RESULT_API = "https://ec-backend-phi.vercel.app/api/results";
-  const RESULT_API = "https://ec-backend-phi.vercel.app/api/results";
+  const ATTENDANCE_API = "https://api.theecportal.com/api/attendance";
+  // const RESULT_API = "https://api.theecportal.com/api/results";
+  const RESULT_API = "https://api.theecportal.com/api/results";
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem("token");

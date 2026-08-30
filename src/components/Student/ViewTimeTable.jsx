@@ -22,7 +22,7 @@ function ViewTimeTable() {
   const userRole = token ? JSON.parse(atob(token.split(".")[1])).role : null;
   const isTeacher = userRole === "teacher";
 
-  const API_BASE = "https://ec-backend-phi.vercel.app/api";
+  const API_BASE = "https://api.theecportal.com/api";
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem("token");

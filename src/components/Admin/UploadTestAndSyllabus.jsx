@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const titleOptions = ["Mid Term","Weekly Test", "Final Term", "Monthly Test"];
-const API_BASE = "https://ec-backend-phi.vercel.app/api/testScheduleAndSyllabus"; //  adjust to your mount path
+const API_BASE = "https://api.theecportal.com/api/testScheduleAndSyllabus"; //  adjust to your mount path
 
 function buildDateRange(from, to) {
     const dates = [];

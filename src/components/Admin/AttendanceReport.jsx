@@ -6,7 +6,7 @@ import logo from "../../images/logo.png";
 import "./AttendanceReport.css";
 import {useAppContext} from "../../contextApi/AppContext";
 
-const API_BASE = "https://ec-backend-phi.vercel.app/api";
+const API_BASE = "https://api.theecportal.com/api";
 
 function AttendanceReport() {
   const location = useLocation();

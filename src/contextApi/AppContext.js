@@ -12,7 +12,7 @@ import axios from "axios";
 export const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
-const [user, setUser] = useState(() => {
+  const [user, setUser] = useState(() => {
     const stored = localStorage.getItem("user");
     return stored ? JSON.parse(stored) : null;
   });
@@ -24,11 +24,14 @@ const [user, setUser] = useState(() => {
   const [teachers, setTeachers] = useState([]);
   const [todayAttendanceStatus, setTodayAttendanceStatus] = useState([]);
   const [isTodaySunday, setIsTodaySunday] = useState(false);
-    const [notifications, setNotifications] = useState([]);
-      const [error, setError] = useState("");
+  const [notifications, setNotifications] = useState([]);
+  const [error, setError] = useState("");
+  // NEW: lets dashboard components show a skeleton/spinner instead of
+  // assuming classOptions/students/etc. are already populated.
+  const [isAppDataLoading, setIsAppDataLoading] = useState(false);
 
-  const API_BASE_URL = "https://ec-backend-phi.vercel.app/api";
-  const API_BASE = "https://ec-backend-phi.vercel.app/api";
+  const API_BASE_URL = "https://api.theecportal.com/api";
+  const API_BASE = "https://api.theecportal.com/api";
 
   function authHeaders(overrideToken) {
     return {
@@ -219,87 +222,102 @@ const [user, setUser] = useState(() => {
     }
   }, [allcourses, classOptions]);
 
-    const fetchNotifications = useCallback(async (overrideToken) => {
-   
-      setError("");
-      try {
-        const res = await fetch(`${API_BASE}/notifications`, { headers: authHeaders(overrideToken) });
-        const data = await res.json();
-        if (!data.success) throw new Error(data.message || "Failed to load notifications.");
-        setNotifications(data.notifications);
-      } catch (err) {
-        setError(err.message || "Something went wrong while loading notifications.");
-      }
-    }, []);
+  const fetchNotifications = useCallback(async (overrideToken) => {
+    setError("");
+    try {
+      const res = await fetch(`${API_BASE}/notifications`, { headers: authHeaders(overrideToken) });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message || "Failed to load notifications.");
+      setNotifications(data.notifications);
+    } catch (err) {
+      setError(err.message || "Something went wrong while loading notifications.");
+    }
+  }, []);
 
   // ---- single entry point that loads everything, called on login ----
+  // NOTE: this is intentionally NOT awaited by login() anymore — it runs
+  // in the background after navigation so the user isn't stuck on the
+  // login screen waiting for every endpoint to resolve.
   const loadAllAppData = useCallback(async (overrideToken, userData) => {
-    console.log("Loading all app data with token:", overrideToken);
     if (!overrideToken) {
       console.error("No token provided for loadAllAppData");
       return;
     }
-    console.log("User role before loading data", userData);
-   if(userData && userData?.role === "admin") {
-     await Promise.all([
-      fetchClasses(overrideToken),
-      fetchStudents(overrideToken),
-      fetchAllCourses(overrideToken),
-      fetchCourses(overrideToken),
-      fetchTeachers(overrideToken),
-    ]);
-   }
-   console.log("User role after loading data", userData);
-if (
-  userData &&
-  (userData.role === "teacher" || userData.role === "student" || userData.role === "Teacher" || userData.role === "Student")
-) {
-  await Promise.all([
-    fetchClasses(overrideToken),
-    fetchNotifications(overrideToken),
-  ]);
-}
 
+    setIsAppDataLoading(true);
+    try {
+      if (userData && userData?.role === "admin") {
+        await Promise.all([
+          fetchClasses(overrideToken),
+          fetchStudents(overrideToken),
+          fetchAllCourses(overrideToken),
+          fetchCourses(overrideToken),
+          fetchTeachers(overrideToken),
+        ]);
+      }
+
+      if (
+        userData &&
+        (userData.role === "teacher" ||
+          userData.role === "student" ||
+          userData.role === "Teacher" ||
+          userData.role === "Student")
+      ) {
+        await Promise.all([
+          fetchClasses(overrideToken),
+          fetchNotifications(overrideToken),
+        ]);
+      }
+    } finally {
+      setIsAppDataLoading(false);
+    }
   }, []);
 
   // ---- call this from your login handler ----
- const login = useCallback(
-  async (newToken, userData) => {
-    localStorage.setItem("token", newToken);
-    localStorage.setItem("user", JSON.stringify(userData || null));
-    setToken(newToken);
-    if (userData) setUser(userData);
-    await loadAllAppData(newToken, userData);
-  },
-  [loadAllAppData],
-);
+  // login() now resolves as soon as the token/user are stored, and kicks
+  // off data loading in the background (fire-and-forget) instead of
+  // blocking on it. Navigate right after awaiting login().
+  const login = useCallback(
+    async (newToken, userData) => {
+      localStorage.setItem("token", newToken);
+      localStorage.setItem("user", JSON.stringify(userData || null));
+      setToken(newToken);
+      if (userData) setUser(userData);
 
- const logout = useCallback(() => {
-  localStorage.removeItem("token");
-  localStorage.removeItem("user");
-  setToken("");
-  setUser(null);
-  setClassOptions([]);
-  setStudents([]);
-  setAllCourses([]);
-  setCourses([]);
-  setTeachers([]);
-  setNotifications([]);
-  setError("");
-  setTeachers([]);
-  setTodayAttendanceStatus([]);
-}, []);
+      // fire-and-forget: don't block navigation on this
+      loadAllAppData(newToken, userData).catch((err) =>
+        console.error("Background data load failed:", err),
+      );
+    },
+    [loadAllAppData],
+  );
+
+  const logout = useCallback(() => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setToken("");
+    setUser(null);
+    setClassOptions([]);
+    setStudents([]);
+    setAllCourses([]);
+    setCourses([]);
+    setTeachers([]);
+    setNotifications([]);
+    setError("");
+    setTeachers([]);
+    setTodayAttendanceStatus([]);
+  }, []);
 
   // If the user is already logged in on app load (token exists in localStorage),
   // load data once on mount.
-useEffect(() => {
-  if (token) {
-    const storedUser = localStorage.getItem("user");
-    const parsedUser = storedUser ? JSON.parse(storedUser) : null;
-    loadAllAppData(token, parsedUser);
-  }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-}, []);
+  useEffect(() => {
+    if (token) {
+      const storedUser = localStorage.getItem("user");
+      const parsedUser = storedUser ? JSON.parse(storedUser) : null;
+      loadAllAppData(token, parsedUser);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <AppContext.Provider
@@ -316,13 +334,14 @@ useEffect(() => {
         isTodaySunday,
         notifications,
         error,
+        isAppDataLoading,
 
         // setters
         setCourses,
         setTeachers,
         setUser,
         setNotifications,
-      setError,
+        setError,
 
         // functions
         login,

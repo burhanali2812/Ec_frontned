@@ -55,7 +55,7 @@ function Attandance() {
     }
   }, [courseIdFromState, directClassInfoFromState, directDateFromState]);
 
-  const API_BASE = "https://ec-backend-phi.vercel.app/api/attendance";
+  const API_BASE = "https://api.theecportal.com/api/attendance";
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem("token");
@@ -210,7 +210,7 @@ function Attandance() {
     try {
       const studentIds = studentList.map((s) => s._id);
       const res = await axios.post(
-        `https://ec-backend-phi.vercel.app/api/leave/checkStudentLeaves`,
+        `https://api.theecportal.com/api/leave/checkStudentLeaves`,
         {
           studentIds,
           date: dateValue,

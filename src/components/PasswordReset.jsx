@@ -29,7 +29,7 @@ function PasswordReset() {
   const finalRole = role === "Student" ? "students" : "teacher";
   console.log("finalRole", finalRole);
 
-  const API_BASE = `https://ec-backend-phi.vercel.app/api/${finalRole}`;
+  const API_BASE = `https://api.theecportal.com/api/${finalRole}`;
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem("token");

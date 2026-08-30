@@ -20,7 +20,7 @@ function ViewReviews() {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        "https://ec-backend-phi.vercel.app/api/admin/getTeacherReviews",
+        "https://api.theecportal.com/api/admin/getTeacherReviews",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -70,7 +70,7 @@ function ViewReviews() {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        `https://ec-backend-phi.vercel.app/api/admin/updateReviewStatus/${reviewId}`,
+        `https://api.theecportal.com/api/admin/updateReviewStatus/${reviewId}`,
         {
           method: "PUT",
           headers: {

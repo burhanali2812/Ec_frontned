@@ -8,7 +8,7 @@ import "./AttendanceControl.css";
 import { useAppContext } from "../../contextApi/AppContext";
 
 
-const API_BASE = "https://ec-backend-phi.vercel.app/api";
+const API_BASE = "https://api.theecportal.com/api";
 
 function AttendanceControl({ adminLoginType = "academy" }) {
   const navigate = useNavigate();
