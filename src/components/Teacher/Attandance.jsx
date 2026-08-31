@@ -125,6 +125,12 @@ function Attandance() {
     ];
   }, [selectedCourse, currentTeacherId]);
 
+  // Students who are on approved leave are excluded from bulk present/absent actions
+  const markableStudents = useMemo(
+    () => students.filter((student) => !leavesMap[student._id]),
+    [students, leavesMap],
+  );
+
   const presentCount = useMemo(
     () =>
       students.filter((student) => statusMap[student._id] === "present").length,
@@ -135,6 +141,21 @@ function Attandance() {
     () =>
       students.filter((student) => statusMap[student._id] === "absent").length,
     [students, statusMap],
+  );
+
+  // Header bulk-select state: whether every markable student currently shares that status
+  const allMarkedPresent = useMemo(
+    () =>
+      markableStudents.length > 0 &&
+      markableStudents.every((student) => statusMap[student._id] === "present"),
+    [markableStudents, statusMap],
+  );
+
+  const allMarkedAbsent = useMemo(
+    () =>
+      markableStudents.length > 0 &&
+      markableStudents.every((student) => statusMap[student._id] === "absent"),
+    [markableStudents, statusMap],
   );
 
   const fetchCourses = async () => {
@@ -309,6 +330,22 @@ function Attandance() {
 
   const handleStatusChange = (studentId, status) => {
     setStatusMap((prev) => ({ ...prev, [studentId]: status }));
+  };
+
+  // Bulk action: mark every eligible (non-leave) student present/absent in one click
+  const handleMarkAll = (status) => {
+    setStatusMap((prev) => {
+      const next = { ...prev };
+      markableStudents.forEach((student) => {
+        next[student._id] = status;
+      });
+      return next;
+    });
+    toast.success(
+      status === "present"
+        ? "All students marked present"
+        : "All students marked absent",
+    );
   };
 
   const handleSave = async () => {
@@ -544,7 +581,7 @@ function Attandance() {
                     <p className="text-muted mb-0">
                       {selectedCourseId && selectedClassInfo
                         ? hasFetched
-                          ? "Mark each student's attendance below."
+                          ? "Mark each student's attendance below, or use the header buttons to mark everyone at once."
                           : 'Click "Fetch Students" to load the list.'
                         : "Choose a course and class to load students."}
                     </p>
@@ -565,115 +602,201 @@ function Attandance() {
                       : "Attendance list will appear here after selecting course and class."}
                   </div>
                 ) : (
-                  <div className="table-responsive">
-                    <table className="attendance-student-table">
-                      <thead>
-                        <tr>
-                          <th>Roll</th>
-                          <th>Student</th>
-                          <th>Contact</th>
-                          <th>Attendance</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {students.map((student) => (
-                          <tr key={student._id}>
-                            <td>
-                              <div className="fw-semibold">
-                                {student.rollNumber || "-"}
-                              </div>
-                              <div className="text-muted small">
-                                {classOptions.find((c) => c._id === student.classInfo)?.name || "-"}
-                              </div>
-                            </td>
-                            <td>
-                              <div className="fw-semibold">{student.name}</div>
+                  <>
+                    {/* Bulk actions — mark everyone at once, works for both layouts below */}
+                    <div className="attendance-bulk-actions">
+                      <span className="attendance-bulk-label">Mark all:</span>
+                      <button
+                        type="button"
+                        className={`attendance-bulk-btn attendance-bulk-btn--present ${allMarkedPresent ? "is-active" : ""}`}
+                        onClick={() => handleMarkAll("present")}
+                        disabled={markableStudents.length === 0}
+                      >
+                        Present
+                      </button>
+                      <button
+                        type="button"
+                        className={`attendance-bulk-btn attendance-bulk-btn--absent ${allMarkedAbsent ? "is-active" : ""}`}
+                        onClick={() => handleMarkAll("absent")}
+                        disabled={markableStudents.length === 0}
+                      >
+                        Absent
+                      </button>
+                    </div>
 
-                              <div className="mt-2">
-                                <div className="d-flex justify-content-between align-items-center mb-1 small text-muted">
-                                  <span>Attendance</span>
-                                  <span>
-                                    {Number(student.percentage || 0)}%
-                                  </span>
-                                </div>
-                                <div
-                                  className="progress"
-                                  style={{ height: 8, borderRadius: 999 }}
-                                >
-                                  <div
-                                    className={`progress-bar ${Number(student.percentage || 0) < 90 ? "bg-danger" : "bg-success"}`}
-                                    role="progressbar"
-                                    aria-valuenow={Number(
-                                      student.percentage || 0,
-                                    )}
-                                    aria-valuemin="0"
-                                    aria-valuemax="100"
-                                    style={{
-                                      width: `${Number(student.percentage || 0)}%`,
-                                    }}
-                                  />
-                                </div>
-                              </div>
-                            </td>
-
-                            <td>
-                              <div className="attendance-radio-group">
-                                {leavesMap[student._id] ? (
-                                  <div
-                                    className="badge bg-warning text-dark d-inline-block"
-                                    style={{
-                                      fontSize: "0.9rem",
-                                      padding: "0.5rem 0.75rem",
-                                    }}
-                                 
-                                     
-                                  >
-                                    <i className="fas fa-calendar-xmark me-1"></i>
-                                    On Leave
+                    {/* Desktop / tablet: table layout */}
+                    <div className="attendance-table-wrap d-none d-md-block">
+                      <table className="attendance-student-table attendance-table-3col">
+                        <colgroup>
+                          <col style={{ width: "52%" }} />
+                          <col style={{ width: "24%" }} />
+                          <col style={{ width: "24%" }} />
+                        </colgroup>
+                        <thead>
+                          <tr>
+                            <th className="text-start">Student</th>
+                            <th>Present</th>
+                            <th>Absent</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {students.map((student) => {
+                            const isOnLeave = Boolean(leavesMap[student._id]);
+                            const status = statusMap[student._id];
+                            return (
+                              <tr key={student._id}>
+                                <td className="attendance-student-cell">
+                                  <div className="fw-semibold">
+                                    {student.name}
                                   </div>
+                                  <div className="text-muted small">
+                                    Roll No: {student.rollNumber || "-"}
+                                  </div>
+                                  <div className="attendance-percentage-row">
+                                    <div
+                                      className="progress"
+                                      style={{ height: 6, borderRadius: 999 }}
+                                    >
+                                      <div
+                                        className={`progress-bar ${Number(student.percentage || 0) < 90 ? "bg-danger" : "bg-success"}`}
+                                        role="progressbar"
+                                        aria-valuenow={Number(
+                                          student.percentage || 0,
+                                        )}
+                                        aria-valuemin="0"
+                                        aria-valuemax="100"
+                                        style={{
+                                          width: `${Number(student.percentage || 0)}%`,
+                                        }}
+                                      />
+                                    </div>
+                                    <span className="attendance-percentage-text">
+                                      {Number(student.percentage || 0)}%
+                                    </span>
+                                  </div>
+                                </td>
+
+                                {isOnLeave ? (
+                                  <td colSpan={2} className="text-center">
+                                    <span className="attendance-leave-badge">
+                                      On Leave
+                                    </span>
+                                  </td>
                                 ) : (
                                   <>
-                                    <label className="attendance-radio-pill">
-                                      <input
-                                        type="radio"
-                                        name={`attendance-${student._id}`}
-                                        checked={
-                                          statusMap[student._id] === "present"
-                                        }
-                                        onChange={() =>
+                                    <td className="text-center">
+                                      <button
+                                        type="button"
+                                        className={`attendance-check-btn attendance-check-btn--present ${status === "present" ? "is-active" : ""}`}
+                                        onClick={() =>
                                           handleStatusChange(
                                             student._id,
                                             "present",
                                           )
                                         }
-                                      />
-                                      Present
-                                    </label>
-                                    <label className="attendance-radio-pill">
-                                      <input
-                                        type="radio"
-                                        name={`attendance-${student._id}`}
-                                        checked={
-                                          statusMap[student._id] === "absent"
-                                        }
-                                        onChange={() =>
+                                        aria-pressed={status === "present"}
+                                        aria-label={`Mark ${student.name} present`}
+                                      >
+                                        <span className="attendance-check-icon">
+                                          ✓
+                                        </span>
+                                      </button>
+                                    </td>
+                                    <td className="text-center">
+                                      <button
+                                        type="button"
+                                        className={`attendance-check-btn attendance-check-btn--absent ${status === "absent" ? "is-active" : ""}`}
+                                        onClick={() =>
                                           handleStatusChange(
                                             student._id,
                                             "absent",
                                           )
                                         }
-                                      />
-                                      Absent
-                                    </label>
+                                        aria-pressed={status === "absent"}
+                                        aria-label={`Mark ${student.name} absent`}
+                                      >
+                                        <span className="attendance-check-icon">
+                                          ✕
+                                        </span>
+                                      </button>
+                                    </td>
                                   </>
                                 )}
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {/* Mobile: stacked card layout, no table / no horizontal scroll */}
+                    <div className="attendance-mobile-list d-md-none">
+                      {students.map((student) => {
+                        const isOnLeave = Boolean(leavesMap[student._id]);
+                        const status = statusMap[student._id];
+                        return (
+                          <div className="attendance-mobile-card" key={student._id}>
+                            <div className="attendance-mobile-card-top">
+                              <div className="attendance-mobile-card-info">
+                                <div className="fw-semibold">{student.name}</div>
+                                <div className="text-muted small">
+                                  Roll No: {student.rollNumber || "-"}
+                                </div>
                               </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                              <div className="attendance-mobile-percentage">
+                                {Number(student.percentage || 0)}%
+                              </div>
+                            </div>
+
+                            <div
+                              className="progress mb-2"
+                              style={{ height: 6, borderRadius: 999 }}
+                            >
+                              <div
+                                className={`progress-bar ${Number(student.percentage || 0) < 90 ? "bg-danger" : "bg-success"}`}
+                                role="progressbar"
+                                aria-valuenow={Number(student.percentage || 0)}
+                                aria-valuemin="0"
+                                aria-valuemax="100"
+                                style={{
+                                  width: `${Number(student.percentage || 0)}%`,
+                                }}
+                              />
+                            </div>
+
+                            {isOnLeave ? (
+                              <span className="attendance-leave-badge">
+                                On Leave
+                              </span>
+                            ) : (
+                              <div className="attendance-toggle">
+                                <button
+                                  type="button"
+                                  className={`attendance-toggle-option attendance-toggle-option--present ${status === "present" ? "is-active" : ""}`}
+                                  onClick={() =>
+                                    handleStatusChange(student._id, "present")
+                                  }
+                                  aria-pressed={status === "present"}
+                                >
+                                  Present
+                                </button>
+                                <button
+                                  type="button"
+                                  className={`attendance-toggle-option attendance-toggle-option--absent ${status === "absent" ? "is-active" : ""}`}
+                                  onClick={() =>
+                                    handleStatusChange(student._id, "absent")
+                                  }
+                                  aria-pressed={status === "absent"}
+                                >
+                                  Absent
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </>
                 )}
               </div>
             </div>
@@ -685,7 +808,7 @@ function Attandance() {
                 <div className="fw-semibold">Quick summary</div>
                 <div className="text-muted small">
                   {selectedCourse?.title || "No course selected"}{" "}
-                  {selectedClassInfo ? `• ${selectedClassInfo}` : ""}
+                  {classOptions.find((cls) => cls._id === selectedClassInfo)?.name || "-"}
                 </div>
                 <div className="text-muted small">
                   {topic ? `Topic: ${topic}` : "Topic: -"}
