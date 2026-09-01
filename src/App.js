@@ -38,6 +38,8 @@ import CreateAnnouncement from "./components/Admin/CreateAnnouncement";
 import Notifications from "./components/Student/Notifications";
 import ViewTestAndSyllabus from "./components/Student/ViewTestAndSyllabus"; 
 import UploadTestAndSyllabus from "./components/Admin/UploadTestAndSyllabus"; 
+import TestGenerator from "./components/Teacher/TestGenerator";
+import InstallApp from "./components/InstallApp";
 import { listenForMessages } from "./services/notificationService";
 
 function App() {
@@ -48,7 +50,8 @@ function App() {
   }, []); // Start listening for foreground messages
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
+        <Route path="/" element={<InstallApp />} />
+      <Route path="/home" element={<Home />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/login" element={<Login />} />
       <Route path="/adminPanel" element={<AdminPanel />} />
@@ -60,6 +63,8 @@ function App() {
       <Route path="/viewTestAndSyllabus" element={<ViewTestAndSyllabus />} />
       <Route path="/admin/UploadTestAndSyllabus" element={<UploadTestAndSyllabus />} />
       <Route path="/student/notifications" element={<Notifications />} />
+      <Route path="/teacher/test-generator" element={<TestGenerator />} />
+    
       
       <Route
         path="/teacherManage"

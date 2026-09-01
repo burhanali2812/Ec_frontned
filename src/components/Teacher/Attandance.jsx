@@ -492,22 +492,6 @@ function Attandance() {
   </div>
 </div>
 
-                  <div className="row g-2 mb-3">
-                
-                    
-                    <div className="col-12">
-                      <label>Topic</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        value={topic}
-                        placeholder="Enter lecture topic"
-                        onChange={(e) => setTopic(e.target.value)}
-                        disabled={!selectedCourseId || !selectedClassInfo || !selectedDate || students.length === 0}
-                      />
-                    </div>
-                  </div>
-
                   <div className="row g-2 mb-4">
                     <div className="col-6">
                       <div
@@ -802,7 +786,24 @@ function Attandance() {
             </div>
           </div>
 
-          <div className="attendance-sticky-actions mt-4">
+          <div className="attendance-card p-3 p-md-4 mt-2">
+            <label className="form-label fw-semibold mb-2">Topic</label>
+            <input
+              type="text"
+              className="form-control py-2"
+              value={topic}
+              placeholder="Enter lecture topic"
+              onChange={(e) => setTopic(e.target.value)}
+              disabled={
+                !selectedCourseId ||
+                !selectedClassInfo ||
+                !selectedDate ||
+                students.length === 0
+              }
+            />
+          </div>
+
+          <div className="attendance-sticky-actions mt-2">
             <div className="attendance-card p-3 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
               <div>
                 <div className="fw-semibold">Quick summary</div>

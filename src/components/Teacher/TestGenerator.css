@@ -1,0 +1,446 @@
+/* ---------------- Print ---------------- */
+
+@page {
+  size: letter;
+  margin: 0.5in;
+}
+
+@media print {
+  .no-print { display: none !important; }
+
+  html, body { background: #fff !important; }
+  .tg-shell { background: #fff; }
+  .tg-layout { display: block; }
+
+  .tg-sheet {
+    box-shadow: none;
+    border: none;
+    margin: 0;
+    padding: 0;
+    max-width: 100%;
+  }
+
+  .tg-watermark {
+    opacity: 0.08;
+    /* Chrome/Edge drop background images by default when printing */
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .tg-sheet-section { break-inside: avoid; }
+  .tg-sheet-question { break-inside: avoid; }
+  .tg-sheet-header { break-after: avoid; }
+}
+/* ============================================================
+   TestGenerator.css
+   Palette: navy #1B2A4A, gold accent #C89B3C, paper cream #FAF7F0,
+   ink #22252A, slate #6B7280. Serif for institute identity,
+   sans for the working UI.
+   ============================================================ */
+
+@import url("https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700&display=swap");
+
+:root {
+  --tg-navy: #1b2a4a;
+  --tg-navy-soft: #2c3e63;
+  --tg-gold: #c89b3c;
+  --tg-cream: #faf7f0;
+  --tg-ink: #22252a;
+  --tg-slate: #6b7280;
+  --tg-line: #d8d2c4;
+  --tg-error: #b3261e;
+  --tg-ok: #2f6b46;
+}
+
+* { box-sizing: border-box; }
+
+.tg-shell {
+  min-height: 100vh;
+  background: #eef0f4;
+  color: var(--tg-ink);
+  font-family: "Inter", sans-serif;
+}
+
+/* ---------------- Top bar ---------------- */
+
+.tg-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 32px;
+  background: var(--tg-navy);
+  color: #fff;
+}
+
+.tg-brand { display: flex; align-items: center; gap: 14px; }
+.tg-brand-logo { width: 40px; height: 40px; object-fit: contain; }
+.tg-brand-eyebrow { margin: 0; font-size: 12px; letter-spacing: 0.04em; color: var(--tg-gold); }
+.tg-brand-title {
+  margin: 2px 0 0;
+  font-family: "Lora", serif;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.tg-tabs { display: flex; gap: 4px; background: rgba(255,255,255,0.08); border-radius: 8px; padding: 4px; }
+.tg-tab {
+  border: none;
+  background: transparent;
+  color: #d9dfea;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  font-size: 14px;
+}
+.tg-tab.is-active { background: #fff; color: var(--tg-navy); }
+
+/* ---------------- Wizard layout ---------------- */
+
+.tg-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 28px;
+  max-width: 1100px;
+  margin: 32px auto;
+  padding: 0 24px;
+}
+
+.tg-stepper {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tg-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: var(--tg-slate);
+  font-size: 14px;
+}
+
+.tg-step-index {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid var(--tg-line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.tg-step.is-current { background: #fff; color: var(--tg-navy); font-weight: 600; box-shadow: 0 1px 3px rgba(27,42,74,0.12); }
+.tg-step.is-current .tg-step-index { border-color: var(--tg-navy); color: var(--tg-navy); }
+.tg-step.is-done { color: var(--tg-ok); }
+.tg-step.is-done .tg-step-index { background: var(--tg-ok); border-color: var(--tg-ok); color: #fff; }
+
+.tg-panel {
+  background: #fff;
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 1px 3px rgba(27,42,74,0.08);
+}
+
+.tg-panel-title {
+  font-family: "Lora", serif;
+  font-size: 22px;
+  margin: 0 0 20px;
+}
+
+.tg-hint { color: var(--tg-slate); font-size: 13px; margin: 4px 0 0; }
+
+.tg-error {
+  background: #fdecea;
+  color: var(--tg-error);
+  border: 1px solid #f3c6c1;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-bottom: 18px;
+}
+
+/* ---------------- Fields ---------------- */
+
+.tg-field { margin-bottom: 18px; }
+.tg-field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--tg-navy-soft);
+}
+
+.tg-field input,
+.tg-field select,
+.tg-field textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid var(--tg-line);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--tg-ink);
+  background: #fff;
+}
+
+.tg-field input:focus,
+.tg-field select:focus,
+.tg-field textarea:focus {
+  outline: none;
+  border-color: var(--tg-navy);
+  box-shadow: 0 0 0 3px rgba(27,42,74,0.12);
+}
+
+.tg-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 20px; }
+.tg-dist-row { align-items: end; }
+
+/* ---------------- Buttons ---------------- */
+
+.tg-actions { display: flex; gap: 10px; margin-top: 24px; flex-wrap: wrap; }
+
+.tg-btn {
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  border: 1.5px solid var(--tg-line);
+  background: #fff;
+  color: var(--tg-navy);
+  cursor: pointer;
+}
+.tg-btn:hover { border-color: var(--tg-navy-soft); }
+.tg-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.tg-btn-primary { background: var(--tg-navy); border-color: var(--tg-navy); color: #fff; }
+.tg-btn-primary:hover { background: var(--tg-navy-soft); }
+
+.tg-btn-accent { background: var(--tg-gold); border-color: var(--tg-gold); color: #2c220a; }
+
+.tg-btn-ghost { border: none; background: none; color: var(--tg-navy); padding-left: 0; }
+
+.tg-back-btn { margin-bottom: 16px; }
+
+/* ---------------- Paper type choice cards ---------------- */
+
+.tg-choice-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+
+.tg-choice-card {
+  text-align: left;
+  border: 1.5px solid var(--tg-line);
+  border-radius: 10px;
+  padding: 18px;
+  background: #fff;
+  cursor: pointer;
+}
+.tg-choice-card h3 { margin: 0 0 6px; font-size: 15px; color: var(--tg-navy); }
+.tg-choice-card p { margin: 0; font-size: 13px; color: var(--tg-slate); }
+.tg-choice-card.is-selected { border-color: var(--tg-gold); box-shadow: 0 0 0 3px rgba(200,155,60,0.18); }
+
+/* ---------------- Distribution total check ---------------- */
+
+.tg-total-check { font-size: 13px; font-weight: 600; margin-top: 4px; }
+.tg-total-check.is-ok { color: var(--tg-ok); }
+.tg-total-check.is-off { color: var(--tg-error); }
+
+/* ---------------- Question step ---------------- */
+
+.tg-q-header { display: flex; align-items: baseline; justify-content: space-between; }
+.tg-q-type-badge {
+  margin-left: 10px;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(27,42,74,0.08);
+  color: var(--tg-navy);
+  vertical-align: middle;
+}
+
+.tg-q-pager { display: flex; flex-wrap: wrap; gap: 6px; margin: 14px 0 20px; }
+.tg-q-dot {
+  width: 30px; height: 30px;
+  border-radius: 6px;
+  border: 1.5px solid var(--tg-line);
+  background: #fff;
+  font-size: 12px;
+  cursor: pointer;
+  color: var(--tg-slate);
+}
+.tg-q-dot.is-filled { border-color: var(--tg-ok); color: var(--tg-ok); }
+.tg-q-dot.is-current { background: var(--tg-navy); border-color: var(--tg-navy); color: #fff; }
+
+.tg-option-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.tg-option-row input[type="text"] { flex: 1; }
+
+/* ============================================================
+   THE EXAM SHEET (printable / PDF)
+   ============================================================ */
+
+.tg-sheet {
+  position: relative;
+  background: var(--tg-cream);
+  max-width: 780px;
+  margin: 24px auto 0;
+  padding: 48px 56px 64px;
+  border: 1px solid var(--tg-line);
+  box-shadow: 0 2px 10px rgba(27,42,74,0.1);
+  font-family: "Lora", serif;
+  color: var(--tg-ink);
+  overflow: hidden;
+}
+
+.tg-watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 380px;
+  transform: translate(-50%, -50%);
+  opacity: 0.06;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.tg-sheet-header,
+.tg-student-block,
+.tg-sheet-section {
+  position: relative;
+  z-index: 1;
+}
+
+.tg-sheet-header { text-align: center; border-bottom: 2px solid var(--tg-navy); padding-bottom: 16px; margin-bottom: 20px; }
+.tg-sheet-logo { width: 56px; height: 56px; object-fit: contain; margin: 0 auto 8px; display: block; }
+.tg-sheet-institute { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: 0.02em; color: var(--tg-navy); }
+.tg-sheet-subject { margin: 4px 0 14px; font-size: 15px; font-style: italic; color: var(--tg-navy-soft); }
+
+.tg-sheet-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 24px;
+  font-family: "Inter", sans-serif;
+  font-size: 12.5px;
+  color: var(--tg-ink);
+}
+
+.tg-student-block {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+  font-family: "Inter", sans-serif;
+  font-size: 14px;
+}
+.tg-student-block > div { display: flex; align-items: baseline; gap: 8px; flex: 1; }
+.tg-line-label { white-space: nowrap; font-weight: 600; }
+.tg-line { flex: 1; border-bottom: 1px solid var(--tg-ink); height: 1px; }
+
+.tg-sheet-section { margin-bottom: 26px; }
+.tg-sheet-section-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--tg-navy);
+  border-bottom: 1px solid var(--tg-line);
+  padding-bottom: 6px;
+  margin-bottom: 14px;
+}
+
+.tg-sheet-qlist { margin: 0; padding-left: 22px; }
+.tg-sheet-question { margin-bottom: 18px; }
+.tg-sheet-qtext { display: flex; justify-content: space-between; gap: 12px; font-size: 14.5px; line-height: 1.5; }
+.tg-sheet-marks { font-family: "Inter", sans-serif; font-size: 12px; color: var(--tg-slate); white-space: nowrap; }
+
+.tg-sheet-options { list-style: none; margin: 8px 0 0; padding-left: 4px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; font-size: 14px; }
+.tg-opt-letter { font-weight: 600; margin-right: 4px; }
+
+.tg-answer-space { border-bottom: 1px dashed var(--tg-line); height: 26px; margin-top: 10px; }
+
+/* ---------------- Library ---------------- */
+
+.tg-library { max-width: 1100px; margin: 32px auto; padding: 0 24px; }
+.tg-library-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-top: 16px; }
+.tg-library-card {
+  text-align: left;
+  background: #fff;
+  border: 1.5px solid var(--tg-line);
+  border-radius: 10px;
+  padding: 18px;
+  cursor: pointer;
+}
+.tg-library-card:hover { border-color: var(--tg-navy-soft); }
+.tg-library-card h3 { margin: 0 0 4px; font-size: 15px; color: var(--tg-navy); }
+.tg-library-card p { margin: 2px 0 0; font-size: 13px; color: var(--tg-slate); }
+
+/* ---------------- Print ---------------- */
+.tg-option-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1.5px solid var(--tg-line);
+}
+.tg-option-row.is-correct { border-color: var(--tg-ok); background: rgba(47,107,70,0.05); }
+
+.tg-option-letter {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: var(--tg-navy);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.tg-option-row input[type="text"] { flex: 1; border: none; padding: 6px 4px; }
+.tg-option-row input[type="text"]:focus { box-shadow: none; }
+
+.tg-option-correct {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 12px;
+  color: var(--tg-slate);
+  white-space: nowrap;
+}
+
+.tg-option-remove {
+  border: none; background: none;
+  color: var(--tg-error);
+  font-size: 18px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0 4px;
+}
+
+.tg-library-card-wrap { position: relative; }
+.tg-library-delete {
+  position: absolute;
+  top: 8px; right: 8px;
+  font-size: 11px;
+  border: none;
+  background: #fdecea;
+  color: var(--tg-error);
+  padding: 3px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+@media print {
+  .no-print { display: none !important; }
+  .tg-shell { background: #fff; }
+  .tg-layout { grid-template-columns: 1fr; }
+  .tg-sheet { box-shadow: none; border: none; margin: 0; max-width: 100%; }
+}
+
+@media (max-width: 800px) {
+  .tg-layout { grid-template-columns: 1fr; }
+  .tg-grid-2, .tg-choice-grid { grid-template-columns: 1fr; }
+  .tg-sheet { padding: 32px 20px 48px; }
+  .tg-student-block { flex-direction: column; }
+}
