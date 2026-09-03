@@ -153,6 +153,14 @@ function InstallApp() {
                   <i className="fas fa-download me-2"></i>
                   Install App
                 </button>
+                  <button
+                  className="btn btn-warning install-btn"
+                  type="button"
+                  onClick={() => navigate("/home", { replace: true })}
+                >
+                  <i className="fas fa-cross me-2"></i>
+                  Cancel
+                </button>
               </div>
             )}
 
