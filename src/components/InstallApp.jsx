@@ -154,11 +154,11 @@ function InstallApp() {
                   Install App
                 </button>
                   <button
-                  className="btn btn-warning install-btn"
+                  className="btn btn-danger install-btn mt-2"
                   type="button"
                   onClick={() => navigate("/home", { replace: true })}
                 >
-                  <i className="fas fa-cross me-2"></i>
+                  <i className="fa-solid fa-x me-2"></i>
                   Cancel
                 </button>
               </div>
