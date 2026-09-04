@@ -285,7 +285,8 @@ useEffect(() => {
                         <td className="fw-semibold">
                           {student.name || "Unnamed Student"}
                         </td>
-                        <td>{student.classInfo?.name || student.className || "-"}</td>
+                            <td>{classOptions.find((cls) => cls._id === student.classInfo)?.name || "-"}</td>
+                     
                         <td>{student.gender || "-"}</td>
                         <td>{student.contact || "-"}</td>
                         <td className="text-end">
