@@ -569,7 +569,7 @@ const haystack =
                             </td>
                             <td>
                               <div className="fw-semibold">
-                               {entry?.classInfo?.name || "-"}
+                                {classOptions.find((cls) => cls._id === entry.classInfo)?.name || "-"}
                               </div>
                             </td>
                             <td>

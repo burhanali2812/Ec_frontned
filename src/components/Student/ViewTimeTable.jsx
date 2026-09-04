@@ -3,7 +3,7 @@ import axios from "axios";
 import Sidebar from "../Sidebar";
 import Footer from "../footer";
 import "./ViewTimeTable.css";
-
+import {useAppContext} from "../../contextApi/AppContext";
 const DAYS = [
   "Monday",
   "Tuesday",
@@ -28,6 +28,7 @@ function ViewTimeTable() {
     const token = localStorage.getItem("token");
     return token ? { Authorization: `Bearer ${token}` } : {};
   };
+    const { classOptions } = useAppContext();
 
   useEffect(() => {
     const fetchTimeTable = async () => {
@@ -149,7 +150,7 @@ function ViewTimeTable() {
                                     {item.startTime} - {item.endTime}
                                   </span>
                                 </td>
-                                <td>{item?.classInfo || "-"}</td>
+                                 <td>{classOptions.find((cls) => cls._id === item?.classInfo)?.name || "-"}</td>
                                 <td>{item?.course?.title || "-"}</td>
                                 <td>{item?.teacher?.name || "-"}</td>
                               </tr>

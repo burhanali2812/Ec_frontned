@@ -197,7 +197,7 @@ function CourseManage({ adminLoginType = "academy" }) {
     });
   };
 
-  const toggleTeacherClass = (teacherId, classData) => {
+const toggleTeacherClass = (teacherId, classId) => {
     setFormData((prev) => {
       const exists = prev.teacherAssignments.some(
         (item) => item.teacherId === teacherId,
@@ -208,7 +208,7 @@ function CourseManage({ adminLoginType = "academy" }) {
           ...prev,
           teacherAssignments: [
             ...prev.teacherAssignments,
-            { teacherId, classes: [classData._id] },
+            { teacherId, classes: [classId] },
           ],
         };
       }
@@ -218,12 +218,12 @@ function CourseManage({ adminLoginType = "academy" }) {
         teacherAssignments: prev.teacherAssignments.map((item) => {
           if (item.teacherId !== teacherId) return item;
 
-          const hasClass = item.classes.includes(classData._id || classData);
+          const hasClass = item.classes.includes(classId);
           return {
             ...item,
             classes: hasClass
-              ? item.classes.filter((itemClass) => itemClass !== classData._id)
-              : [...item.classes, classData._id || classData],
+              ? item.classes.filter((itemClass) => itemClass !== classId)
+              : [...item.classes, classId],
           };
         }),
       };
