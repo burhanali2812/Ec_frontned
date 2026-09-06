@@ -36,8 +36,8 @@ import Footer from "./components/footer";
 import ClassManagement from "./components/Admin/ClassManagement";
 import CreateAnnouncement from "./components/Admin/CreateAnnouncement";
 import Notifications from "./components/Student/Notifications";
-import ViewTestAndSyllabus from "./components/Student/ViewTestAndSyllabus"; 
-import UploadTestAndSyllabus from "./components/Admin/UploadTestAndSyllabus"; 
+import ViewTestAndSyllabus from "./components/Student/ViewTestAndSyllabus";
+import UploadTestAndSyllabus from "./components/Admin/UploadTestAndSyllabus";
 import TestGenerator from "./components/Teacher/TestGenerator";
 import InstallApp from "./components/InstallApp";
 import { listenForMessages } from "./services/notificationService";
@@ -45,12 +45,29 @@ import { listenForMessages } from "./services/notificationService";
 function App() {
   const token = localStorage.getItem("token");
   const [adminLoginType, setAdminLoginType] = useState("academy");
-    useEffect(() => {
+
+  // Computed once, synchronously, before the first paint.
+  const [isAppInstalled] = useState(() => {
+    const isStandalone =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      window.navigator.standalone === true; // iOS Safari
+    const alreadyInstalledFlag =
+      localStorage.getItem("appInstalled") === "true";
+    return isStandalone || alreadyInstalledFlag;
+  });
+
+  useEffect(() => {
     listenForMessages();
-  }, []); // Start listening for foreground messages
+  }, []);
+
   return (
     <Routes>
-        <Route path="/" element={<InstallApp />} />
+      <Route
+        path="/"
+        element={
+          isAppInstalled ? <Navigate to="/home" replace /> : <InstallApp />
+        }
+      />
       <Route path="/home" element={<Home />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/login" element={<Login />} />
@@ -64,62 +81,30 @@ function App() {
       <Route path="/admin/UploadTestAndSyllabus" element={<UploadTestAndSyllabus />} />
       <Route path="/student/notifications" element={<Notifications />} />
       <Route path="/teacher/test-generator" element={<TestGenerator />} />
-    
-      
-      <Route
-        path="/teacherManage"
-        element={<TeacherManage adminLoginType={adminLoginType} />}
-      />
-      <Route
-        path="/courseManage"
-        element={<CourseManage adminLoginType={adminLoginType} />}
-      />
-      <Route
-        path="/studentManage"
-        element={<StudentManage adminLoginType={adminLoginType} />}
-      />
-      <Route
-        path="/student-register/:studentId"
-        element={<StudentRegister adminLoginType={adminLoginType} />}
-      />
-      <Route
-        path="/student-register"
-        element={<StudentRegister adminLoginType={adminLoginType} />}
-      />
+
+      <Route path="/teacherManage" element={<TeacherManage adminLoginType={adminLoginType} />} />
+      <Route path="/courseManage" element={<CourseManage adminLoginType={adminLoginType} />} />
+      <Route path="/studentManage" element={<StudentManage adminLoginType={adminLoginType} />} />
+      <Route path="/student-register/:studentId" element={<StudentRegister adminLoginType={adminLoginType} />} />
+      <Route path="/student-register" element={<StudentRegister adminLoginType={adminLoginType} />} />
 
       <Route path="/password-reset" element={<PasswordReset />} />
       <Route path="/fee-management/:studentId" element={<FeeManagement />} />
-      <Route
-        path="/admin/result-generate"
-        element={<ResultGenerate adminLoginType={adminLoginType} />}
-      />
-      <Route
-        path="/admin/result-report/:studentId"
-        element={<ResultReport />}
-      />
+      <Route path="/admin/result-generate" element={<ResultGenerate adminLoginType={adminLoginType} />} />
+      <Route path="/admin/result-report/:studentId" element={<ResultReport />} />
       <Route path="/teacher/attendance" element={<Attandance />} />
       <Route path="/teacher/view-attendance" element={<ViewAttandance />} />
       <Route path="/teacher/upload-result" element={<UploadResult />} />
       <Route path="/student/dashboard" element={<StudentDashboard />} />
-      <Route
-        path="/student/attendance-overview"
-        element={<OverAllAttandanceStd />}
-      />
+      <Route path="/student/attendance-overview" element={<OverAllAttandanceStd />} />
       <Route path="/student/result-overview" element={<OverAllResult />} />
-
       <Route path="/student/viewFeeStatuses" element={<ViewFeeStatuses />} />
       <Route path="/student/fee-voucher" element={<Voucher />} />
       <Route path="/student/timetable" element={<ViewTimeTable />} />
       <Route path="/teacher/timetable" element={<ViewTimeTable />} />
       <Route path="/apply-leave" element={<ApplyLeave />} />
-      <Route
-        path="/admin/view-and-approve-leaves"
-        element={<ViewAndApproveLeaves />}
-      />
-      <Route
-        path="/admin/timetable-manage"
-        element={<TimeTableManage adminLoginType={adminLoginType} />}
-      />
+      <Route path="/admin/view-and-approve-leaves" element={<ViewAndApproveLeaves />} />
+      <Route path="/admin/timetable-manage" element={<TimeTableManage adminLoginType={adminLoginType} />} />
       <Route path="/admin/attendance-control" element={<AttendanceControl />} />
       <Route path="/admin/attendance-report" element={<AttendanceReport />} />
       <Route path="/admin/viewReviews" element={<ViewReviews />} />
