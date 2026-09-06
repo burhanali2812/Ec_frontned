@@ -230,12 +230,13 @@ function StudentManage({ adminLoginType = "academy" }) {
 
     setDeletingStudent(true);
     try {
-      const res = await axios.put(
-        `${STUDENT_API}/deleteStudent/${editingStudentId}`,
-        {
-          headers: getAuthHeaders(),
-        },
-      );
+     const res = await axios.put(
+  `${STUDENT_API}/deleteStudent/${editingStudentId}`,
+  {},
+  {
+    headers: getAuthHeaders(),
+  }
+);
 
       if (res.data?.success) {
         toast.success(res.data?.message || "Student deleted successfully!");
