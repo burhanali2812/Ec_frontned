@@ -191,9 +191,12 @@ function PasswordReset() {
       <div className="password-reset-wrapper">
         {/* Header */}
         <div className="reset-header">
-          <div className="reset-icon">
-            <i className="fas fa-lock"></i>
-          </div>
+          <img
+            src={`${process.env.PUBLIC_URL}/logo512.png`}
+            alt="The Education's Cradle Institute"
+            className="institute-logo"
+          />
+          <p className="institute-name">The Education's Cradle Institute</p>
           <h1 className="reset-title">Password Reset</h1>
           <p className="reset-subtitle">Securely reset your account password</p>
         </div>
@@ -221,7 +224,7 @@ function PasswordReset() {
           <form onSubmit={handleVerifyEmail} className="reset-form">
             <div className="form-section">
               <label className="form-label">Email Address</label>
-              <div className="input-group">
+              <div className="input-groupReset">
                 <i className="fas fa-envelope input-icon"></i>
                 <input
                   type="email"
@@ -322,7 +325,7 @@ function PasswordReset() {
               )}
 
               <label className="form-label">Answer</label>
-              <div className="input-group">
+              <div className="input-groupReset">
                 <i className="fas fa-key input-icon"></i>
                 <input
                   type="text"
@@ -383,7 +386,7 @@ function PasswordReset() {
           <form onSubmit={handleResetPassword} className="reset-form">
             <div className="form-section">
               <label className="form-label">Current Password</label>
-              <div className="input-group">
+              <div className="input-groupReset">
                 <i className="fas fa-lock input-icon"></i>
                 <input
                   type={showOldPassword ? "text" : "password"}
@@ -407,7 +410,7 @@ function PasswordReset() {
 
             <div className="form-section">
               <label className="form-label">New Password</label>
-              <div className="input-group">
+              <div className="input-groupReset">
                 <i className="fas fa-lock input-icon"></i>
                 <input
                   type={showNewPassword ? "text" : "password"}
@@ -439,7 +442,7 @@ function PasswordReset() {
 
             <div className="form-section">
               <label className="form-label">Confirm Password</label>
-              <div className="input-group">
+              <div className="input-groupReset">
                 <i className="fas fa-lock input-icon"></i>
                 <input
                   type={showConfirmPassword ? "text" : "password"}
