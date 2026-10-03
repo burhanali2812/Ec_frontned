@@ -4,7 +4,7 @@ import logo from "../images/logo.png";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppContext } from "../contextApi/AppContext";
-import { Toaster , toast} from "react-hot-toast";
+import { Toaster, toast } from "react-hot-toast";
 
 function Sidebar({ children }) {
   const [lengthOfPendingLeaves, setLengthOfPendingLeaves] = useState(null);
@@ -14,12 +14,13 @@ function Sidebar({ children }) {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const userRole = token ? JSON.parse(atob(token.split(".")[1])).role : null;
-  const { logout, user, login , API_BASE_URL} = useAppContext();
+  const { logout, user, login, API_BASE_URL } = useAppContext();
 
   const currentType = user?.institution?.type || user?.institutionType;
   const targetType = currentType === "School" ? "Academy" : "School";
-  const isSchool = currentType === "School";
-  console.log("Sidebar: currentType =", currentType, ", targetType =", targetType, ", isSchool =", isSchool, "userRole =", userRole, "user =", user);
+
+  // Changes when the admin switches, used to remount the page content
+  const institutionKey = user?.institution?._id || currentType || "none";
 
   useEffect(() => {
     const fetchPendingLeaves = async () => {
@@ -44,7 +45,7 @@ function Sidebar({ children }) {
     if (userRole === "admin" && token) {
       fetchPendingLeaves();
     }
-  }, [userRole, token]);
+  }, [userRole, token, institutionKey]);
 
   const handleSwitchInstitution = async () => {
     if (switching) return;
@@ -62,18 +63,17 @@ function Sidebar({ children }) {
         { headers: { Authorization: `Bearer ${token}` } },
       );
       if (res.data.success) {
-     
         localStorage.setItem("token", res.data.token);
-         await login(res?.data.token, res?.data.user);
+        await login(res?.data.token, res?.data.user);
         toast.success(`Switched to ${targetType} successfully`);
-           setSwitching(false);
         navigate("/adminPanel");
+        setSwitching(false);
       } else {
         throw new Error(res.data.message);
       }
     } catch (error) {
       setSwitching(false);
-      alert(
+      toast.error(
         error.response?.data?.message ||
           error.message ||
           "Could not switch institution.",
@@ -233,29 +233,58 @@ function Sidebar({ children }) {
   const toggleMenu = () => setIsOpen((prev) => !prev);
   const closeMenu = () => setIsOpen(false);
 
+  const switchOptions = [
+    { type: "School", icon: "fa-school" },
+    { type: "Academy", icon: "fa-graduation-cap" },
+  ];
+
   // Institution switch card (admin only), shown at the top of the nav
-  const renderSwitchCard = (beforeSwitch) =>
-    userRole === "admin" && currentType ? (
+  const renderSwitchCard = (beforeSwitch) => {
+    if (userRole !== "admin" || !currentType) return null;
+
+    return (
       <div className="sb-switch-card">
-        <span className="sb-switch-label">Current institution</span>
-        <div className="sb-switch-current">
-          <span className="sb-switch-dot"></span>
-          {currentType}
+        <div className="sb-switch-head">
+          <span className="sb-switch-title">Institution</span>
+          <span className="sb-switch-status">
+            <span className="sb-switch-dot"></span>
+            Active
+          </span>
         </div>
-        <button
-          type="button"
-          className="sb-switch-btn"
-          disabled={switching}
-          onClick={() => {
-            beforeSwitch?.();
-            handleSwitchInstitution();
-          }}
+
+        <div
+          className="sb-switch-toggle"
+          role="group"
+          aria-label="Switch institution"
         >
-          <i className="fas fa-right-left"></i>
-          Switch to {targetType}
-        </button>
+          {switchOptions.map((opt) => {
+            const active = opt.type === currentType;
+            return (
+              <button
+                key={opt.type}
+                type="button"
+                className={`sb-switch-option ${active ? "active" : ""}`}
+                aria-pressed={active}
+                disabled={switching}
+                onClick={() => {
+                  if (active) return;
+                  beforeSwitch?.();
+                  handleSwitchInstitution();
+                }}
+              >
+                <i className={`fas ${opt.icon}`}></i>
+                {opt.type}
+              </button>
+            );
+          })}
+        </div>
+
+        <p className="sb-switch-hint">
+          Choose {targetType} to change the data you manage.
+        </p>
       </div>
-    ) : null;
+    );
+  };
 
   const renderMenuLink = (item, onNavigate) => (
     <Link key={item.title} to={item.to} className="sb-link" onClick={onNavigate}>
@@ -327,8 +356,6 @@ function Sidebar({ children }) {
         </div>
         <div className="sb-header">
           <h1 className="text-dark text-center fw-bold">EC Portal</h1>
-          <div style={{ display: "flex", justifyContent: "center" }}>
-          </div>
         </div>
 
         <nav className="sb-nav">
@@ -382,7 +409,10 @@ function Sidebar({ children }) {
 
       {isOpen && <div className="sb-overlay" onClick={closeMenu}></div>}
 
-      <main className="sb-main-content">{children}</main>
+      {/* key remounts the page content after a switch so it refetches its data */}
+      <main key={institutionKey} className="sb-main-content">
+        {children}
+      </main>
     </div>
   );
 }
