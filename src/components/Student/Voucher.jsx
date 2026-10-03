@@ -4,6 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import logo from "../../images/logo.png";
 import "./Voucher.css";
+import {useAppContext} from "../../contextApi/AppContext";
 
 function Voucher() {
   const [searchParams] = useSearchParams();
@@ -16,6 +17,7 @@ function Voucher() {
   const [loading, setLoading] = useState(true);
   const [isPrinting, setIsPrinting] = useState(false);
   const voucherRef = useRef(null);
+  const {classOptions} = useAppContext();
 
   const API_BASE = "https://api.theecportal.com/api";
   const studentIdFromParams = searchParams.get("studentId");
@@ -492,7 +494,10 @@ function Voucher() {
 
             <div className="info-item">
               <label className="info-label">Class/Grade</label>
-              <div className="info-value">{student?.classInfo || "N/A"}</div>
+              <div className="info-value">
+                {classOptions.find((c) => c.value === student?.classId)?.name ||
+                  "N/A"}
+              </div>
             </div>
 
             <div className="info-item">

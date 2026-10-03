@@ -6,6 +6,7 @@ import Sidebar from "../Sidebar";
 import TopBar from "../TopBar";
 import Footer from "../footer";
 import "./FeeManagement.css";
+import { useAppContext } from "../../contextApi/AppContext";
 
 function FeeManagement() {
   const { studentId } = useParams();
@@ -22,6 +23,7 @@ function FeeManagement() {
   const [searchRollNumber, setSearchRollNumber] = useState("");
   const [searchLoading, setSearchLoading] = useState(false);
   const [currentStudentId, setCurrentStudentId] = useState(studentId || null);
+  const {classOptions} = useAppContext();
 
   const API_BASE = "https://api.theecportal.com/api";
 
@@ -474,7 +476,7 @@ function FeeManagement() {
                         color: "#0f172a",
                       }}
                     >
-                      {student?.classInfo || "N/A"}
+                      {classOptions.find((c) => c.value === student?.classId)?.name || "N/A"}
                     </span>
                   </div>
                 </div>
