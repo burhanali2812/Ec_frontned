@@ -1,16 +1,10 @@
 
 
-.no-dashboard-scroll,
-.no-dashboard-scroll body {
-  overflow: hidden !important;
-  height: 100%;
-}
+
 
 .student-dashboard {
-  height: 100dvh;
   min-height: 100dvh;
   overflow-x: hidden;
-  overflow-y: hidden !important;
 }
 
 .dashboard-hero {
@@ -907,10 +901,7 @@
 }
 
 @media (min-width: 992px) and (max-height: 900px) {
-  .student-dashboard {
-    overflow-y: auto !important;
-    padding-right: 0.25rem;
-  }
+
 
   .dashboard-hero {
     min-height: 64px;
@@ -958,13 +949,10 @@
     overflow-x: hidden;
   }
 
-  .student-dashboard {
-    overflow-y: auto !important;
-    -webkit-overflow-scrolling: touch;
-    height: auto;
-    min-height: calc(100dvh - 64px);
-    padding-bottom: 0.85rem;
-  }
+.student-dashboard {
+  min-height: calc(100dvh - 64px);
+  padding-bottom: 0.85rem;
+}
 
   .student-dashboard .row {
     margin-left: 0;

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
 import { Toaster, toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
@@ -11,8 +11,7 @@ import { useAppContext } from "../../contextApi/AppContext";
 
 function StudentManage({ adminLoginType = "academy" }) {
   const navigate = useNavigate();
-  const [CLASS_OPTIONS , setCLASS_OPTIONS] = useState([]);
-
+  const [CLASS_OPTIONS, setCLASS_OPTIONS] = useState([]);
 
   const [searchText, setSearchText] = useState("");
   const [selectedClass, setSelectedClass] = useState(null);
@@ -22,6 +21,8 @@ function StudentManage({ adminLoginType = "academy" }) {
   const [submitting, setSubmitting] = useState(false);
   const [deletingStudent, setDeletingStudent] = useState(false);
   const [loadingStudents, setLoadingStudents] = useState(false);
+  const FATHER_CONTACT_LENGTH = 11;
+  const lastLookedUpFatherContact = useRef("");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -32,7 +33,16 @@ function StudentManage({ adminLoginType = "academy" }) {
     fatherName: "",
     fatherContact: "",
   });
-  const { classOptions, students , fetchStudents } = useAppContext();
+
+  // Result of looking up existing students by father's contact number.
+  // Unlike the teacher CNIC lookup, this can hold MULTIPLE matches
+  // (siblings often share a father's contact), so the admin picks one.
+  const [fatherLookup, setFatherLookup] = useState({
+    checking: false,
+    matches: [],
+  });
+
+  const { classOptions, students, fetchStudents, user } = useAppContext();
 
   const STUDENT_API = "https://api.theecportal.com/api/students";
 
@@ -58,36 +68,35 @@ function StudentManage({ adminLoginType = "academy" }) {
     setCLASS_OPTIONS(classOptions);
   }, [classOptions]);
 
+ const resetForm = () => {
+  setFormData({
+    name: "",
+    email: "",
+    contact: "",
+    gender: "",
+    address: "",
+    classInfo: "",
+    fatherName: "",
+    fatherContact: "",
+  });
+  setIsEditMode(false);
+  setEditingStudentId("");
+  setFatherLookup({ checking: false, matches: [] });
+  lastLookedUpFatherContact.current = "";
+};
 
-
-  const resetForm = () => {
-    setFormData({
-      name: "",
-      email: "",
-      contact: "",
-      gender: "",
-      address: "",
-      classInfo: "",
-      fatherName: "",
-      fatherContact: "",
-    });
-    setIsEditMode(false);
-    setEditingStudentId("");
-  };
-
-
-
+  // student.classInfo / student.rollNumber / student.isActive are already
+  // flattened by the backend to match the enrollment at this institution
+  // (see shapeStudent server-side), so this filtering logic is unchanged.
   const filteredStudents = useMemo(() => {
     let filtered = students;
 
-    // Filter by selected class
     if (selectedClass) {
       filtered = filtered.filter(
         (student) => student.classInfo === selectedClass._id,
       );
     }
 
-    // Filter by search text
     if (searchText.trim()) {
       const q = searchText.toLowerCase();
       filtered = filtered.filter(
@@ -103,15 +112,105 @@ function StudentManage({ adminLoginType = "academy" }) {
   }, [students, searchText, selectedClass]);
 
   const getStudentCountByClass = (classInfo) => {
-    return students.filter((student) => student.classInfo === classInfo._id).length;
+    return students.filter((student) => student.classInfo === classInfo._id)
+      .length;
   };
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+  const { name, value } = e.target;
+  setFormData((prev) => ({
+    ...prev,
+    [name]: value,
+  }));
+
+  if (name === "fatherContact") {
+    // Editing the number invalidates any previous results
+    setFatherLookup({ checking: false, matches: [] });
+    if (value.trim() !== lastLookedUpFatherContact.current) {
+      lastLookedUpFatherContact.current = "";
+    }
+    // Auto-fetch as soon as the number is complete
+    lookupFatherContact(value);
+  }
+};
+
+const lookupFatherContact = async (rawContact) => {
+  if (isEditMode) return; // lookup only makes sense when adding
+  const fatherContact = rawContact.trim();
+  if (fatherContact.replace(/\D/g, "").length !== FATHER_CONTACT_LENGTH) return; // not complete yet
+  if (lastLookedUpFatherContact.current === fatherContact) return; // already fetched
+  lastLookedUpFatherContact.current = fatherContact;
+
+  setFatherLookup({ checking: true, matches: [] });
+  try {
+    const res = await axios.get(
+      `${STUDENT_API}/lookupByFatherContact/${encodeURIComponent(fatherContact)}`,
+      { headers: getAuthHeaders() },
+    );
+
+    // The number was changed while the request was in flight - ignore this result
+    if (lastLookedUpFatherContact.current !== fatherContact) return;
+
+    if (res.data?.found) {
+      setFatherLookup({ checking: false, matches: res.data.matches });
+    } else {
+      setFatherLookup({ checking: false, matches: [] });
+    }
+  } catch (error) {
+    // A failed lookup shouldn't block manual entry - allow a retry
+    if (lastLookedUpFatherContact.current === fatherContact) {
+      lastLookedUpFatherContact.current = "";
+    }
+    setFatherLookup({ checking: false, matches: [] });
+  }
+};
+
+  // Fires when the admin leaves the Father Contact field on the Add form.
+  // Looks up every student who shares that father's contact number -
+  // could be the same student enrolling at a second institution, or a
+  // sibling whose family details are worth reusing.
+  const handleFatherContactBlur = async () => {
+    if (isEditMode) return; // lookup only makes sense when adding
+    const fatherContact = formData.fatherContact.trim();
+    if (fatherContact.length < 7) return; // wait for something plausible
+
+    setFatherLookup({ checking: true, matches: [] });
+    try {
+      const res = await axios.get(
+        `${STUDENT_API}/lookupByFatherContact/${encodeURIComponent(fatherContact)}`,
+        { headers: getAuthHeaders() },
+      );
+
+      if (res.data?.found) {
+        setFatherLookup({ checking: false, matches: res.data.matches });
+      } else {
+        setFatherLookup({ checking: false, matches: [] });
+      }
+    } catch (error) {
+      // A failed lookup shouldn't block manual entry.
+      setFatherLookup({ checking: false, matches: [] });
+    }
+  };
+
+  // Admin picked one of the matched students to base the form on.
+  const applyFatherLookupMatch = (match) => {
+    if (match.alreadyAtThisInstitution) {
+      toast.error("This student is already enrolled at this institution.");
+      return;
+    }
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      name: match.name,
+      email: match.email,
+      contact: match.contact,
+      address: match.address,
+      gender: match.gender,
+      fatherName: match.fatherName,
+      fatherContact: match.fatherContact,
     }));
+    toast.success(
+      "Details filled in from an existing family record. Edit anything that's different for this student.",
+    );
   };
 
   const validateForm = () => {
@@ -153,6 +252,8 @@ function StudentManage({ adminLoginType = "academy" }) {
 
     setSubmitting(true);
     try {
+      // institution is no longer sent - both signUp and updateStudent
+      // read req.user.institution from the auth token, not the body.
       const payload = {
         name: formData.name.trim(),
         email: formData.email.trim(),
@@ -162,7 +263,6 @@ function StudentManage({ adminLoginType = "academy" }) {
         classInfo: formData.classInfo,
         fatherName: formData.fatherName.trim(),
         fatherContact: formData.fatherContact.trim(),
-        institutionType: adminLoginType === "academy" ? "Academy" : "School",
       };
 
       const endpoint = isEditMode
@@ -223,31 +323,33 @@ function StudentManage({ adminLoginType = "academy" }) {
   const handleDeleteStudent = async () => {
     if (!editingStudentId) return;
 
+    // deleteStudent now deactivates just this institution's enrollment -
+    // the student's record (and any enrollment elsewhere) is untouched.
     const confirmed = window.confirm(
-      "Delete this student? This will also delete all course registrations for this student.",
+      "Deactivate this student at this institution? Their course registration here will remain on record but they'll show as inactive.",
     );
     if (!confirmed) return;
 
     setDeletingStudent(true);
     try {
-     const res = await axios.put(
-  `${STUDENT_API}/deleteStudent/${editingStudentId}`,
-  {},
-  {
-    headers: getAuthHeaders(),
-  }
-);
+      const res = await axios.put(
+        `${STUDENT_API}/deleteStudent/${editingStudentId}`,
+        {},
+        {
+          headers: getAuthHeaders(),
+        },
+      );
 
       if (res.data?.success) {
-        toast.success(res.data?.message || "Student deleted successfully!");
+        toast.success(res.data?.message || "Student deactivated successfully!");
         setShowModal(false);
         resetForm();
         fetchStudents();
       } else {
-        toast.error(res.data?.message || "Failed to delete student");
+        toast.error(res.data?.message || "Failed to deactivate student");
       }
     } catch (error) {
-      toast.error(getErrorMessage(error, "Failed to delete student"));
+      toast.error(getErrorMessage(error, "Failed to deactivate student"));
     } finally {
       setDeletingStudent(false);
     }
@@ -260,18 +362,43 @@ function StudentManage({ adminLoginType = "academy" }) {
   };
 
   const handleFeeManage = (student) => {
-    // Store student data for fee management
     localStorage.setItem("voucherStudent", JSON.stringify(student));
     localStorage.setItem("voucherStudentId", student._id || student.id);
-
-    // Navigate to fee management page
     navigate(`/fee-management/${student._id || student.id}`);
   };
-  console.log("CLASS_OPTIONS:", CLASS_OPTIONS);
 
   return (
     <Sidebar>
       <Toaster position="top-right" />
+
+      {fatherLookup.checking && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            background: "rgba(0, 0, 0, 0.45)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "0.75rem",
+            zIndex: 2000,
+          }}
+        >
+          <span
+            className="spinner-border text-light"
+            style={{ width: "3rem", height: "3rem" }}
+            role="status"
+            aria-hidden="true"
+          ></span>
+          <span className="text-light fw-semibold">
+            Looking up students for this contact number...
+          </span>
+        </div>
+      )}
 
       <div className="sm-content-wrapper">
         <section className="sm-header-card">
@@ -320,7 +447,6 @@ function StudentManage({ adminLoginType = "academy" }) {
                 className="btn btn-dark sm-add-btn"
                 onClick={() => {
                   resetForm();
-             
                   setShowModal(true);
                 }}
               >
@@ -397,7 +523,7 @@ function StudentManage({ adminLoginType = "academy" }) {
                             )}
                           </td>
                           <td>{student.rollNumber}</td>
-                    
+
                           <td>{student.fatherName}</td>
                           <td className="text-center text-dark fw-bold">
                             {student.isActive ? "Active" : "Inactive"}
@@ -406,7 +532,7 @@ function StudentManage({ adminLoginType = "academy" }) {
                             <div className="sm-manage-actions">
                               <button
                                 type="button"
-                                className="btn btn-sm btn-primary"
+                                className="btn btn-sm btn-dark "
                                 onClick={() => handleEditStudent(student)}
                               >
                                 <i className="fas fa-edit me-1"></i>Edit
@@ -472,6 +598,61 @@ function StudentManage({ adminLoginType = "academy" }) {
 
             <form onSubmit={handleSubmit}>
               <div className="row g-3">
+                {!isEditMode && (
+                  <div className="col-12">
+                    <label className="form-label">Father Contact</label>
+                    <input
+                      name="fatherContact"
+                      type="text"
+                      className="form-control"
+                      value={formData.fatherContact}
+                      onChange={handleChange}
+                      onBlur={handleFatherContactBlur}
+                      placeholder="Enter father's contact"
+                    />
+                  </div>
+                )}
+
+                {fatherLookup.matches.length > 0 && (
+                  <div className="col-12">
+                    <div className="alert alert-info py-2 mb-0">
+                      <i className="fas fa-circle-info me-2"></i>
+                      Found {fatherLookup.matches.length} student
+                      {fatherLookup.matches.length > 1 ? "s" : ""} with this
+                      father's contact. Pick one to reuse their details, or
+                      keep typing manually if this is a new student.
+                      <div className="d-flex flex-column gap-2 mt-2">
+                        {fatherLookup.matches.map((match) => (
+                          <div
+                            key={match._id}
+                            className="d-flex justify-content-between align-items-center border rounded px-2 py-1 bg-white"
+                          >
+                            <div>
+                              <strong>{match.name}</strong>{" "}
+                              <span className="text-muted">
+                                ({match.email})
+                              </span>
+                              {match.alreadyAtThisInstitution && (
+                                <span className="badge bg-secondary ms-2">
+                                  Already here
+                                </span>
+                              )}
+                            </div>
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-outline-primary"
+                              disabled={match.alreadyAtThisInstitution}
+                              onClick={() => applyFatherLookupMatch(match)}
+                            >
+                              Use this
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 <div className="col-12">
                   <label className="form-label">Student Name</label>
                   <input
@@ -564,17 +745,21 @@ function StudentManage({ adminLoginType = "academy" }) {
                   />
                 </div>
 
-                <div className="col-12">
-                  <label className="form-label">Father Contact</label>
-                  <input
-                    name="fatherContact"
-                    type="text"
-                    className="form-control"
-                    value={formData.fatherContact}
-                    onChange={handleChange}
-                    placeholder="Enter father's contact"
-                  />
-                </div>
+                {isEditMode && (
+                  <div className="col-12">
+                    <label className="form-label">Father Contact</label>
+                   <input
+  name="fatherContact"
+  type="text"
+  className="form-control"
+  value={formData.fatherContact}
+  onChange={handleChange}
+  onBlur={(e) => lookupFatherContact(e.target.value)}
+  placeholder="03xxxxxxxxx"
+  maxLength={15}
+/>
+                  </div>
+                )}
               </div>
 
               <div className="d-flex justify-content-between gap-2 mt-4 flex-wrap">
@@ -586,7 +771,7 @@ function StudentManage({ adminLoginType = "academy" }) {
                     disabled={deletingStudent || submitting}
                   >
                     <i className="fas fa-trash me-1"></i>
-                    {deletingStudent ? "Deleting..." : "Delete Student"}
+                    {deletingStudent ? "Deactivating..." : "Deactivate Student"}
                   </button>
                 ) : (
                   <span></span>

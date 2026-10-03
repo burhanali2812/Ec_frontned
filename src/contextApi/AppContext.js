@@ -31,7 +31,6 @@ export const AppProvider = ({ children }) => {
   const [isAppDataLoading, setIsAppDataLoading] = useState(false);
 
   const API_BASE_URL = "https://api.theecportal.com/api";
-  const API_BASE = "https://api.theecportal.com/api";
 
   function authHeaders(overrideToken) {
     return {
@@ -68,7 +67,7 @@ export const AppProvider = ({ children }) => {
   const fetchStudents = async (overrideToken) => {
     try {
       const res = await axios.get(`${API_BASE_URL}/students/getAllStudents`, {
-        params: { institutionType: "Academy" },
+        params: { institution: user?.institution?._id || user?.institution?.id }, // Include institution ID in the request
         headers: authHeaders(overrideToken),
       });
       if (res.data?.success) {
@@ -114,7 +113,7 @@ export const AppProvider = ({ children }) => {
   const fetchTeachers = async (overrideToken) => {
     try {
       const res = await axios.get(`${API_BASE_URL}/teacher/getAllTeachers`, {
-        params: { institutionType: "academy" },
+        params: { institution : user?.institution?._id || user?.institution?.id }, // Include institution ID in the request
         headers: authHeaders(overrideToken),
       });
       if (res.data?.success) {
@@ -225,7 +224,7 @@ export const AppProvider = ({ children }) => {
   const fetchNotifications = useCallback(async (overrideToken) => {
     setError("");
     try {
-      const res = await fetch(`${API_BASE}/notifications`, { headers: authHeaders(overrideToken) });
+      const res = await fetch(`${API_BASE_URL}/notifications`, { headers: authHeaders(overrideToken) });
       const data = await res.json();
       if (!data.success) throw new Error(data.message || "Failed to load notifications.");
       setNotifications(data.notifications);
@@ -335,6 +334,7 @@ export const AppProvider = ({ children }) => {
         notifications,
         error,
         isAppDataLoading,
+        API_BASE_URL,
 
         // setters
         setCourses,

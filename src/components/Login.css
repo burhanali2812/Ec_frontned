@@ -14,6 +14,46 @@
   justify-content: center;
   width: 100%;
 }
+/* Institution type toggle (School / Academy) */
+.institution-toggle {
+  display: flex;
+  width: 100%;
+  padding: 4px;
+  gap: 4px;
+  background: #e9eef3;
+  border-radius: 10px;
+}
+
+.institution-toggle-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #244e6d;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.institution-toggle-btn:hover:not(.active) {
+  background: rgba(6, 38, 63, 0.08);
+}
+
+.institution-toggle-btn.active {
+  background: #212529; /* matches btn-dark */
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(2, 32, 58, 0.25);
+}
+
+.institution-toggle-btn:focus-visible {
+  outline: 2px solid #0b4f75;
+  outline-offset: 2px;
+}
 
 .login-page .container > div {
   width: 100%;

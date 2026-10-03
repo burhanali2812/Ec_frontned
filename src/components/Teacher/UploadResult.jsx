@@ -10,6 +10,7 @@ function UploadResult() {
   const [mode, setMode] = useState("upload"); // "upload" | "edit"
   const [courses, setCourses] = useState([]);
   const [loadingCourses, setLoadingCourses] = useState(false);
+  const {API_BASE_URL} = useAppContext();
 
   const navigate = useNavigate();
 
@@ -21,9 +22,8 @@ function UploadResult() {
     return `${y}-${m}-${day}`;
   };
 
-  const ATTENDANCE_API = "https://api.theecportal.com/api/attendance";
-  // const RESULT_API = "https://api.theecportal.com/api/results";
-  const RESULT_API = "https://api.theecportal.com/api/results";
+  const ATTENDANCE_API = `${API_BASE_URL}/attendance`;
+  const RESULT_API = `${API_BASE_URL}/results`;
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem("token");

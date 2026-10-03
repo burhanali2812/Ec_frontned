@@ -12,6 +12,7 @@ function Voucher() {
   const [aboutCourse, setAboutCourse] = useState([]);
   const [feeHistory, setFeeHistory] = useState([]);
   const [allFees, setAllFees] = useState([]);
+  const [institution, setInstitution] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isPrinting, setIsPrinting] = useState(false);
   const voucherRef = useRef(null);

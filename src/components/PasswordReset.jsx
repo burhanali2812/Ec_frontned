@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import "./PasswordReset.css";
 import Footer from "./footer";
+import { useAppContext } from "../contextApi/AppContext";
 
 function PasswordReset() {
   const [step, setStep] = useState(1); // Step 1: Email, Step 2: Security, Step 3: Password
@@ -19,6 +20,7 @@ function PasswordReset() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [securityQuestion, setSecurityQuestion] = useState("");
+  const { API_BASE_URL } = useAppContext();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -29,7 +31,7 @@ function PasswordReset() {
   const finalRole = role === "Student" ? "students" : "teacher";
   console.log("finalRole", finalRole);
 
-  const API_BASE = `https://api.theecportal.com/api/${finalRole}`;
+  const API_BASE = `${API_BASE_URL}/${finalRole}`;
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem("token");

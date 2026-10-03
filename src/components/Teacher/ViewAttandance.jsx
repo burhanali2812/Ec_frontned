@@ -20,9 +20,9 @@ function ViewAttandance() {
   const [editingStudentId, setEditingStudentId] = useState(null);
   const [pendingStatus, setPendingStatus] = useState("");
   const [savingStudentId, setSavingStudentId] = useState(null);
-  const{classOptions} = useAppContext()
+  const{classOptions, API_BASE_URL} = useAppContext()
 
-  const API_BASE = "https://api.theecportal.com/api/attendance";
+  const API_BASE = `${API_BASE_URL}/attendance`;
 
   const getLocalToday = () => {
     const today = new Date();

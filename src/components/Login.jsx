@@ -14,7 +14,8 @@ function Login() {
   const location = useLocation();
   const role = location.state?.role || "Student"; // Default to Student if no role is passed
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const { login } = useAppContext();
+  const { login , API_BASE_URL} = useAppContext();
+  const [institutionType, setInstitutionType] = useState("Academy"); // Academy by default
 
   const togglePassword = () => {
     setPasswordVisible(!passwordVisible);
@@ -22,7 +23,6 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rollNumber, setRollNumber] = useState("");
-  const [loginType, setLoginType] = useState(null);
   const [Loading, setLoading] = useState(false);
 
   // Fire-and-forget: registering the FCM token is not needed to show the
@@ -31,7 +31,7 @@ function Login() {
     try {
       const token = await getFCMToken();
       if (token) {
-        await axios.post("https://api.theecportal.com/api/notifications/fcm-token", {
+        await axios.post(`${API_BASE_URL}/notifications/fcm-token`, {
           userId: userId,
           token,
         });
@@ -52,6 +52,11 @@ function Login() {
         return;
       }
     }
+    if(institutionType !== "School" && institutionType !== "Academy") {
+      toast.error("Invalid institution type");
+      setLoading(false);
+      return;
+    }
 
     if (role === "Admin" || role === "Teacher") {
       if (!email || !password) {
@@ -62,10 +67,11 @@ function Login() {
       console.log("Logging in as:", role, "with email:", email);
       try {
         const res = await axios.post(
-          `https://api.theecportal.com/api/${role.toLowerCase()}/login`,
+          `${API_BASE_URL}/${role.toLowerCase()}/login`,
           {
             email,
             password,
+              institution: institutionType, // Send the selected institution type
           },
         );
         if (res?.data.success) {
@@ -92,9 +98,9 @@ function Login() {
       }
       try {
         const res = await axios.post(
-          `https://api.theecportal.com/api/students/login`,
+          `${API_BASE_URL}/students/login`,
           {
-            institutionPrefix: loginType,
+             institutionPrefix: institutionType === "School" ? "ECS" : "ECA",
             rollNumber,
             password,
           },
@@ -116,7 +122,7 @@ function Login() {
       }
     }
   };
-  console.log(loginType);
+
 
   return (
     <div className="login-page">
@@ -151,50 +157,61 @@ function Login() {
               </p>
             </div>
 
-            {role &&
-              (role !== "Student" ? (
-                <div className="input-group flex-nowrap mb-3">
-                  <span className="input-group-text" id="addon-Email">
-                    <i
-                      className={`fa-solid ${role !== "Student" ? "fa-envelope" : "fa-user-graduate"}`}
-                    ></i>
-                  </span>
-                  <input
-                    type="email"
-                    className="form-control"
-                    placeholder="Eg : abc@gmail.com"
-                    aria-label="email"
-                    aria-describedby="addon-Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
-              ) : (
-                <div className="input-group flex-nowrap mb-3">
-                  <span className="input-group-text" id="addon-Roll Number">
-                    <i className="fa-solid fa-user-graduate"></i>
-                  </span>
-                  <select
-                    className="form-select "
-                    aria-label="Login Type"
-                    onChange={(e) => setLoginType(e.target.value)}
-                    value={loginType}
-                  >
-                    <option value="ECS">ECS</option>
-                    <option value="ECA">ECA</option>
-                  </select>
+        {/* Institution type toggle (all roles) */}
+<div
+  className="institution-toggle mb-3"
+  role="group"
+  aria-label="Institution Type"
+>
+  <button
+    type="button"
+    className={`institution-toggle-btn ${institutionType === "School" ? "active" : ""}`}
+    onClick={() => setInstitutionType("School")}
+  >
+    <i className="fa-solid fa-school me-2"></i>
+    School
+  </button>
+  <button
+    type="button"
+    className={`institution-toggle-btn ${institutionType === "Academy" ? "active" : ""}`}
+    onClick={() => setInstitutionType("Academy")}
+  >
+    <i className="fa-solid fa-graduation-cap me-2"></i>
+    Academy
+  </button>
+</div>
 
-                  <input
-                    type="number"
-                    className="form-control"
-                    placeholder="Eg : 10001"
-                    aria-label="rollNumber"
-                    aria-describedby="addon-Roll Number"
-                    value={rollNumber}
-                    onChange={(e) => setRollNumber(e.target.value)}
-                  />
-                </div>
-              ))}
+{role !== "Student" ? (
+  <div className="input-group flex-nowrap mb-3">
+    <span className="input-group-text" id="addon-Email">
+      <i className="fa-solid fa-envelope"></i>
+    </span>
+    <input
+      type="email"
+      className="form-control"
+      placeholder="Eg : abc@gmail.com"
+      aria-label="email"
+      aria-describedby="addon-Email"
+      value={email}
+      onChange={(e) => setEmail(e.target.value)}
+    />
+  </div>
+) : (
+  <div className="input-group flex-nowrap mb-3">
+    <span className="input-group-text" id="addon-Roll Number">
+      <i className="fa-solid fa-user-graduate"></i>
+    </span>
+    <input
+      type="number"
+      className="form-control"
+      placeholder="Eg : 10001"
+      aria-label="rollNumber"
+      aria-describedby="addon-Roll Number"
+      value={rollNumber}
+      onChange={(e) => setRollNumber(e.target.value)}
+    />
+  </div>
+)}
             {/* Password Field */}
 
             <div className="input-group flex-nowrap mb-1">

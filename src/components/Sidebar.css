@@ -30,10 +30,7 @@
   color: #dc3545;
 }
 
-.sb-header {
-  padding: 1.25rem 1.15rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
+
 
 .sb-header h5 {
   font-weight: 700;
@@ -282,4 +279,93 @@
     margin-top: 83px;
     padding: 1rem;
   }
+}
+.sb-switch-card {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 0.9rem;
+  padding: 0.85rem;
+  margin-bottom: 0.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.sb-switch-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #6c757d;
+}
+
+.sb-switch-current {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 1rem;
+  color: #111;
+}
+
+.sb-switch-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+}
+
+.sb-switch-btn {
+  margin-top: 0.4rem;
+  width: 100%;
+  border: 1px solid #111;
+  background: #fff;
+  color: #111;
+  border-radius: 0.6rem;
+  padding: 0.55rem 0.7rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sb-switch-btn:hover:not(:disabled) {
+  background: #111;
+  color: #fff;
+}
+
+.sb-switch-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.sb-switching-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(255, 255, 255, 0.92);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  font-weight: 600;
+}
+
+.sb-spinner {
+  width: 48px;
+  height: 48px;
+  border: 5px solid #e0e0e0;
+  border-top-color: #111;
+  border-radius: 50%;
+  animation: sb-spin 0.8s linear infinite;
+}
+
+@keyframes sb-spin {
+  to { transform: rotate(360deg); }
 }

@@ -84,24 +84,6 @@ function StudentDashboard() {
     return fallback;
   };
 
-  const fetchProfile = async () => {
-    setLoadingProfile(true);
-    try {
-      const res = await axios.get(`${API_BASE}/students/myProfile`, {
-        headers: getAuthHeaders(),
-      });
-
-      if (res.data?.success) {
-        setStudent(res.data.student);
-      } else {
-        toast.error(res.data?.message || "Failed to load profile");
-      }
-    } catch (error) {
-      toast.error(getErrorMessage(error, "Unable to load profile."));
-    } finally {
-      setLoadingProfile(false);
-    }
-  };
 
 
 
@@ -217,6 +199,7 @@ function StudentDashboard() {
         });
         if (profileRes.data?.success) {
           setStudent(profileRes.data.student);
+          console.log("Fetched student profile:", profileRes.data.student);
         }
       } catch (error) {
         console.error("Profile fetch error:", error);
@@ -257,19 +240,8 @@ function StudentDashboard() {
     init();
   }, []);
 
-  useEffect(() => {
-    const isMobile = window.matchMedia("(max-width: 768px)").matches;
 
-    if (!isMobile) {
-      document.documentElement.classList.add("no-dashboard-scroll");
-      document.body.classList.add("no-dashboard-scroll");
-    }
 
-    return () => {
-      document.documentElement.classList.remove("no-dashboard-scroll");
-      document.body.classList.remove("no-dashboard-scroll");
-    };
-  }, []);
 
   const getTeacherNamesForClass = (course, classInfo) => {
     const assignments = Array.isArray(course?.assignments)
@@ -433,6 +405,16 @@ function StudentDashboard() {
       }),
     [coursesWithPercentage],
   );
+  const handleQuickAccessClick = (href) => {
+  // In-page anchor: scroll to the section instead of navigating
+  if (href.startsWith("#")) {
+    document
+      .getElementById(href.slice(1))
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    return;
+  }
+  navigate(href, { state: { fromteacher: true } });
+};
 
   const quickAccessItems = useMemo(
     () => [
@@ -640,13 +622,13 @@ function StudentDashboard() {
           role="button"
           tabIndex={0}
           style={{ position: "relative" }}
-          onClick={() => navigate(item.href, { state: { fromteacher: true } })}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              navigate(item.href, { state: { fromteacher: true } });
-            }
-          }}
+         onClick={() => handleQuickAccessClick(item.href)}
+onKeyDown={(e) => {
+  if (e.key === "Enter" || e.key === " ") {
+    e.preventDefault();
+    handleQuickAccessClick(item.href);
+  }
+}}
         >
           {showUnreadBadge && (
             <span
